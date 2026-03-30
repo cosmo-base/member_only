@@ -39,11 +39,14 @@ export default function PartnerJoinPage() {
       // Supabaseへのロゴアップロード
       if (fileInput && fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0]
-        const uniqueFileName = `${Date.now()}_${file.name}`
-
+        // ファイルの拡張子だけを取得（.png など）
+        const fileExtension = file.name.split('.').pop();
+        // タイムスタンプとランダムな文字列だけでファイル名を作る（日本語を排除）
+        const safeFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
+        
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('logos') // 最初に作った logos バケツを使用
-          .upload(`public/${uniqueFileName}`, file)
+          .from('logos') // libraryバケツの場合はここを 'library' に
+        .upload(`public/${safeFileName}`, file)
 
         if (uploadError) throw uploadError
 
