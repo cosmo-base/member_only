@@ -4,6 +4,11 @@ import Image from "next/image"
 import { StarBackground } from "@/components/star-background"
 import { SiteHeader } from "@/components/site-header"
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ★ 1. フッター用のロゴを直接インポートする（最強の解決策）
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import footerLogo from "../public/images/cosmo-base-logo.png"
+
 interface ContentPageLayoutProps {
   children: React.ReactNode
   title: string
@@ -52,7 +57,16 @@ export function ContentPageLayout({
 
           {/* Image Area */}
           <div className="ml-10 flex-shrink-0 mb-6">
-            <img src={`/member-only/${logo}_logo.png`} alt={`${logo}logo`} className="h-24 w-auto object-contain"/>
+            {/* ★ 2. 動的なロゴ画像（CBEDなど）のパス指定
+              Next.jsの <Image> は使えないので、標準の <img> タグを使います。
+              ※ 画像ファイルが public/images/ の中にある前提でパスを調整しています。
+                 もし public の直下にある場合は `/member-only/${logo}_logo.png` に戻してください。
+            */}
+            <img 
+              src={`/member-only/${logo}_logo.png`} 
+              alt={`${logo}logo`} 
+              className="h-24 w-auto object-contain"
+            />
           </div>
         </div>
 
@@ -64,11 +78,10 @@ export function ContentPageLayout({
         {/* Footer */}
         <footer className="border-t border-border/50 bg-background/80 backdrop-blur-sm py-8">
           <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-4">
+            {/* ★ 3. フッターのロゴをインポート方式に書き換え */}
             <Image
-              src="/member-only/images/cosmo-base-logo.png"
+              src={footerLogo}
               alt="Cosmo Base"
-              width={150}
-              height={40}
               className="h-8 w-auto opacity-70"
             />
             <p className="text-sm text-muted-foreground">
