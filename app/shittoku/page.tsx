@@ -1,5 +1,4 @@
 import Link from "next/link"
-import Image from "next/image"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { Calendar, History, CalendarDays, MessageSquare, Users } from "lucide-react"
@@ -49,7 +48,7 @@ export default function ShittokuPage() {
 
         <div className="w-full max-w-3xl mx-auto rounded-xl overflow-hidden border border-border/50 shadow-md">
           <img
-            src="/shittoku/2604.jpeg"
+            src="/member-only/shittoku/2604.jpeg"
             alt="今月のイベント"
             className="w-full h-auto object-cover transition-transform duration-500"
           />
