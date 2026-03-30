@@ -20,7 +20,7 @@ const speakers: Speaker[] = [
     id: "1",
     name: "山田 太郎",
     affiliation: "宇宙航空研究開発機構（JAXA）",
-    photo: "/images/speaker-placeholder.jpg",
+    photo: "/member-only/images/speaker-placeholder.jpg",
     biography: "東京大学大学院工学研究科修了。2010年よりJAXAにて有人宇宙技術の研究に従事。国際宇宙ステーション計画にも参画し、日本実験棟「きぼう」の運用に携わる。宇宙教育の普及活動にも力を入れている。",
     events: [
       { name: "国際宇宙ステーションの1日", date: "2026年1月18日" },
@@ -31,7 +31,7 @@ const speakers: Speaker[] = [
     id: "2",
     name: "佐藤 花子",
     affiliation: "国立天文台",
-    photo: "/images/speaker-placeholder.jpg",
+    photo: "/member-only/images/speaker-placeholder.jpg",
     biography: "京都大学理学部卒業後、国立天文台にて太陽系外惑星の研究に従事。すばる望遠鏡を用いた観測プロジェクトを多数主導。サイエンスコミュニケーション活動も積極的に行っている。",
     events: [
       { name: "太陽系外惑星の発見と探索", date: "2026年4月26日" },
@@ -41,7 +41,7 @@ const speakers: Speaker[] = [
     id: "3",
     name: "鈴木 一郎",
     affiliation: "スペーステック株式会社",
-    photo: "/images/speaker-placeholder.jpg",
+    photo: "/member-only/images/speaker-placeholder.jpg",
     biography: "早稲田大学理工学部卒業。大手重工メーカーでロケットエンジン開発に携わった後、宇宙ベンチャーを起業。民間主導の宇宙開発を推進し、複数の衛星打ち上げプロジェクトを成功させている。",
     events: [
       { name: "宇宙ビジネス最前線", date: "2026年1月11日" },
@@ -52,7 +52,7 @@ const speakers: Speaker[] = [
     id: "4",
     name: "田中 美咲",
     affiliation: "プラネタリウム解説員",
-    photo: "/images/speaker-placeholder.jpg",
+    photo: "/member-only/images/speaker-placeholder.jpg",
     biography: "日本大学天文学科卒業後、全国のプラネタリウムで解説員として活動。星座や天体の魅力を分かりやすく伝えることに定評がある。天文関連の書籍も多数執筆。",
     events: [
       { name: "冬の星座観測ガイド", date: "2025年12月21日" },
@@ -63,7 +63,7 @@ const speakers: Speaker[] = [
     id: "5",
     name: "高橋 健太",
     affiliation: "惑星科学研究所",
-    photo: "/images/speaker-placeholder.jpg",
+    photo: "/member-only/images/speaker-placeholder.jpg",
     biography: "東北大学大学院理学研究科博士課程修了。火星や小惑星の地質学的研究を専門とし、複数の探査ミッションに科学チームとして参加。一般向けの講演活動も精力的に行っている。",
     events: [
       { name: "火星探査の最前線", date: "2026年3月15日" },
