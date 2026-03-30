@@ -1,4 +1,5 @@
 // app/CBED/[id]/page.tsx
+import { Metadata } from "next" // ★ メタデータ用のインポートを追加
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { MapPin, Calendar, Clock, ArrowLeft, ExternalLink, User, Users, Building } from "lucide-react"
@@ -6,32 +7,56 @@ import Link from "next/link"
 import { fetchEventsData } from "@/data/CBED"
 import { notFound } from "next/navigation"
 
-export const dynamicParams = false; // 指定したID以外のページは404にする
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const events = await fetchEventsData();
-  
-  // スプレッドシートにある全イベントのIDをリストにして返す
   return events.map((event) => ({
     id: String(event.id),
   }));
 }
 
-// params の型を Promise に変更します
-export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ★ 動的メタデータ：URL(id)からイベント名を取得してタイトルにする
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const eventId = resolvedParams.id;
 
-  // params を await して展開します
+  const allEvents = await fetchEventsData();
+  const event = allEvents.find(e => String(e.id) === eventId);
+
+  // イベントが見つからない場合のタイトル
+  if (!event) {
+    return {
+      title: "イベントが見つかりません",
+    }
+  }
+
+  // イベントが見つかった場合は、そのタイトルをタブ名にする
+  // ※長すぎる説明文は100文字でカットする処理を入れています
+  const descriptionText = event.description 
+    ? event.description.slice(0, 100) + "..." 
+    : `${event.title}の詳細情報ページです。`;
+
+  return {
+    title: event.title, // これが自動的に「イベント名 | Cosmo Base - 参加者ページ」になります！
+    description: descriptionText,
+  }
+}
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const eventId = resolvedParams.id;
 
   const allEvents = await fetchEventsData()
-
-  //  展開した eventId を使って比較します
   const event = allEvents.find(e => String(e.id) === eventId)
 
   if (!event) {
     notFound()
   }  
-  // 主催者チェック
+  
   const isCosmoBaseEvent = event.organizer
     ? event.organizer.replace(/\s+/g, "").toLowerCase().includes("cosmobase")
     : false
@@ -129,10 +154,9 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             </a>
           )}
           
-          {/* ★ 地図リンク：latとlngが両方ある時だけ表示 */}
           {event.lat && event.lng && (
             <a
-              href={`https://www.google.com/maps?q=${event.lat},${event.lng}`}
+              href={`https://www.google.com/maps/search/?api=1&query=$${event.lat},${event.lng}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto"
