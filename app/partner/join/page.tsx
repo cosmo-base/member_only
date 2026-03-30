@@ -96,9 +96,6 @@ if (fileInput && fileInput.files && fileInput.files[0]) {
               <p className="text-muted-foreground mb-8">
                 パートナー申請ありがとうございます。内容を確認の上、担当者よりご連絡いたします。
               </p>
-              <Link href="/partner">
-                <Button>マイページに戻る</Button>
-              </Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="glass-card rounded-xl p-6 md:p-8 space-y-10 shadow-lg">
