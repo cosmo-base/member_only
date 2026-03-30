@@ -9,7 +9,7 @@ export function Header() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202026-03-16%20131704-ezTYVUhhNXEETW5qctCrrvK9KtrEmE.png"
+            src="/member-only/images/cosmo-base-logo.png"
             alt="Cosmo Base"
             width={180}
             height={60}
