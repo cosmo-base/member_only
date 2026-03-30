@@ -57,14 +57,11 @@ export function ContentPageLayout({
 
           {/* Image Area */}
           <div className="ml-10 flex-shrink-0 mb-6">
-            {/* ★ 2. 動的なロゴ画像（CBEDなど）のパス指定
-              Next.jsの <Image> は使えないので、標準の <img> タグを使います。
-              ※ 画像ファイルが public/images/ の中にある前提でパスを調整しています。
-                 もし public の直下にある場合は `/member-only/${logo}_logo.png` に戻してください。
-            */}
-            <img 
-              src={`/member-only/${logo}_logo.png`} 
+            <Image 
+              src={`/${logo}_logo.png`} 
               alt={`${logo}logo`} 
+              width={200}
+              height={96}
               className="h-24 w-auto object-contain"
             />
           </div>
