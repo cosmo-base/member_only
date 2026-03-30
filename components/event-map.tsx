@@ -1,4 +1,4 @@
-// components/event-map.tsx 完全版
+// components/event-map.tsx
 "use client"
 
 import { useEffect } from "react"
@@ -36,11 +36,12 @@ function MapController({ center, onBoundsChange }: { center: [number, number], o
 
 export default function EventMap({ events, center, onBoundsChange }: { events: SpaceEvent[], center: [number, number], onBoundsChange: (bounds: {n: number, s: number, e: number, w: number}) => void }) {
   return (
-    <div className="w-full h-full relative" style={{ minHeight: "400px", background: "#0a0a10" }}>
+    // ★ ここが一番のキモです。absolute inset-0 で親要素にピッタリ張り付きます。
+    <div className="absolute inset-0 z-10 bg-secondary/20">
       <MapContainer 
         center={center} 
         zoom={12} 
-        style={{ height: "100%", width: "100%", zIndex: 10 }}
+        style={{ height: "100%", width: "100%" }}
         scrollWheelZoom={true}
       >
         <TileLayer
