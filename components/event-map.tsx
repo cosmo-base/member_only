@@ -1,4 +1,4 @@
-// components/event-map.tsx
+// components/event-map.tsx 完全版
 "use client"
 
 import { useEffect } from "react"
@@ -6,8 +6,8 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaf
 import "leaflet/dist/leaflet.css"
 import L from "leaflet"
 import { SpaceEvent } from "@/data/CBED"
+import Link from "next/link"
 
-// ★ アイコンURLを相対パスではなく絶対URLに固定（表示漏れ防止）
 const DefaultIcon = L.icon({
   iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
   iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
@@ -27,7 +27,6 @@ function MapController({ center, onBoundsChange }: { center: [number, number], o
   })
 
   useEffect(() => {
-    // 画面サイズが変わった時に地図が壊れるのを防ぐ
     map.invalidateSize()
     map.flyTo(center, map.getZoom())
   }, [center, map])
@@ -37,14 +36,13 @@ function MapController({ center, onBoundsChange }: { center: [number, number], o
 
 export default function EventMap({ events, center, onBoundsChange }: { events: SpaceEvent[], center: [number, number], onBoundsChange: (bounds: {n: number, s: number, e: number, w: number}) => void }) {
   return (
-    <div className="w-full h-full relative" style={{ minHeight: "400px", background: "#f8f9fa" }}>
+    <div className="w-full h-full relative" style={{ minHeight: "400px", background: "#0a0a10" }}>
       <MapContainer 
         center={center} 
         zoom={12} 
         style={{ height: "100%", width: "100%", zIndex: 10 }}
         scrollWheelZoom={true}
       >
-        {/* ★ タイルURLを a.tile... から {s}.tile... の標準形式に変更 */}
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
