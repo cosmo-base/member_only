@@ -17,7 +17,7 @@ const ITTEKITA_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQjzMb
 
 export async function fetchIttekitaData(): Promise<IttekitaEvent[]> {
   try {
-    const response = await fetch(ITTEKITA_CSV_URL, { cache: "no-store" })
+    const response = await fetch(ITTEKITA_CSV_URL)
     if (!response.ok) throw new Error("スプレッドシートの読み込みに失敗しました")
     
     const csvText = await response.text()
