@@ -30,7 +30,7 @@ const LOGO_MAP: Record<string, any> = {
   "CBED": cbedLogo,
   "CBL": cblLogo,
   "ittekita": ittekitaLogo,
-  "ittoide": ittoideLogo, /
+  "ittoide": ittoideLogo, 
   "news": newsLogo,
   "oshiete": oshieteLogo,
   "quiz": quizLogo,
