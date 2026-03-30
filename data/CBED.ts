@@ -22,7 +22,7 @@ const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJU_Qq6T
 
 export async function fetchEventsData(): Promise<SpaceEvent[]> {
   try {
-    const response = await fetch(SHEET_CSV_URL, { cache: "no-store" })
+   const response = await fetch(SHEET_CSV_URL)
     if (!response.ok) throw new Error("スプレッドシートの読み込みに失敗しました")
 
     const csvText = await response.text()
