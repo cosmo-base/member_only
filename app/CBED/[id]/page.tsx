@@ -6,6 +6,7 @@ import Link from "next/link"
 import { fetchEventsData } from "@/data/CBED"
 import { notFound } from "next/navigation"
 
+export const dynamicParams = false; // 指定したID以外のページは404にする
 export async function generateStaticParams() {
   const events = await fetchEventsData();
   
@@ -29,10 +30,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
 
   if (!event) {
     notFound()
-  }
-
-export const dynamicParams = false; // 指定したID以外のページは404にする
-  
+  }  
   // 主催者チェック
   const isCosmoBaseEvent = event.organizer
     ? event.organizer.replace(/\s+/g, "").toLowerCase().includes("cosmobase")
