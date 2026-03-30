@@ -5,16 +5,19 @@ import Image from "next/image"; // ← Imageコンポーネントのインポー
 import { footerLinks } from "@/lib/voyagerdata";
 import { Twitter, MessageCircle } from "lucide-react";
 
+// ★ Imageタグを正常に動かすための直接インポートを追加
+// （components/space-voyager フォルダから見て2つ上の階層のpublicを指定）
+import logoImg from "../../public/images/cosmo-base-logo.png"
+
 export function Footer() {
   return (
     <>
       <footer className="border-t border-border/50 bg-background/80 backdrop-blur-sm py-8">
         <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-4">
+          {/* ★ Imageタグのみ修正（インポートした変数を指定、不要なwidth/heightを削除） */}
           <Image
-            src="/member-only/images/cosmo-base-logo.png"
+            src={logoImg}
             alt="Cosmo Base"
-            width={150}
-            height={40}
             className="h-8 w-auto opacity-70"
           />
           <p className="text-sm text-muted-foreground">
