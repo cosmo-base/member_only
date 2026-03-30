@@ -52,7 +52,7 @@ export function ContentPageLayout({
 
           {/* Image Area */}
           <div className="ml-10 flex-shrink-0 mb-6">
-            <img src={`/${logo}_logo.png`} alt={`${logo}logo`} className="h-24 w-auto object-contain"/>
+            <img src={`/member-only/${logo}_logo.png`} alt={`${logo}logo`} className="h-24 w-auto object-contain"/>
           </div>
         </div>
 
@@ -65,7 +65,7 @@ export function ContentPageLayout({
         <footer className="border-t border-border/50 bg-background/80 backdrop-blur-sm py-8">
           <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-4">
             <Image
-              src="/images/cosmo-base-logo.png"
+              src="/member-only/images/cosmo-base-logo.png"
               alt="Cosmo Base"
               width={150}
               height={40}
