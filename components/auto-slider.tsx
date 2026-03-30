@@ -20,7 +20,7 @@ const slides = [
     id: 0,
     title: "Cosmo Baseへようこそ",
     description: "宇宙をさらに身近にしていくコミュニティーです。\nCosmo Baseで宇宙を楽しみましょう。",
-    image: welcomeImg, // ★ 2. インポートした変数を直接指定
+    image: welcomeImg,
     href: "/",
   },
   {
@@ -28,7 +28,7 @@ const slides = [
     title: "オープニング企画実施中",
     description: "Cosmo Base参加者ページのオープンを記念して、様々な企画を実施中です。ぜひご参加ください！",
     image: openingImg,
-    href: "/shittoku",
+    href: "https://cosmo-base.github.io/opening/",
   },
   {
     id: 2,
@@ -49,7 +49,7 @@ const slides = [
     title: "意見箱",
     description: "Cosmo Baseへのご意見・ご要望をお聞かせください。より良いコミュニティーづくりにご協力ください。",
     image: feedbackImg,
-    href: "/shittoku/request",
+    href: "https://fsifofficial.github.io/CosmoBase/contact",
   },
 ]
 
