@@ -6,6 +6,15 @@ import Link from "next/link"
 import { fetchEventsData } from "@/data/CBED"
 import { notFound } from "next/navigation"
 
+export async function generateStaticParams() {
+  const events = await fetchEventsData();
+  
+  // スプレッドシートにある全イベントのIDをリストにして返す
+  return events.map((event) => ({
+    id: String(event.id),
+  }));
+}
+
 // params の型を Promise に変更します
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
 
@@ -22,6 +31,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     notFound()
   }
 
+export const dynamicParams = false; // 指定したID以外のページは404にする
+  
   // 主催者チェック
   const isCosmoBaseEvent = event.organizer
     ? event.organizer.replace(/\s+/g, "").toLowerCase().includes("cosmobase")
