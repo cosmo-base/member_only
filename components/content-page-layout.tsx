@@ -29,14 +29,14 @@ import voyagerLogo from "../public/CBvoyager_logo.png"
 const LOGO_MAP: Record<string, any> = {
   "CBED": cbedLogo,
   "CBL": cblLogo,
-  "ittekita": ittekitaLogo,
-  "ittoide": ittoideLogo, 
-  "news": newsLogo,
-  "oshiete": oshieteLogo,
-  "quiz": quizLogo,
-  "shittoku": shittokuLogo,
-  "type": typeLogo,
-  "voyager": voyagerLogo,
+  "CBittekita": ittekitaLogo,
+  "CBittoide": ittoideLogo, 
+  "CBnews": newsLogo,
+  "CBoshiete": oshieteLogo,
+  "CBquiz": quizLogo,
+  "CBshittoku": shittokuLogo,
+  "CBtype": typeLogo,
+  "CBvoyager": voyagerLogo,
 }
 
 interface ContentPageLayoutProps {

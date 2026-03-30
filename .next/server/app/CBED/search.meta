@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/CBED/layout,_N_T_/CBED/search/layout,_N_T_/CBED/search/page,_N_T_/CBED/search"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/CBED/search/__PAGE__",
+    "/CBED/search",
+    "/CBED",
+    "/_index",
+    "/_head"
+  ]
+}

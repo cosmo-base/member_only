@@ -35,13 +35,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   // イベントが見つかった場合は、そのタイトルをタブ名にする
   // ※長すぎる説明文は100文字でカットする処理を入れています
-  const descriptionText = event.description 
-    ? event.description.slice(0, 100) + "..." 
-    : `${event.title}の詳細情報ページです。`;
+  const titleText = event.title 
+    ? event.title.slice(0, 15) + "..." 
+    : `${event.title} | Cosmo Base Event Databese`;
 
   return {
-    title: event.title, // これが自動的に「イベント名 | Cosmo Base - 参加者ページ」になります！
-    description: descriptionText,
+    title:  titleText,
   }
 }
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
