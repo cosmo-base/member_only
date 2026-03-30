@@ -17,8 +17,9 @@ export default function EventSearchPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedType, setSelectedType] = useState("all") 
   const [selectedDifficulty, setSelectedDifficulty] = useState("all")
-  // ★追加：主催イベントの絞り込み用State
   const [selectedOrganizer, setSelectedOrganizer] = useState("all")
+  // ★追加：過去イベント表示用トグル
+  const [showPastEvents, setShowPastEvents] = useState(false)
 
   useEffect(() => {
     async function loadEvents() {
@@ -30,7 +31,6 @@ export default function EventSearchPage() {
     loadEvents()
   }, [])
 
-  // スプレッドシートのデータから「存在する形式タグ」を自動で全部抽出する処理
   const uniqueTypes = useMemo(() => {
     const typesSet = new Set<string>()
     events.forEach(event => {
@@ -49,17 +49,21 @@ export default function EventSearchPage() {
     })
   }, [events])
 
-  // リセットボタンの処理
   const handleReset = () => {
     setSearchQuery("")
     setSelectedType("all")
     setSelectedDifficulty("all")
-    setSelectedOrganizer("all") // ★追加：主催リセット
+    setSelectedOrganizer("all")
+    setShowPastEvents(false) // トグルもリセット
   }
 
-  // フィルタリング処理
+  // フィルタリングと並び替え処理
   const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
+    // 今日の日付文字列（yyyy-mm-dd）を作成
+    const d = new Date()
+    const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+
+    const filtered = events.filter((event) => {
       const title = event.title ? String(event.title).toLowerCase() : ""
       const location = event.location ? String(event.location).toLowerCase() : ""
       
@@ -67,10 +71,18 @@ export default function EventSearchPage() {
       const difficulty = event.difficulty ? String(event.difficulty).trim() : ""
       const query = searchQuery.toLowerCase().trim()
 
-      // ★追加：Cosmo Base主催かどうかの判定（大文字小文字・スペースの違いを吸収）
       const isCosmoBaseEvent = event.organizer 
         ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
         : false
+
+      // ★追加：過去イベントかどうかの判定（終了日があれば終了日、なければ開始日で判定）
+      const targetDate = event.endDate || event.date || ""
+      const isPastEvent = targetDate !== "" && targetDate < todayStr
+
+      // 0. 過去イベントを非表示にする設定なら弾く
+      if (!showPastEvents && isPastEvent) {
+        return false
+      }
 
       // 1. キーワード検索
       const matchQuery = !query || title.includes(query) || location.includes(query)
@@ -94,7 +106,7 @@ export default function EventSearchPage() {
         }
       }
 
-      // ★ 4. 主催フィルター
+      // 4. 主催フィルター
       let matchOrganizer = true
       if (selectedOrganizer === "cosmobase") {
         matchOrganizer = isCosmoBaseEvent
@@ -104,7 +116,15 @@ export default function EventSearchPage() {
 
       return matchQuery && matchType && matchDifficulty && matchOrganizer
     })
-  }, [events, searchQuery, selectedType, selectedDifficulty, selectedOrganizer])
+
+    // ★追加：日付の昇順（直近のイベントから順に）並び替える
+    return filtered.sort((a, b) => {
+      const dateA = a.date || ""
+      const dateB = b.date || ""
+      return dateA.localeCompare(dateB)
+    })
+
+  }, [events, searchQuery, selectedType, selectedDifficulty, selectedOrganizer, showPastEvents])
 
   return (
     <ContentPageLayout title="詳細検索" level={4} levelTitle="体系化" logo="CBED">
@@ -133,9 +153,7 @@ export default function EventSearchPage() {
         </div>
 
         {/* フィルタープルダウン群 */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          
-          {/* ★追加：主催フィルター */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
           <div>
             <span className="text-xs font-semibold text-muted-foreground block mb-2">主催・運営</span>
             <select 
@@ -176,80 +194,3 @@ export default function EventSearchPage() {
               <option value="上級者向け">上級者向け</option>
             </select>
           </div>
-
-        </div>
-      </div>
-
-      {/* 検索結果リスト */}
-      <div className="space-y-4">
-        {isLoading ? (
-          <div className="flex flex-col justify-center items-center py-20 gap-4">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">イベントを読み込み中...</p>
-          </div>
-        ) : filteredEvents.length > 0 ? (
-          filteredEvents.map((event) => {
-            const displayTypes = event.type ? String(event.type).split(',').map(t => t.trim()) : []
-            // ★リスト表示用の主催判定
-            const isCosmoBaseEvent = event.organizer 
-              ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
-              : false
-            
-            return (
-              <Link href={`/CBED/${event.id}`} key={event.id} className="block group">
-                <div className="glass-card rounded-xl p-5 border border-border/50 hover:bg-primary/5 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm hover:shadow-md">
-                  
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      {/* ★追加：主催タグ（詳細ページと同じデザイン） */}
-                      <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full border ${
-                        isCosmoBaseEvent ? "bg-primary/20 text-primary border-primary/30" : "bg-secondary text-muted-foreground border-border/50"
-                      }`}>
-                        {isCosmoBaseEvent ? "主催イベント" : "外部イベント"}
-                      </span>
-
-                      {displayTypes.map((t, idx) => (
-                        <span key={idx} className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-accent/20 text-accent border border-accent/30">
-                          {t}
-                        </span>
-                      ))}
-                      {event.difficulty && (
-                        <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-secondary border border-border/50 text-muted-foreground">
-                          {event.difficulty}
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
-                      {event.title}
-                    </h3>
-                  </div>
-
-                  <div className="flex flex-col gap-2 text-sm text-muted-foreground md:min-w-[200px] shrink-0">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-primary" />
-                      <span>{event.endDate ? `${event.date} 〜 ${event.endDate}` : event.date} {event.time}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-accent" />
-                      <span className="line-clamp-1">{event.location}</span>
-                    </div>
-                  </div>
-
-                </div>
-              </Link>
-            )
-          })
-        ) : (
-          <div className="text-center py-20 text-muted-foreground bg-secondary/20 rounded-xl border border-dashed border-border/50">
-            <Filter className="w-12 h-12 mx-auto mb-4 opacity-20" />
-            <p className="font-medium">条件に一致するイベントが見つかりません。</p>
-            <p className="text-sm mt-1">フィルターをリセットするか、キーワードを変えてみてください。</p>
-            <Button variant="outline" onClick={handleReset} className="mt-4">
-              絞り込みをリセット
-            </Button>
-          </div>
-        )}
-      </div>
-    </ContentPageLayout>
-  )
-}
