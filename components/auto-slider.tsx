@@ -18,7 +18,7 @@ const slides = [
     id: 1,
     title: "オープニング企画実施中",
     description: "Cosmo Base参加者ページのオープンを記念して、様々な企画を実施中です。ぜひご参加ください！",
-    image: /member-only"/images/slider-opening.jpg",
+    image: "/member-only/images/slider-opening.jpg",
     href: "/shittoku",
   },
   {
