@@ -71,18 +71,24 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
           </h2>
 
           <div className="grid sm:grid-cols-2 gap-4 text-sm text-foreground bg-secondary/30 p-5 rounded-lg border border-border/50">
-            <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-primary shrink-0" />
-              <span>{event.endDate ? `${event.date} 〜 ${event.endDate}` : event.date}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Clock className="w-5 h-5 text-primary shrink-0" />
-              <span>{event.time}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <MapPin className="w-5 h-5 text-accent shrink-0" />
-              <span className="line-clamp-1">{event.location}</span>
-            </div>
+            {event.date && (
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-primary shrink-0" />
+                <span>{event.endDate ? `${event.date} 〜 ${event.endDate}` : event.date}</span>
+              </div>
+            )}
+            {event.time && (
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 text-primary shrink-0" />
+                <span>{event.time}</span>
+              </div>
+            )}
+            {event.location && (
+              <div className="flex items-center gap-3">
+                <MapPin className="w-5 h-5 text-accent shrink-0" />
+                <span className="line-clamp-1">{event.location}</span>
+              </div>
+            )}
             {event.capacity && (
               <div className="flex items-center gap-3">
                 <Users className="w-5 h-5 text-muted-foreground shrink-0" />
@@ -122,17 +128,21 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
               </Button>
             </a>
           )}
-          <a
-            href={`https://www.google.com/maps?q=${event.lat},${event.lng}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto"
-          >
-            <Button variant="outline" className="w-full">
-              Googleマップで開く
-              <MapPin className="w-4 h-4 ml-2" />
-            </Button>
-          </a>
+          
+          {/* ★ 地図リンク：latとlngが両方ある時だけ表示 */}
+          {event.lat && event.lng && (
+            <a
+              href={`https://www.google.com/maps?q=${event.lat},${event.lng}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto"
+            >
+              <Button variant="outline" className="w-full">
+                Googleマップで開く
+                <MapPin className="w-4 h-4 ml-2" />
+              </Button>
+            </a>
+          )}
         </div>
       </div>
     </ContentPageLayout>
