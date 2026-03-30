@@ -12,15 +12,15 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/CB_icon.png',
+        url: '/member-only/CB_icon.png',
         media: '(prefers-color-scheme: light)',
       },
       {
-        url: '/CB_icon.png',
+        url: '/member-only/CB_icon.png',
         media: '(prefers-color-scheme: dark)',
       },
     ],
-    apple: '/CB_icon.png',
+    apple: '/member-only/CB_icon.png',
   },
 }
 
