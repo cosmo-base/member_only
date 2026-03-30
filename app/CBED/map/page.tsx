@@ -1,4 +1,4 @@
-// app/CBED/map/page.tsx
+// app/CBED/map/page.tsx (※118行目付近の地図エリア部分のみ抜粋ですが、全体を上書きしてOKです)
 "use client"
 
 import { useEffect, useState, useMemo } from "react"
@@ -25,7 +25,7 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 const DynamicMap = dynamic(() => import("@/components/event-map"), {
   ssr: false,
   loading: () => (
-    <div className="flex flex-col items-center justify-center h-full bg-secondary/30 text-muted-foreground">
+    <div className="flex flex-col items-center justify-center h-full w-full bg-secondary/30 text-muted-foreground min-h-[400px]">
       <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
       <p>地図を読み込み中...</p>
     </div>
@@ -65,7 +65,6 @@ export default function MapSearchPage() {
     async function loadEvents() {
       setIsLoadingEvents(true)
       const data = await fetchEventsData()
-      // lat/lng が数値として存在するものだけを抽出
       const mapEvents = data.filter(
         e => typeof e.lat === 'number' && typeof e.lng === 'number'
       )
@@ -97,10 +96,9 @@ export default function MapSearchPage() {
     <ContentPageLayout title="地図で探す" level={4} levelTitle="体系化" logo="CBED">
       <div className="flex flex-col lg:flex-row gap-6 relative z-20">
         
-        {/* 地図エリア：スマホでの高さをしっかり確保し、z-indexを上げる */}
         <div className="flex-1 glass-card rounded-xl overflow-hidden flex flex-col h-[450px] md:h-[600px] relative border border-border/50 z-30">
           <div className="absolute top-4 left-4 right-4 z-40 flex flex-col sm:flex-row justify-between items-stretch sm:items-start gap-3 pointer-events-none">
-            <div className="bg-background/90 backdrop-blur-md px-4 py-2 rounded-lg border border-border/50 pointer-events-auto shadow-lg">
+            <div className="bg-background/90 backdrop-blur-md px-4 py-2 rounded-lg border border-border/50 pointer-events-auto shadow-lg w-fit">
               <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
                 <MapIcon className="w-4 h-4 text-primary" />
                 全国のイベントマップ
@@ -109,14 +107,15 @@ export default function MapSearchPage() {
             <Button
               onClick={handleGetLocation}
               disabled={isLocating}
-              className="pointer-events-auto bg-primary/90 hover:bg-primary text-primary-foreground shadow-lg backdrop-blur-md"
+              className="pointer-events-auto bg-primary/90 hover:bg-primary text-primary-foreground shadow-lg backdrop-blur-md w-fit"
             >
               <Navigation className={`w-4 h-4 mr-2 ${isLocating ? "animate-pulse" : ""}`} />
               現在地から探す
             </Button>
           </div>
 
-          <div className="flex-1 relative">
+          {/* ★ ここの div が潰れないように w-full h-full min-h-[400px] を追加 */}
+          <div className="flex-1 relative w-full h-full min-h-[400px] z-0">
             {!isLoadingEvents && (
               <DynamicMap
                 events={events}
@@ -127,7 +126,6 @@ export default function MapSearchPage() {
           </div>
         </div>
 
-        {/* 右側リストエリア */}
         <div className="w-full lg:w-80 flex flex-col gap-4 z-20">
           <div className="glass-card rounded-xl p-5 h-[500px] md:h-[600px] flex flex-col border border-border/50">
             <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
@@ -150,7 +148,6 @@ export default function MapSearchPage() {
                       <ChevronRight className="w-4 h-4 text-muted-foreground absolute right-3 top-3 group-hover:text-primary transition-colors" />
 
                       <div className="flex flex-col gap-1 text-[11px] text-muted-foreground mt-2">
-                        {/* 記載のないものは非表示に */}
                         {event.location && (
                           <div className="flex items-center justify-between">
                             <span className="line-clamp-1 mr-2">{event.location}</span>
