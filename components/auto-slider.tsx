@@ -6,40 +6,49 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ★ 1. スライダー用の画像をすべて直接インポートする
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import welcomeImg from "../public/images/slider-welcome.jpg"
+import openingImg from "../public/images/slider-opening.jpg"
+import eventsImg from "../public/images/slider-events.jpg"
+import partnerImg from "../public/images/slider-partner.jpg"
+import feedbackImg from "../public/images/slider-feedback.jpg"
+
 const slides = [
   {
     id: 0,
     title: "Cosmo Baseへようこそ",
     description: "宇宙をさらに身近にしていくコミュニティーです。\nCosmo Baseで宇宙を楽しみましょう。",
-    image: "/member-only/images/slider-welcome.jpg",
+    image: welcomeImg, // ★ 2. インポートした変数を直接指定
     href: "/",
   },
   {
     id: 1,
     title: "オープニング企画実施中",
     description: "Cosmo Base参加者ページのオープンを記念して、様々な企画を実施中です。ぜひご参加ください！",
-    image: "/member-only/images/slider-opening.jpg",
+    image: openingImg,
     href: "/shittoku",
   },
   {
     id: 2,
     title: "おすすめのイベント",
     description: "今月注目の宇宙イベントをピックアップ。見逃せない観測会や講演会をチェック！",
-    image: "/member-only/images/slider-events.jpg",
+    image: eventsImg,
     href: "/ittoide",
   },
   {
     id: 3,
     title: "パートナーからのお知らせ",
     description: "Cosmo Baseのパートナー企業・団体からの最新情報をお届けします。",
-    image: "/member-only/images/slider-partner.jpg",
+    image: partnerImg,
     href: "https://fsifofficial.github.io/CosmoBase/partners",
   },
   {
     id: 4,
     title: "意見箱",
     description: "Cosmo Baseへのご意見・ご要望をお聞かせください。より良いコミュニティーづくりにご協力ください。",
-    image: "/member-only/images/slider-feedback.jpg",
+    image: feedbackImg,
     href: "/shittoku/request",
   },
 ]
@@ -114,7 +123,7 @@ export function AutoSlider() {
           >
             <div className="relative aspect-[1280/670] overflow-hidden rounded-xl">
               <Image
-                src={slide.image}
+                src={slide.image} // ★ 3. ここには既にインポートされたオブジェクトが渡されます
                 alt={slide.title}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
