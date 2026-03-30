@@ -11,7 +11,7 @@ export function Footer() {
       <footer className="border-t border-border/50 bg-background/80 backdrop-blur-sm py-8">
         <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-4">
           <Image
-            src="/images/cosmo-base-logo.png"
+            src="/member-only/images/cosmo-base-logo.png"
             alt="Cosmo Base"
             width={150}
             height={40}
