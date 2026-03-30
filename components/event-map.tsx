@@ -7,6 +7,7 @@ import "leaflet/dist/leaflet.css"
 import L from "leaflet"
 import { SpaceEvent } from "@/data/CBED"
 
+// アイコンの設定
 const DefaultIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
@@ -50,19 +51,37 @@ export default function EventMap({
   onBoundsChange: (bounds: {n: number, s: number, e: number, w: number}) => void
 }) {
   return (
-    <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%", zIndex: 0 }}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <MapController center={center} onBoundsChange={onBoundsChange} />
-      {events.map((event) => (
-        <Marker key={event.id} position={[event.lat, event.lng]}>
-          <Popup>
-            <div className="font-sans">
-              <strong className="text-primary block mb-1">{event.title}</strong>
-              <span className="text-xs text-muted-foreground block">{event.location}</span>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+    <div className="w-full h-full relative" style={{ minHeight: "300px" }}>
+      {/* ★ 修正ポイント：
+        1. MapContainerを直接ではなく、divで包んで最小高さを保証します。
+        2. zIndex を 1 以上（10程度）に設定します。0だと背景に隠れます。
+        3. スマホのタッチ操作が効くようにします。
+      */}
+      <MapContainer 
+        center={center} 
+        zoom={12} 
+        style={{ height: "100%", width: "100%", zIndex: 10 }}
+        scrollWheelZoom={true}
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <MapController center={center} onBoundsChange={onBoundsChange} />
+        {events.map((event) => (
+          <Marker key={event.id} position={[event.lat, event.lng]}>
+            <Popup>
+              <div className="font-sans text-slate-900">
+                <strong className="text-primary block mb-1">{event.title}</strong>
+                <span className="text-xs block">{event.location}</span>
+                <a 
+                  href={`./${event.id}`} 
+                  className="text-[10px] text-blue-600 underline block mt-2"
+                >
+                  詳細を見る
+                </a>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
   )
 }
