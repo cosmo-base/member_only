@@ -8,8 +8,8 @@ export function Header() {
     <header className="relative z-10 border-b border-border/50 bg-background/80 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Image
-            src="/images/cosmo-base-logo.png"
+          <img
+            src="/member-only/images/cosmo-base-logo.png"
             alt="Cosmo Base"
             width={180}
             height={60}
