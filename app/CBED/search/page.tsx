@@ -194,3 +194,92 @@ export default function EventSearchPage() {
               <option value="上級者向け">上級者向け</option>
             </select>
           </div>
+        </div>
+
+        {/* ★追加：過去イベントの表示トグル */}
+        <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer w-max hover:opacity-80 transition-opacity">
+          <input
+            type="checkbox"
+            checked={showPastEvents}
+            onChange={(e) => setShowPastEvents(e.target.checked)}
+            className="w-4 h-4 rounded border-border/50 text-primary focus:ring-primary/50 bg-secondary/50"
+          />
+          過去のイベントも表示する
+        </label>
+      </div>
+
+      {/* 検索結果リスト */}
+      <div className="space-y-4">
+        {isLoading ? (
+          <div className="flex flex-col justify-center items-center py-20 gap-4">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">イベントを読み込み中...</p>
+          </div>
+        ) : filteredEvents.length > 0 ? (
+          filteredEvents.map((event) => {
+            const displayTypes = event.type ? String(event.type).split(',').map(t => t.trim()) : []
+            const isCosmoBaseEvent = event.organizer 
+              ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
+              : false
+            
+            return (
+              <Link href={`/CBED/${event.id}`} key={event.id} className="block group">
+                <div className="glass-card rounded-xl p-5 border border-border/50 hover:bg-primary/5 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm hover:shadow-md">
+                  
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full border ${
+                        isCosmoBaseEvent ? "bg-primary/20 text-primary border-primary/30" : "bg-secondary text-muted-foreground border-border/50"
+                      }`}>
+                        {isCosmoBaseEvent ? "主催イベント" : "外部イベント"}
+                      </span>
+
+                      {displayTypes.map((t, idx) => (
+                        <span key={idx} className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-accent/20 text-accent border border-accent/30">
+                          {t}
+                        </span>
+                      ))}
+                      {event.difficulty && (
+                        <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-secondary border border-border/50 text-muted-foreground">
+                          {event.difficulty}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                      {event.title}
+                    </h3>
+                  </div>
+
+                  <div className="flex flex-col gap-2 text-sm text-muted-foreground md:min-w-[200px] shrink-0">
+                    {event.date && (
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-primary" />
+                        <span>{event.endDate ? `${event.date} 〜 ${event.endDate}` : event.date} {event.time}</span>
+                      </div>
+                    )}
+                    {event.location && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-accent" />
+                        <span className="line-clamp-1">{event.location}</span>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              </Link>
+            )
+          })
+        ) : (
+          <div className="text-center py-20 text-muted-foreground bg-secondary/20 rounded-xl border border-dashed border-border/50">
+            <Filter className="w-12 h-12 mx-auto mb-4 opacity-20" />
+            <p className="font-medium">条件に一致するイベントが見つかりません。</p>
+            <p className="text-sm mt-1">フィルターをリセットするか、キーワードを変えてみてください。</p>
+            <Button variant="outline" onClick={handleReset} className="mt-4">
+              絞り込みをリセット
+            </Button>
+          </div>
+        )}
+      </div>
+    </ContentPageLayout>
+  )
+}
