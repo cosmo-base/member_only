@@ -7,6 +7,15 @@ import Image from "next/image"
 import { Menu, X, Users, BookOpen, Database, Globe, HelpCircle, Twitter, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ★ 1. 画像をすべて直接インポートする
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import logoImg from "../public/images/cosmo-base-logo.png"
+import cbIcon from "../public/CB_icon.png"
+import xIcon from "../public/X.png"
+import instaIcon from "../public/Instagram.png"
+import noteIcon from "../public/note.png"
+
 export function SiteHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const router = useRouter()
@@ -29,11 +38,10 @@ export function SiteHeader() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
+            {/* ★ 2. インポートしたロゴを指定 */}
             <Image
-              src="/images/cosmo-base-logo.png"
+              src={logoImg}
               alt="Cosmo Base"
-              width={160}
-              height={45}
               className="h-10 w-auto"
               priority
               loading="eager"
@@ -88,9 +96,9 @@ export function SiteHeader() {
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
                 >
-                  {/* アイコンの背景（座布団） */}
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
-                    <img src="/member-only/CB_icon.png" className="w-5 h-5 object-contain" alt="Cosmo Base" />
+                    {/* ★ 3. <img>タグの場合は .src をつけて渡します */}
+                    <img src={cbIcon.src} className="w-5 h-5 object-contain" alt="Cosmo Base" />
                   </div>
                   <div>
                     <p className="font-semibold text-foreground group-hover:text-primary transition-colors">Cosmo Base</p>
@@ -117,7 +125,7 @@ export function SiteHeader() {
                 </a>
               </li>
 
-              {/* 区切り線（公式サイト系とSNS系を分ける） */}
+              {/* 区切り線 */}
               <div className="h-px w-full bg-border/50 my-1 rounded-full" />
 
               <li>
@@ -129,7 +137,8 @@ export function SiteHeader() {
                   className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
-                    <img src="/member-only/X.png" alt="X" className="w-4 h-4 object-contain" />
+                    {/* ★ インポートした変数.src に変更 */}
+                    <img src={xIcon.src} alt="X" className="w-4 h-4 object-contain" />
                   </div>
                   <div>
                     <p className="font-semibold text-foreground group-hover:text-primary transition-colors">X (Twitter)</p>
@@ -147,7 +156,8 @@ export function SiteHeader() {
                   className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
-                    <img src="/member-only/Instagram.png" alt="Instagram" className="w-5 h-5 object-contain" />
+                    {/* ★ インポートした変数.src に変更 */}
+                    <img src={instaIcon.src} alt="Instagram" className="w-5 h-5 object-contain" />
                   </div>
                   <div>
                     <p className="font-semibold text-foreground group-hover:text-primary transition-colors">Instagram</p>
@@ -165,7 +175,8 @@ export function SiteHeader() {
                   className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
-                    <img src="/member-only/note.png" alt="note" className="w-5 h-5 object-contain" />
+                    {/* ★ インポートした変数.src に変更 */}
+                    <img src={noteIcon.src} alt="note" className="w-5 h-5 object-contain" />
                   </div>
                   <div>
                     <p className="font-semibold text-foreground group-hover:text-primary transition-colors">note</p>
