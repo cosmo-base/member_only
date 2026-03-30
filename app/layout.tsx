@@ -38,3 +38,15 @@ export default function RootLayout({
     </html>
   )
 }
+
+/* Leafletのタイル表示を安定させる */
+.leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+  z-index: 10 !important;
+}
+
+/* タイルの境界線が白く見えるのを防ぐ */
+.leaflet-tile-container img {
+  box-shadow: 0 0 1px rgba(0,0,0,0.05);
+}
