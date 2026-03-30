@@ -17,7 +17,7 @@ export function FooterSection() {
           {/* Logo */}
           <div className="flex items-center">
             <Image
-              src="/images/cosmo-base-logo.png"
+              src="/member-only/images/cosmo-base-logo.png"
               alt="Cosmo Base"
               width={200}
               height={60}
