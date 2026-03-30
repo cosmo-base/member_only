@@ -51,22 +51,23 @@ export default function PartnerUpdateFormPage() {
     let uploadedFileUrl = ""
 
     try {
-      if (edits.logo && fileInput && fileInput.files && fileInput.files[0]) {
+      if (fileInput && fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0]
-        // ファイルの拡張子だけを取得（.png など）
-        const fileExtension = file.name.split('.').pop();
-        // タイムスタンプとランダムな文字列だけでファイル名を作る（日本語を排除）
-        const safeFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
         
+        // ① 新しく作った安全なファイル名
+        const fileExtension = file.name.split('.').pop();
+        const safeFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
+
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('logos') // libraryバケツの場合はここを 'library' に
-        .upload(`public/${safeFileName}`, file)
+          .from('logos')
+          .upload(`public/${safeFileName}`, file)  // ← ② ここは safeFileName になっているはず
 
         if (uploadError) throw uploadError
 
         const { data: { publicUrl } } = supabase.storage
           .from('logos')
-          .getPublicUrl(`public/${uniqueFileName}`)
+          // ↓ ③ ★ここが uniqueFileName のまま残っているので、safeFileName に変えます！★
+          .getPublicUrl(`public/${safeFileName}`) 
           
         uploadedFileUrl = publicUrl
         data.logoUrl = uploadedFileUrl
