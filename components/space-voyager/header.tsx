@@ -31,7 +31,7 @@ export function Header() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link href="/voyager" className="flex items-center gap-3 group">
-            <img src={`/CBvoyager_logo.png`} alt="Space Voyager 検定" className="h-16"/>
+            <img src={`/member-only/CBvoyager_logo.png`} alt="Space Voyager 検定" className="h-16"/>
           </Link>
 
           {/* Desktop Nav */}
