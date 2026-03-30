@@ -65,10 +65,10 @@ export default function MapSearchPage() {
     async function loadEvents() {
       setIsLoadingEvents(true)
       const data = await fetchEventsData()
+      // lat/lng が数値として存在するものだけを抽出
       const mapEvents = data.filter(
         e => typeof e.lat === 'number' && typeof e.lng === 'number'
       )
-
       setEvents(mapEvents)
       setIsLoadingEvents(false)
     }
@@ -77,32 +77,29 @@ export default function MapSearchPage() {
 
   const visibleEvents = useMemo(() => {
     let filtered = events
-
     if (mapBounds) {
       filtered = filtered.filter(e =>
         e.lat <= mapBounds.n && e.lat >= mapBounds.s &&
         e.lng <= mapBounds.e && e.lng >= mapBounds.w
       )
     }
-
     const referencePoint = userLocation || center
-
     return filtered.map(event => {
       const distanceKm = calculateDistance(referencePoint[0], referencePoint[1], event.lat, event.lng)
       const distanceStr = distanceKm < 1
         ? `${Math.round(distanceKm * 1000)}m`
         : `${distanceKm.toFixed(1)}km`
-
       return { ...event, distanceKm, distanceStr }
     }).sort((a, b) => a.distanceKm - b.distanceKm)
-
   }, [events, mapBounds, userLocation, center])
 
   return (
     <ContentPageLayout title="地図で探す" level={4} levelTitle="体系化" logo="CBED">
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="flex-1 glass-card rounded-xl overflow-hidden flex flex-col h-[600px] relative border border-border/50">
-          <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-start pointer-events-none">
+      <div className="flex flex-col lg:flex-row gap-6 relative z-20">
+        
+        {/* 地図エリア：スマホでの高さをしっかり確保し、z-indexを上げる */}
+        <div className="flex-1 glass-card rounded-xl overflow-hidden flex flex-col h-[450px] md:h-[600px] relative border border-border/50 z-30">
+          <div className="absolute top-4 left-4 right-4 z-40 flex flex-col sm:flex-row justify-between items-stretch sm:items-start gap-3 pointer-events-none">
             <div className="bg-background/90 backdrop-blur-md px-4 py-2 rounded-lg border border-border/50 pointer-events-auto shadow-lg">
               <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
                 <MapIcon className="w-4 h-4 text-primary" />
@@ -119,7 +116,7 @@ export default function MapSearchPage() {
             </Button>
           </div>
 
-          <div className="flex-1 relative z-0">
+          <div className="flex-1 relative">
             {!isLoadingEvents && (
               <DynamicMap
                 events={events}
@@ -130,8 +127,9 @@ export default function MapSearchPage() {
           </div>
         </div>
 
-        <div className="w-full lg:w-80 flex flex-col gap-4">
-          <div className="glass-card rounded-xl p-5 h-[600px] flex flex-col border border-border/50">
+        {/* 右側リストエリア */}
+        <div className="w-full lg:w-80 flex flex-col gap-4 z-20">
+          <div className="glass-card rounded-xl p-5 h-[500px] md:h-[600px] flex flex-col border border-border/50">
             <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
               <MapPin className="w-4 h-4 text-accent" />
               表示中のイベント ({visibleEvents.length}件)
@@ -151,12 +149,19 @@ export default function MapSearchPage() {
                       </h4>
                       <ChevronRight className="w-4 h-4 text-muted-foreground absolute right-3 top-3 group-hover:text-primary transition-colors" />
 
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span className="line-clamp-1 mr-2">{event.location}</span>
-                        <span className="text-accent font-medium shrink-0">{event.distanceStr}</span>
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-2 bg-secondary/50 w-fit px-2 py-1 rounded">
-                        {event.endDate ? `${event.date} 〜 ${event.endDate}` : event.date} {event.time}
+                      <div className="flex flex-col gap-1 text-[11px] text-muted-foreground mt-2">
+                        {/* 記載のないものは非表示に */}
+                        {event.location && (
+                          <div className="flex items-center justify-between">
+                            <span className="line-clamp-1 mr-2">{event.location}</span>
+                            <span className="text-accent font-medium shrink-0">{event.distanceStr}</span>
+                          </div>
+                        )}
+                        {(event.date || event.time) && (
+                          <div className="bg-secondary/50 w-fit px-2 py-1 rounded">
+                            {event.date} {event.time}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </Link>
