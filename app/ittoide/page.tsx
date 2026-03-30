@@ -46,7 +46,7 @@ export default function IttoidePage() {
         <h3 className="text-lg font-semibold text-foreground mb-4">おすすめのイベント</h3>
         <div className="relative aspect-[1260/670] rounded-xl overflow-hidden">
           <Image
-            src="/images/ittoide-event.jpg"
+            src="/member-only/images/ittoide-event.jpg"
             alt="おすすめのイベント"
             fill
             className="object-cover"
