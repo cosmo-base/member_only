@@ -47,18 +47,21 @@ export default function LibraryUploadPage() {
     try {
       if (fileInput && fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0]
-        const uniqueFileName = `${Date.now()}_${file.name}`
+        
+        // ★ 日本語ファイル名エラー対策：安全なファイル名（英数字のみ）を生成
+        const fileExtension = file.name.split('.').pop()
+        const safeFileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`
 
         // 'library' バケツにアップロード
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('library')
-          .upload(`public/${uniqueFileName}`, file)
+          .upload(`public/${safeFileName}`, file) // ★ ここを safeFileName に変更
 
         if (uploadError) throw uploadError
 
         const { data: { publicUrl } } = supabase.storage
           .from('library')
-          .getPublicUrl(`public/${uniqueFileName}`)
+          .getPublicUrl(`public/${safeFileName}`) // ★ ここも safeFileName に変更
           
         uploadedFileUrl = publicUrl
         data.fileUrl = uploadedFileUrl
