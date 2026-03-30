@@ -4,6 +4,11 @@ import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { MapPin, History, CalendarDays } from "lucide-react"
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ★ 画像を直接インポートする
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import ittoideEventImg from "../../public/images/ittoide-event.jpg"
+
 export default function IttoidePage() {
   return (
     <ContentPageLayout
@@ -45,8 +50,9 @@ export default function IttoidePage() {
       <div className="mb-8">
         <h3 className="text-lg font-semibold text-foreground mb-4">おすすめのイベント</h3>
         <div className="relative aspect-[1260/670] rounded-xl overflow-hidden">
+          {/* ★ Imageタグのsrcをインポートした変数に変更 */}
           <Image
-            src="/member-only/images/ittoide-event.jpg"
+            src={ittoideEventImg}
             alt="おすすめのイベント"
             fill
             className="object-cover"
