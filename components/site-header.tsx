@@ -90,7 +90,7 @@ export function SiteHeader() {
                 >
                   {/* アイコンの背景（座布団） */}
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
-                    <img src="/CB_icon.png" className="w-5 h-5 object-contain" alt="Cosmo Base" />
+                    <img src="/member-only/CB_icon.png" className="w-5 h-5 object-contain" alt="Cosmo Base" />
                   </div>
                   <div>
                     <p className="font-semibold text-foreground group-hover:text-primary transition-colors">Cosmo Base</p>
@@ -129,7 +129,7 @@ export function SiteHeader() {
                   className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
-                    <img src="/X.png" alt="X" className="w-4 h-4 object-contain" />
+                    <img src="/member-only/X.png" alt="X" className="w-4 h-4 object-contain" />
                   </div>
                   <div>
                     <p className="font-semibold text-foreground group-hover:text-primary transition-colors">X (Twitter)</p>
@@ -147,7 +147,7 @@ export function SiteHeader() {
                   className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
-                    <img src="/Instagram.png" alt="Instagram" className="w-5 h-5 object-contain" />
+                    <img src="/member-only/Instagram.png" alt="Instagram" className="w-5 h-5 object-contain" />
                   </div>
                   <div>
                     <p className="font-semibold text-foreground group-hover:text-primary transition-colors">Instagram</p>
@@ -165,7 +165,7 @@ export function SiteHeader() {
                   className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
                 >
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
-                    <img src="/note.png" alt="note" className="w-5 h-5 object-contain" />
+                    <img src="/member-only/note.png" alt="note" className="w-5 h-5 object-contain" />
                   </div>
                   <div>
                     <p className="font-semibold text-foreground group-hover:text-primary transition-colors">note</p>
