@@ -3,6 +3,11 @@ import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { Calendar, History, CalendarDays, MessageSquare, Users } from "lucide-react"
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 画像を直接インポートする
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import eventImg from "../../public/shittoku/2604.jpeg"
+
 export default function ShittokuPage() {
   return (
     <ContentPageLayout
@@ -19,36 +24,33 @@ export default function ShittokuPage() {
           </div>
           <div>
             <h2 className="text-xl font-semibold text-foreground mb-2">
-              毎週開催の宇宙イベント・講座
+              「ちょっと気になる」をみんなで楽しむ、気軽な学びの場。
             </h2>
             <div className="text-muted-foreground leading-relaxed space-y-3">
               <p>
-                オンラインで気軽に参加できる宇宙イベントや講座を毎週開催しています。
-                宇宙の専門家や研究者、そして宇宙愛好家が登壇し、様々なテーマでお話しします。
+                宇宙に関するテーマを、分かりやすく楽しく学べる定期イベントです。ニュースの解説やミニ講座、座談会など、毎回さまざまな形式で開催され、専門知識がなくても気軽に参加できます。
               </p>
               <p>
-                惑星科学、ロケット工学、宇宙ビジネス、天体観測のコツなど、
-                幅広いジャンルをカバー。初心者の方も大歓迎で、質問タイムでは自由に質問できます。
-                録画アーカイブも残るので、リアルタイムで参加できなくても後から視聴可能です。
+                一方的に話を聞くだけでなく、気になったことをその場で質問したり、他の参加者の意見を聞けたりと、自然な会話が生まれるのが特徴です。「少し知ってみたい」という気持ちがあれば十分楽しめます。
               </p>
               <p>
-                「宇宙に興味はあるけど、何から始めればいいかわからない」という方にぴったり。
-                専門家の話を聞くことで、宇宙への理解がぐっと深まります。
+                毎週水曜日の定期開催により、宇宙に触れる心地よいリズムが生まれます。「知る」だけでなく「話す」「共有する」体験を通じて、宇宙をもっと身近でワクワクするものに変えていきましょう。
               </p>
             </div>
           </div>
         </div>
       </div>
 
-{/* Current Month Event Image */}
+      {/* Current Month Event Image */}
       <div className="mb-8 flex flex-col items-center">
         <h3 className="text-lg font-semibold text-foreground mb-4 self-start w-full">
           今月のイベント
         </h3>
 
         <div className="w-full max-w-3xl mx-auto rounded-xl overflow-hidden border border-border/50 shadow-md">
+          {/*インポートした画像の .src を指定します */}
           <img
-            src="/member-only/shittoku/2604.jpeg"
+            src={eventImg.src}
             alt="今月のイベント"
             className="w-full h-auto object-cover transition-transform duration-500"
           />
@@ -67,9 +69,9 @@ export default function ShittokuPage() {
             見逃したイベントも録画で視聴できます。
           </p>
           {/*<Link href="/shittoku/archive">*/}
-            <Button variant="outline" className="w-full">
-              近日公開{/*アーカイブを見る*/}
-            </Button>
+          <Button variant="outline" className="w-full">
+            近日公開{/*アーカイブを見る*/}
+          </Button>
           {/*</Link>*/}
         </div>
 

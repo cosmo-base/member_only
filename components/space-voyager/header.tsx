@@ -6,6 +6,11 @@ import { navItems } from "@/lib/voyagerdata";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ★ 画像を直接インポートする
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import voyagerLogo from "../../public/CBvoyager_logo.png";
+
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -31,7 +36,8 @@ export function Header() {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link href="/voyager" className="flex items-center gap-3 group">
-            <img src={`/member-only/CBvoyager_logo.png`} alt="Space Voyager 検定" className="h-16"/>
+            {/* ★ インポートした画像の .src を指定する */}
+            <img src={voyagerLogo.src} alt="Space Voyager 検定" className="h-16"/>
           </Link>
 
           {/* Desktop Nav */}

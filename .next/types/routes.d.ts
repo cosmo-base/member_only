@@ -3,7 +3,7 @@
 
 type AppRoutes = "/" | "/CBED" | "/CBED/[id]" | "/CBED/map" | "/CBED/register" | "/CBED/search" | "/guide" | "/ittekita" | "/ittekita/calendar" | "/ittoide" | "/ittoide/archive" | "/ittoide/upcoming" | "/library" | "/news" | "/oshiete" | "/partner" | "/partner/event" | "/partner/join" | "/partner/library" | "/partner/survey" | "/partner/update" | "/quiz" | "/shittoku" | "/shittoku/archive" | "/shittoku/request" | "/shittoku/speakers" | "/shittoku/upcoming" | "/type" | "/voyager"
 type PageRoutes = never
-type LayoutRoutes = "/"
+type LayoutRoutes = "/" | "/CBED" | "/CBED/map" | "/CBED/register" | "/CBED/search" | "/guide" | "/ittekita" | "/ittekita/calendar" | "/ittoide" | "/ittoide/archive" | "/ittoide/upcoming" | "/library" | "/news" | "/oshiete" | "/partner" | "/quiz" | "/shittoku" | "/shittoku/archive" | "/shittoku/request" | "/shittoku/speakers" | "/shittoku/upcoming" | "/type" | "/voyager"
 type RedirectRoutes = never
 type RewriteRoutes = never
 type Routes = AppRoutes | PageRoutes | LayoutRoutes | RedirectRoutes | RewriteRoutes
@@ -46,6 +46,28 @@ export type ParamsOf<Route extends Routes> = ParamMap[Route]
 
 interface LayoutSlotMap {
   "/": never
+  "/CBED": never
+  "/CBED/map": never
+  "/CBED/register": never
+  "/CBED/search": never
+  "/guide": never
+  "/ittekita": never
+  "/ittekita/calendar": never
+  "/ittoide": never
+  "/ittoide/archive": never
+  "/ittoide/upcoming": never
+  "/library": never
+  "/news": never
+  "/oshiete": never
+  "/partner": never
+  "/quiz": never
+  "/shittoku": never
+  "/shittoku/archive": never
+  "/shittoku/request": never
+  "/shittoku/speakers": never
+  "/shittoku/upcoming": never
+  "/type": never
+  "/voyager": never
 }
 
 

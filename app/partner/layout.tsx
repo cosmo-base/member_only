@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Cosmo Baseで宇宙知っトク",
+  title: {
+    absolute: " | Cosmo Baseパートナーページ", 
+  },
 }
 
-export default function SubPageLayout({
+export default function PartnersLayout({
   children,
 }: {
   children: React.ReactNode
