@@ -9,50 +9,76 @@ import { notFound } from "next/navigation"
 
 export const dynamicParams = false;
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ★ 1. ページ生成の指示出し（ここで146件分の指示を強制的に出させます！）
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export async function generateStaticParams() {
   const events = await fetchEventsData();
-  return events.map((event) => ({
-    id: String(event.id),
-  }));
+  
+  // 重複IDや空のIDを排除して確実に全件渡す最強のロジック
+  const uniqueIds = new Set<string>();
+  const params: { id: string }[] = [];
+  
+  events.forEach(event => {
+    const idStr = String(event.id).trim();
+    if (idStr && !uniqueIds.has(idStr)) {
+      uniqueIds.add(idStr);
+      params.push({ id: idStr });
+    }
+  });
+
+  // ターミナルに強制的に生成件数を表示させます！
+  console.log(`\n=========================================`);
+  console.log(`🚀 generateStaticParams が ${params.length} ページ分の作成を指示しました！`);
+  console.log(`=========================================\n`);
+
+  return params;
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ★ 2. メタデータ（タブのタイトル）の生成
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const eventId = resolvedParams.id;
+  // Next.jsのURLエンコード（%20など）のバグ対策
+  const eventId = decodeURIComponent(resolvedParams.id);
 
   const allEvents = await fetchEventsData();
-  const event = allEvents.find(e => String(e.id) === eventId);
+  const event = allEvents.find(e => String(e.id).trim() === eventId);
 
   if (!event) {
-    return {
-      title: "イベントが見つかりません",
-    }
+    return { title: "イベントが見つかりません" }
   }
-  const titleText = event.title 
-    ? event.title.slice(0, 15) + "..." 
-    : `${event.title} | Cosmo Base Event Databese`;
+
+  const descriptionText = event.description 
+    ? event.description.slice(0, 100) + "..." 
+    : `${event.title}の詳細情報ページです。`;
 
   return {
-    title:  titleText,
+    title: `${event.title} | CBED`,
+    description: descriptionText,
   }
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ★ 3. ページ本体の表示
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
-  const eventId = resolvedParams.id;
+  const eventId = decodeURIComponent(resolvedParams.id);
 
   const allEvents = await fetchEventsData()
-  const event = allEvents.find(e => String(e.id) === eventId)
+  const event = allEvents.find(e => String(e.id).trim() === eventId)
 
+  // ページ生成時に見つからなかった場合は404ページを出す（ここで弾かれていた可能性大）
   if (!event) {
     notFound()
   }  
   
-  // ★ タグ出し分けロジック
   const isCosmoBaseEvent = event.organizer
-    ? event.organizer.replace(/\s+/g, "").toLowerCase().includes("cosmobase")
+    ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
     : false
-  const isPartnerEvent = event.isPartner && String(event.isPartner).toUpperCase() === "TRUE"
+  const isPartnerEvent = Boolean(event.isPartner && String(event.isPartner).toUpperCase() === "TRUE")
 
   let orgLabel = "外部イベント"
   let orgStyle = "bg-secondary text-muted-foreground border-border/50"
@@ -79,7 +105,6 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
       <div className="glass-card rounded-xl p-6 md:p-8 max-w-3xl mx-auto border border-border/50">
         <div className="mb-8">
           <div className="flex flex-wrap gap-2 mb-4">
-            {/* ★ 動的に変わるタグ */}
             <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${orgStyle}`}>
               {orgLabel}
             </span>
@@ -108,15 +133,16 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
               </div>
             )}
             {event.time && (
-              <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-primary shrink-0" />
-                <span>{event.time}</span>
+              <div className="flex items-start gap-3">
+                <Clock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                {/* ★ 修正：時間が複数行になっても綺麗に表示されるように whitespace-pre-wrap を追加 */}
+                <span className="whitespace-pre-wrap leading-relaxed">{event.time}</span>
               </div>
             )}
             {event.location && (
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-accent shrink-0" />
-                <span className="line-clamp-1">{event.location}</span>
+                <span>{event.location}</span>
               </div>
             )}
             {event.capacity && (
@@ -128,13 +154,13 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             {event.speaker && (
               <div className="flex items-center gap-3">
                 <User className="w-5 h-5 text-muted-foreground shrink-0" />
-                <span className="line-clamp-1">登壇: {event.speaker}</span>
+                <span>登壇: {event.speaker}</span>
               </div>
             )}
             {event.organizer && (
               <div className="flex items-center gap-3">
                 <Building className="w-5 h-5 text-muted-foreground shrink-0" />
-                <span className="line-clamp-1">主催: {event.organizer}</span>
+                <span>主催: {event.organizer}</span>
               </div>
             )}
           </div>
