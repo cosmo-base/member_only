@@ -67,10 +67,6 @@ export default function EventSearchPage() {
       const difficulty = event.difficulty ? String(event.difficulty).trim() : ""
       const query = searchQuery.toLowerCase().trim()
 
-      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      // ★ 修正箇所1：超・厳格な型指定と条件分岐
-      // 「: boolean」と明記し、trueかfalseしか絶対に入らないように強制します
-      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       const isCosmoBaseEvent: boolean = event.organizer 
         ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase") 
         : false;
@@ -135,7 +131,7 @@ export default function EventSearchPage() {
               placeholder="イベント名や会場で検索..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-secondary/50 border-border/50"
+              className="pl-9 bg-secondary/50 border border-border/50"
             />
           </div>
           <Button 
@@ -214,9 +210,6 @@ export default function EventSearchPage() {
           filteredEvents.map((event) => {
             const displayTypes = event.type ? String(event.type).split(',').map(t => t.trim()) : []
             
-            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            // ★ 修正箇所2：ここも同様に超・厳格な型指定を行います
-            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
             const isCosmoBaseEvent: boolean = event.organizer 
               ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase") 
               : false;
@@ -238,9 +231,10 @@ export default function EventSearchPage() {
             
             return (
               <Link href={`/CBED/${event.id}`} key={event.id} className="block group">
-                <div className="glass-card rounded-xl p-5 border border-border/50 hover:bg-primary/5 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm hover:shadow-md">
+                <div className="glass-card rounded-xl p-5 border border-border/50 hover:bg-primary/5 transition-colors flex flex-col md:flex-row md:items-start justify-between gap-4 shadow-sm hover:shadow-md">
                   
-                  <div className="flex-1">
+                  {/* ★ 修正ポイント： min-w-0 を追加してタイトルが潰れるのを防ぐ */}
+                  <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full border ${orgStyle}`}>
                         {orgLabel}
@@ -257,22 +251,26 @@ export default function EventSearchPage() {
                         </span>
                       )}
                     </div>
-                    <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                    {/* ★ 修正ポイント： break-words を追加して長すぎる単語を改行させる */}
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors break-words">
                       {event.title}
                     </h3>
                   </div>
 
-                  <div className="flex flex-col gap-2 text-sm text-muted-foreground md:min-w-[200px] shrink-0">
-                    {event.date && (
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-primary" />
-                        <span>{event.endDate ? `${event.date} 〜 ${event.endDate}` : event.date} {event.time}</span>
+                  {/* ★ 修正ポイント： 右側の横幅を md:w-[280px] に固定し、要素を上揃えにする */}
+                  <div className="flex flex-col gap-2 text-sm text-muted-foreground w-full md:w-[280px] shrink-0">
+                    {(event.date || event.time) && (
+                      <div className="flex items-start gap-2">
+                        <Calendar className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                        <span className="break-words whitespace-pre-wrap leading-relaxed">
+                          {event.endDate ? `${event.date} 〜 ${event.endDate}` : event.date} {event.time}
+                        </span>
                       </div>
                     )}
                     {event.location && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-accent" />
-                        <span className="line-clamp-1">{event.location}</span>
+                      <div className="flex items-start gap-2">
+                        <MapPin className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                        <span className="break-words line-clamp-2 leading-relaxed">{event.location}</span>
                       </div>
                     )}
                   </div>
