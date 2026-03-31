@@ -25,72 +25,71 @@ export interface SpaceEvent {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 2. データの取得先URLの設定
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ※教えていただいたCSV公開用URLを直接セットしました！
 const SPREADSHEET_API_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJU_Qq6TICMIAhDidiH2BYlBcZBvS_Uwy4wth9tT-02RYWkVP_AufdGo0PMAbAyrHKeZrE1x0laETY/pub?gid=0&single=true&output=csv";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ★ 3. 超・強化版 CSVパーサー（セル内の改行に完全対応！）
+// ★ 3. 最強のCSVパーサー（セル内の改行・カンマに完全対応！）
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function parseCSV(csvText: string): SpaceEvent[] {
-  const rows: string[][] = [];
-  let currentRow: string[] = [];
-  let currentVal = "";
-  let inQuotes = false;
+  const arr: string[][] = [];
+  let quote = false;
+  let col = 0, row = 0;
 
-  // 1文字ずつ読み込んで、セル内の改行と本物の改行を見分ける
-  for (let i = 0; i < csvText.length; i++) {
-    const char = csvText[i];
-    const nextChar = csvText[i + 1];
+  // 1文字ずつ順番に読み込んで、正確に列と行を振り分ける
+  for (let c = 0; c < csvText.length; c++) {
+    let cc = csvText[c], nc = csvText[c + 1];
+    arr[row] = arr[row] || [];
+    arr[row][col] = arr[row][col] || '';
 
-    if (char === '"') {
-      if (inQuotes && nextChar === '"') {
-        // セル内の「"」はエスケープとして処理
-        currentVal += '"';
-        i++; // 次の " をスキップ
-      } else {
-        // ダブルクォーテーションの開閉
-        inQuotes = !inQuotes;
-      }
-    } else if (char === ',' && !inQuotes) {
-      // カンマで列を区切る
-      currentRow.push(currentVal);
-      currentVal = "";
-    } else if ((char === '\n' || char === '\r') && !inQuotes) {
-      // ダブルクォーテーションの外（＝本物の行の終わり）
-      if (char === '\r' && nextChar === '\n') {
-        i++; // \r\n の場合は \n をスキップ
-      }
-      currentRow.push(currentVal);
-      rows.push(currentRow);
-      currentRow = [];
-      currentVal = "";
-    } else {
-      // 普通の文字を連結
-      currentVal += char;
+    // セル内のエスケープされたダブルクォーテーション ("")
+    if (cc === '"' && quote && nc === '"') {
+      arr[row][col] += cc;
+      ++c; // 次の " をスキップ
+      continue;
     }
-  }
-  
-  // 最後の行の端数を追加
-  if (currentVal !== "" || currentRow.length > 0) {
-    currentRow.push(currentVal);
-    rows.push(currentRow);
+
+    // ダブルクォーテーションの開閉
+    if (cc === '"') {
+      quote = !quote;
+      continue;
+    }
+
+    // 文字列の外にあるカンマ ＝ 次の列へ
+    if (cc === ',' && !quote) {
+      ++col;
+      continue;
+    }
+
+    // 文字列の外にある改行 ＝ 次の行へ
+    if (cc === '\r' && nc === '\n' && !quote) {
+      ++row; col = 0; ++c; continue;
+    }
+    if (cc === '\n' && !quote) {
+      ++row; col = 0; continue;
+    }
+    if (cc === '\r' && !quote) {
+      ++row; col = 0; continue;
+    }
+
+    // 通常の文字を追加
+    arr[row][col] += cc;
   }
 
-  if (rows.length < 2) return [];
+  if (arr.length < 2) return [];
 
-  const headers = rows[0].map(h => h.trim());
+  const headers = arr[0].map(h => h.trim());
   const events: SpaceEvent[] = [];
 
-  // 2行目以降をデータとして処理
-  for (let r = 1; r < rows.length; r++) {
-    const row = rows[r];
-    // 空行はスキップ
-    if (row.length === 1 && row[0].trim() === "") continue;
+  // 2行目以降をデータとして組み立て
+  for (let r = 1; r < arr.length; r++) {
+    const rowData = arr[r];
+    // 完全に空っぽの行はスキップ
+    if (rowData.length === 1 && rowData[0].trim() === "") continue;
 
     const event: any = {};
     headers.forEach((header, index) => {
-      let value = row[index] || "";
-      // 余白は消しつつ、セル内の改行はそのまま残す
+      let value = rowData[index] || "";
+      // 前後の不要な空白だけ消す（セル内の改行はそのまま残る）
       value = value.trim();
       
       if (header === "lat" || header === "lng") {
@@ -100,10 +99,8 @@ function parseCSV(csvText: string): SpaceEvent[] {
       }
     });
 
-    // ★ 安全装置：万が一 id が空欄だった場合、ビルドが落ちないように行番号をIDにする
-    if (!event.id) {
-      event.id = `fallback-id-${r}`;
-    }
+    // IDが空欄だった場合の安全装置
+    if (!event.id) event.id = `fallback-${r}`;
     
     events.push(event as SpaceEvent);
   }
@@ -127,10 +124,9 @@ export async function fetchEventsData(): Promise<SpaceEvent[]> {
     const text = await response.text();
     
     try {
-      // JSON形式の可能性も考慮（念のため）
       return JSON.parse(text) as SpaceEvent[];
     } catch (e) {
-      // JSONじゃなければCSVとして強力パース処理へ
+      // 完璧にCSVを解析する！
       return parseCSV(text);
     }
     
