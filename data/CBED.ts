@@ -107,12 +107,15 @@ function parseCSV(csvText: string): SpaceEvent[] {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ★ 4. データの取得処理
+// ★ 4. データの取得処理（キャッシュ完全破壊版）
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export async function fetchEventsData(): Promise<SpaceEvent[]> {
   try {
-    const response = await fetch(SPREADSHEET_API_URL, {
-      next: { revalidate: 60 }, 
+    // 🌟 URLの末尾に現在の時間をくっつけて、毎回「違うURL」だと錯覚させる最強のハック
+    const bustCacheUrl = `${SPREADSHEET_API_URL}&t=${Date.now()}`;
+
+    const response = await fetch(bustCacheUrl, {
+      cache: "no-store", // 🌟 Next.jsの通信キャッシュを完全に無効化！
     });
 
     if (!response.ok) {
@@ -128,18 +131,16 @@ export async function fetchEventsData(): Promise<SpaceEvent[]> {
       parsedEvents = parseCSV(text);
     }
 
-    // 🌟 デバッグ：ビルド画面に読み込み状況を強制出力する！
+    // デバッグ出力
     console.log("=========================================");
     console.log(`✅ 読み込んだ全イベント数: ${parsedEvents.length}件`);
     
     const fallbackEvents = parsedEvents.filter(e => String(e.id).includes("fallback"));
-    console.log(`⚠️ IDが読み取れなかった件数: ${fallbackEvents.length}件`);
-    
     if (fallbackEvents.length > 0) {
-      console.log(`📝 IDが読めなかった最初のイベントのタイトル: 「${fallbackEvents[0].title}」`);
+      console.log(`⚠️ IDが読み取れなかった件数: ${fallbackEvents.length}件`);
+      console.log(`📝 最初の仮IDイベント: 「${fallbackEvents[0].title}」`);
     }
 
-    // 90番付近のデータを覗き見する
     const event90 = parsedEvents.find(e => e.id == "90" || e.id === 90);
     if (!event90) {
       console.log("❌ ID「90」のイベントが見つかりません！");
