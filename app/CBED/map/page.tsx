@@ -67,9 +67,17 @@ export default function EventSearchPage() {
       const difficulty = event.difficulty ? String(event.difficulty).trim() : ""
       const query = searchQuery.toLowerCase().trim()
 
-      // ★ 修正箇所1: Boolean() で包んで強制的に true/false のどちらかに変換します
-      const isCosmoBaseEvent = Boolean(event.organizer && String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase"))
-      const isPartnerEvent = Boolean(event.isPartner && String(event.isPartner).toUpperCase() === "TRUE")
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // ★ 修正箇所1：超・厳格な型指定と条件分岐
+      // 「: boolean」と明記し、trueかfalseしか絶対に入らないように強制します
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      const isCosmoBaseEvent: boolean = event.organizer 
+        ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase") 
+        : false;
+        
+      const isPartnerEvent: boolean = (event.isPartner === true) || (String(event.isPartner).toUpperCase() === "TRUE") 
+        ? true 
+        : false;
 
       const targetDate = event.endDate || event.date || ""
       const isPastEvent = targetDate !== "" && targetDate < todayStr
@@ -96,7 +104,6 @@ export default function EventSearchPage() {
         }
       }
 
-      // ★ 変数の型を boolean に明示的に指定
       let matchOrganizer: boolean = true
       if (selectedOrganizer === "cosmobase") {
         matchOrganizer = isCosmoBaseEvent
@@ -207,9 +214,16 @@ export default function EventSearchPage() {
           filteredEvents.map((event) => {
             const displayTypes = event.type ? String(event.type).split(',').map(t => t.trim()) : []
             
-            // ★ 修正箇所2: こちらも Boolean() で確実に変換
-            const isCosmoBaseEvent = Boolean(event.organizer && String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase"))
-            const isPartnerEvent = Boolean(event.isPartner && String(event.isPartner).toUpperCase() === "TRUE")
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            // ★ 修正箇所2：ここも同様に超・厳格な型指定を行います
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            const isCosmoBaseEvent: boolean = event.organizer 
+              ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase") 
+              : false;
+              
+            const isPartnerEvent: boolean = (event.isPartner === true) || (String(event.isPartner).toUpperCase() === "TRUE") 
+              ? true 
+              : false;
 
             let orgLabel = "外部イベント"
             let orgStyle = "bg-secondary text-muted-foreground border-border/50"
