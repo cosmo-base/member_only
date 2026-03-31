@@ -4,7 +4,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-
+  trailingSlash: true,
   basePath: '/member_only', 
   assetPrefix: '/member_only', 
 };
