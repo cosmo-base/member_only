@@ -10,7 +10,6 @@ import { ArrowLeft, CheckCircle2, Loader2, UploadCloud, FileText, ShieldCheck } 
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 
-// ★ 新しく発行したGASのURLを貼り付けてください
 const GAS_API_URL = "https://script.google.com/macros/s/AKfycbw2GY6EKyoAdbegq089wKGARZgSAbP2nqz9H0QHx2wq5CsqPphRMKguj3Rog_QhgG6PWA/exec"
 
 export default function PartnerJoinPage() {
@@ -128,7 +127,7 @@ export default function PartnerJoinPage() {
                 <div>
                   <label className="block text-sm font-medium mb-2">パートナー種別 <span className="text-red-500">*</span></label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
-                    {["宇宙系企業", "宇宙系学生団体", "非宇宙系企業", "非宇宙系学生団体", "その他"].map((type) => (
+                    {["宇宙系企業", "宇宙系学生団体", "非宇宙系企業", "非宇宙系学生団体"].map((type) => (
                       <label key={type} className="flex items-center gap-2 p-3 rounded-lg border border-border/50 bg-secondary/30 cursor-pointer hover:bg-secondary/50">
                         <input type="radio" name="partnerType" value={type} required onChange={(e) => setPartnerType(e.target.value)} className="text-primary focus:ring-primary" />
                         <span className="text-sm">{type}</span>
@@ -198,8 +197,8 @@ export default function PartnerJoinPage() {
                 <div className="pt-2">
                   <h4 className="text-sm font-bold mb-4">SNSリンク <span className="text-[10px] font-normal text-muted-foreground ml-2">※他にリンクがある場合は「そのほか」に入力してください。</span></h4>
                   <div className="space-y-3">
-                    <div><label className="block text-xs font-medium mb-1">HP <span className="text-red-500">*</span></label><Input name="snsHp" required placeholder="https://" className="bg-secondary/50" /></div>
-                    <div><label className="block text-xs font-medium mb-1">X (Twitter) <span className="text-red-500">*</span></label><Input name="snsX" required placeholder="https://" className="bg-secondary/50" /></div>
+                    <div><label className="block text-xs font-medium mb-1">HP</label><Input name="snsHp" placeholder="https://" className="bg-secondary/50" /></div>
+                    <div><label className="block text-xs font-medium mb-1">X (Twitter)</label><Input name="snsX" placeholder="https://" className="bg-secondary/50" /></div>
                     <div><label className="block text-xs font-medium mb-1">Instagram</label><Input name="snsInsta" placeholder="https://" className="bg-secondary/50" /></div>
                     <div><label className="block text-xs font-medium mb-1">Facebook</label><Input name="snsFb" placeholder="https://" className="bg-secondary/50" /></div>
                     <div><label className="block text-xs font-medium mb-1">note</label><Input name="snsNote" placeholder="https://" className="bg-secondary/50" /></div>
