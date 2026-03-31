@@ -67,12 +67,9 @@ export default function EventSearchPage() {
       const difficulty = event.difficulty ? String(event.difficulty).trim() : ""
       const query = searchQuery.toLowerCase().trim()
 
-      const isCosmoBaseEvent = event.organizer 
-        ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
-        : false
-      
-      // ★ 修正箇所1: 空（undefined）の時は強制的に false を返すようにしました
-      const isPartnerEvent = event.isPartner ? String(event.isPartner).toUpperCase() === "TRUE" : false
+      // ★ 修正箇所1: Boolean() で包んで強制的に true/false のどちらかに変換します
+      const isCosmoBaseEvent = Boolean(event.organizer && String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase"))
+      const isPartnerEvent = Boolean(event.isPartner && String(event.isPartner).toUpperCase() === "TRUE")
 
       const targetDate = event.endDate || event.date || ""
       const isPastEvent = targetDate !== "" && targetDate < todayStr
@@ -99,7 +96,8 @@ export default function EventSearchPage() {
         }
       }
 
-      let matchOrganizer = true
+      // ★ 変数の型を boolean に明示的に指定
+      let matchOrganizer: boolean = true
       if (selectedOrganizer === "cosmobase") {
         matchOrganizer = isCosmoBaseEvent
       } else if (selectedOrganizer === "partner") {
@@ -209,12 +207,9 @@ export default function EventSearchPage() {
           filteredEvents.map((event) => {
             const displayTypes = event.type ? String(event.type).split(',').map(t => t.trim()) : []
             
-            const isCosmoBaseEvent = event.organizer 
-              ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
-              : false
-            
-            // ★ 修正箇所2: リスト表示用の判定部分も同様に確実に false を返すように修正
-            const isPartnerEvent = event.isPartner ? String(event.isPartner).toUpperCase() === "TRUE" : false
+            // ★ 修正箇所2: こちらも Boolean() で確実に変換
+            const isCosmoBaseEvent = Boolean(event.organizer && String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase"))
+            const isPartnerEvent = Boolean(event.isPartner && String(event.isPartner).toUpperCase() === "TRUE")
 
             let orgLabel = "外部イベント"
             let orgStyle = "bg-secondary text-muted-foreground border-border/50"
