@@ -8,7 +8,7 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  // ★ 1. タイトルをテンプレート化（他のページで title を設定すると自動で「| Cosmo Base」が付きます）
+  // ★ 1. タイトルをテンプレート化
   title: {
     template: '%s | Cosmo Base - 参加者ページ',
     default: 'Cosmo Base - 参加者ページ',
@@ -26,15 +26,15 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/member-only/CB_icon.png',
+        url: '/member_only/CB_icon.png',
         media: '(prefers-color-scheme: light)',
       },
       {
-        url: '/member-only/CB_icon.png',
+        url: '/member_only/CB_icon.png',
         media: '(prefers-color-scheme: dark)',
       },
     ],
-    apple: '/member-only/CB_icon.png',
+    apple: '/member_only/CB_icon.png',
   },
 }
 
