@@ -1,5 +1,5 @@
 // app/CBED/[id]/page.tsx
-import { Metadata } from "next" // ★ メタデータ用のインポートを追加
+import { Metadata } from "next"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { MapPin, Calendar, Clock, ArrowLeft, ExternalLink, User, Users, Building } from "lucide-react"
@@ -16,9 +16,6 @@ export async function generateStaticParams() {
   }));
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ★ 動的メタデータ：URL(id)からイベント名を取得してタイトルにする
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const eventId = resolvedParams.id;
@@ -26,15 +23,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const allEvents = await fetchEventsData();
   const event = allEvents.find(e => String(e.id) === eventId);
 
-  // イベントが見つからない場合のタイトル
   if (!event) {
     return {
       title: "イベントが見つかりません",
     }
   }
-
-  // イベントが見つかった場合は、そのタイトルをタブ名にする
-  // ※長すぎる説明文は100文字でカットする処理を入れています
   const titleText = event.title 
     ? event.title.slice(0, 15) + "..." 
     : `${event.title} | Cosmo Base Event Databese`;
@@ -43,7 +36,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     title:  titleText,
   }
 }
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -56,9 +48,22 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     notFound()
   }  
   
+  // ★ タグ出し分けロジック
   const isCosmoBaseEvent = event.organizer
     ? event.organizer.replace(/\s+/g, "").toLowerCase().includes("cosmobase")
     : false
+  const isPartnerEvent = event.isPartner && String(event.isPartner).toUpperCase() === "TRUE"
+
+  let orgLabel = "外部イベント"
+  let orgStyle = "bg-secondary text-muted-foreground border-border/50"
+
+  if (isCosmoBaseEvent) {
+    orgLabel = "主催イベント"
+    orgStyle = "bg-primary/20 text-primary border-primary/30"
+  } else if (isPartnerEvent) {
+    orgLabel = "パートナー"
+    orgStyle = "bg-emerald-500/20 text-emerald-500 border-emerald-500/30"
+  }
 
   return (
     <ContentPageLayout title="イベント詳細" level={4} levelTitle="体系化" logo="CBED">
@@ -74,10 +79,11 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
       <div className="glass-card rounded-xl p-6 md:p-8 max-w-3xl mx-auto border border-border/50">
         <div className="mb-8">
           <div className="flex flex-wrap gap-2 mb-4">
-            <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${isCosmoBaseEvent ? "bg-primary/20 text-primary border-primary/30" : "bg-secondary text-muted-foreground border-border/50"
-              }`}>
-              {isCosmoBaseEvent ? "主催イベント" : "外部イベント"}
+            {/* ★ 動的に変わるタグ */}
+            <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${orgStyle}`}>
+              {orgLabel}
             </span>
+            
             {event.type && String(event.type).split(',').map((t, idx) => (
               <span key={idx} className="px-3 py-1 text-xs font-medium rounded-full bg-accent/20 text-accent border border-accent/30">
                 {t.trim()}
