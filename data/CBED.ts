@@ -28,39 +28,31 @@ export interface SpaceEvent {
 const SPREADSHEET_API_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJU_Qq6TICMIAhDidiH2BYlBcZBvS_Uwy4wth9tT-02RYWkVP_AufdGo0PMAbAyrHKeZrE1x0laETY/pub?gid=0&single=true&output=csv";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ★ 3. 最強のCSVパーサー（セル内の改行・カンマに完全対応！）
+// ★ 3. 最強のCSVパーサー（空行スキップ機能を搭載）
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function parseCSV(csvText: string): SpaceEvent[] {
   const arr: string[][] = [];
   let quote = false;
   let col = 0, row = 0;
 
-  // 1文字ずつ順番に読み込んで、正確に列と行を振り分ける
   for (let c = 0; c < csvText.length; c++) {
     let cc = csvText[c], nc = csvText[c + 1];
     arr[row] = arr[row] || [];
     arr[row][col] = arr[row][col] || '';
 
-    // セル内のエスケープされたダブルクォーテーション ("")
     if (cc === '"' && quote && nc === '"') {
       arr[row][col] += cc;
-      ++c; // 次の " をスキップ
+      ++c; 
       continue;
     }
-
-    // ダブルクォーテーションの開閉
     if (cc === '"') {
       quote = !quote;
       continue;
     }
-
-    // 文字列の外にあるカンマ ＝ 次の列へ
     if (cc === ',' && !quote) {
       ++col;
       continue;
     }
-
-    // 文字列の外にある改行 ＝ 次の行へ
     if (cc === '\r' && nc === '\n' && !quote) {
       ++row; col = 0; ++c; continue;
     }
@@ -71,7 +63,6 @@ function parseCSV(csvText: string): SpaceEvent[] {
       ++row; col = 0; continue;
     }
 
-    // 通常の文字を追加
     arr[row][col] += cc;
   }
 
@@ -80,16 +71,17 @@ function parseCSV(csvText: string): SpaceEvent[] {
   const headers = arr[0].map(h => h.trim());
   const events: SpaceEvent[] = [];
 
-  // 2行目以降をデータとして組み立て
   for (let r = 1; r < arr.length; r++) {
     const rowData = arr[r];
-    // 完全に空っぽの行はスキップ
-    if (rowData.length === 1 && rowData[0].trim() === "") continue;
+    
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // ★ 修正箇所：カンマだけの行（全て空白の行）を完全にスキップ！
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    if (!rowData.some(val => val.trim() !== "")) continue;
 
     const event: any = {};
     headers.forEach((header, index) => {
       let value = rowData[index] || "";
-      // 前後の不要な空白だけ消す（セル内の改行はそのまま残る）
       value = value.trim();
       
       if (header === "lat" || header === "lng") {
@@ -99,9 +91,15 @@ function parseCSV(csvText: string): SpaceEvent[] {
       }
     });
 
-    // IDが空欄だった場合の安全装置
+    // ★ 修正箇所：IDもタイトルも空っぽの場合は「イベントではない」と判定してスキップ
+    if (!event.id && !event.title) continue;
+
+    // IDがない場合は仮IDを振るが、基本的にはスプシのIDを使用する
     if (!event.id) event.id = `fallback-${r}`;
     
+    // ★ 修正箇所：IDの前後に誤ってスペースが入っていた場合（" 90 " など）に404になるのを防ぐ
+    event.id = String(event.id).trim();
+
     events.push(event as SpaceEvent);
   }
 
@@ -126,7 +124,6 @@ export async function fetchEventsData(): Promise<SpaceEvent[]> {
     try {
       return JSON.parse(text) as SpaceEvent[];
     } catch (e) {
-      // 完璧にCSVを解析する！
       return parseCSV(text);
     }
     
