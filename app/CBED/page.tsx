@@ -96,8 +96,8 @@ export default function EventsPage() {
             <h3 className="text-lg font-semibold text-foreground">イベント登録</h3>
           </div>
           <p className="text-muted-foreground text-sm mb-4">
-            イベント主催者の方はこちらから<br />
-            イベント情報を登録できます。
+             記載されていない宇宙のイベントがありましたら、お手数ですがお書きいただけますと幸いです。<br />
+             皆様からの情報提供が、多くの宇宙ファンの助けになります！
           </p>
           <Link href="/CBED/register">
             <Button variant="outline" className="w-full">
