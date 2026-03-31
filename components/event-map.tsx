@@ -36,7 +36,6 @@ function MapController({ center, onBoundsChange }: { center: [number, number], o
 
 export default function EventMap({ events, center, onBoundsChange }: { events: SpaceEvent[], center: [number, number], onBoundsChange: (bounds: {n: number, s: number, e: number, w: number}) => void }) {
   return (
-    // ★ ここが一番のキモです。absolute inset-0 で親要素にピッタリ張り付きます。
     <div className="absolute inset-0 z-10 bg-secondary/20">
       <MapContainer 
         center={center} 
@@ -50,7 +49,8 @@ export default function EventMap({ events, center, onBoundsChange }: { events: S
         />
         <MapController center={center} onBoundsChange={onBoundsChange} />
         {events.map((event) => (
-          <Marker key={event.id} position={[event.lat, event.lng]}>
+          // ★ 修正箇所：event.lat! と event.lng! に変更しました
+          <Marker key={event.id} position={[event.lat!, event.lng!]}>
             <Popup>
               <div className="font-sans text-slate-900 leading-tight">
                 <strong className="text-primary block mb-1">{event.title}</strong>
