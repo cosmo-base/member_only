@@ -18,7 +18,6 @@ export default function EventSearchPage() {
   const [selectedType, setSelectedType] = useState("all") 
   const [selectedDifficulty, setSelectedDifficulty] = useState("all")
   const [selectedOrganizer, setSelectedOrganizer] = useState("all")
-  // ★追加：過去イベント表示用トグル
   const [showPastEvents, setShowPastEvents] = useState(false)
 
   useEffect(() => {
@@ -54,12 +53,11 @@ export default function EventSearchPage() {
     setSelectedType("all")
     setSelectedDifficulty("all")
     setSelectedOrganizer("all")
-    setShowPastEvents(false) // トグルもリセット
+    setShowPastEvents(false)
   }
 
   // フィルタリングと並び替え処理
   const filteredEvents = useMemo(() => {
-    // 今日の日付文字列（yyyy-mm-dd）を作成
     const d = new Date()
     const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 
@@ -71,15 +69,15 @@ export default function EventSearchPage() {
       const difficulty = event.difficulty ? String(event.difficulty).trim() : ""
       const query = searchQuery.toLowerCase().trim()
 
+      // ★追加：主催とパートナーの判定
       const isCosmoBaseEvent = event.organizer 
         ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
         : false
+      const isPartnerEvent = event.isPartner && String(event.isPartner).toUpperCase() === "TRUE"
 
-      // ★追加：過去イベントかどうかの判定（終了日があれば終了日、なければ開始日で判定）
       const targetDate = event.endDate || event.date || ""
       const isPastEvent = targetDate !== "" && targetDate < todayStr
 
-      // 0. 過去イベントを非表示にする設定なら弾く
       if (!showPastEvents && isPastEvent) {
         return false
       }
@@ -106,18 +104,19 @@ export default function EventSearchPage() {
         }
       }
 
-      // 4. 主催フィルター
+      // ★ 4. 主催・パートナーフィルター
       let matchOrganizer = true
       if (selectedOrganizer === "cosmobase") {
         matchOrganizer = isCosmoBaseEvent
+      } else if (selectedOrganizer === "partner") {
+        matchOrganizer = isPartnerEvent
       } else if (selectedOrganizer === "others") {
-        matchOrganizer = !isCosmoBaseEvent
+        matchOrganizer = !isCosmoBaseEvent && !isPartnerEvent
       }
 
       return matchQuery && matchType && matchDifficulty && matchOrganizer
     })
 
-    // ★追加：日付の昇順（直近のイベントから順に）並び替える
     return filtered.sort((a, b) => {
       const dateA = a.date || ""
       const dateB = b.date || ""
@@ -130,7 +129,6 @@ export default function EventSearchPage() {
     <ContentPageLayout title="詳細検索" level={4} levelTitle="体系化" logo="CBED">
       <div className="glass-card rounded-xl p-5 md:p-6 mb-8 border border-border/50 shadow-sm">
         
-        {/* 検索バー ＆ リセットボタン */}
         <div className="flex gap-3 mb-6">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -152,7 +150,6 @@ export default function EventSearchPage() {
           </Button>
         </div>
 
-        {/* フィルタープルダウン群 */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
           <div>
             <span className="text-xs font-semibold text-muted-foreground block mb-2">主催・運営</span>
@@ -163,6 +160,8 @@ export default function EventSearchPage() {
             >
               <option value="all">すべてのイベント</option>
               <option value="cosmobase">Cosmo Base主催</option>
+              {/* ★ パートナーの選択肢を追加 */}
+              <option value="partner">パートナー主催</option>
               <option value="others">外部イベント</option>
             </select>
           </div>
@@ -196,7 +195,6 @@ export default function EventSearchPage() {
           </div>
         </div>
 
-        {/* ★追加：過去イベントの表示トグル */}
         <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer w-max hover:opacity-80 transition-opacity">
           <input
             type="checkbox"
@@ -208,7 +206,6 @@ export default function EventSearchPage() {
         </label>
       </div>
 
-      {/* 検索結果リスト */}
       <div className="space-y-4">
         {isLoading ? (
           <div className="flex flex-col justify-center items-center py-20 gap-4">
@@ -218,9 +215,23 @@ export default function EventSearchPage() {
         ) : filteredEvents.length > 0 ? (
           filteredEvents.map((event) => {
             const displayTypes = event.type ? String(event.type).split(',').map(t => t.trim()) : []
+            
+            // ★ 主催・パートナー・外部のタグ出し分けロジック
             const isCosmoBaseEvent = event.organizer 
               ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
               : false
+            const isPartnerEvent = event.isPartner && String(event.isPartner).toUpperCase() === "TRUE"
+
+            let orgLabel = "外部イベント"
+            let orgStyle = "bg-secondary text-muted-foreground border-border/50"
+
+            if (isCosmoBaseEvent) {
+              orgLabel = "主催イベント"
+              orgStyle = "bg-primary/20 text-primary border-primary/30"
+            } else if (isPartnerEvent) {
+              orgLabel = "パートナー"
+              orgStyle = "bg-emerald-500/20 text-emerald-500 border-emerald-500/30" // ★ パートナー用カラー
+            }
             
             return (
               <Link href={`/CBED/${event.id}`} key={event.id} className="block group">
@@ -228,10 +239,9 @@ export default function EventSearchPage() {
                   
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full border ${
-                        isCosmoBaseEvent ? "bg-primary/20 text-primary border-primary/30" : "bg-secondary text-muted-foreground border-border/50"
-                      }`}>
-                        {isCosmoBaseEvent ? "主催イベント" : "外部イベント"}
+                      {/* ★ 動的に変わるタグ */}
+                      <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full border ${orgStyle}`}>
+                        {orgLabel}
                       </span>
 
                       {displayTypes.map((t, idx) => (
