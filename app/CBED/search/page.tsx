@@ -13,7 +13,6 @@ export default function EventSearchPage() {
   const [events, setEvents] = useState<SpaceEvent[]>([])
   const [isLoading, setIsLoading] = useState(true)
   
-  // フィルター用の状態
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedType, setSelectedType] = useState("all") 
   const [selectedDifficulty, setSelectedDifficulty] = useState("all")
@@ -56,7 +55,6 @@ export default function EventSearchPage() {
     setShowPastEvents(false)
   }
 
-  // フィルタリングと並び替え処理
   const filteredEvents = useMemo(() => {
     const d = new Date()
     const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -69,11 +67,17 @@ export default function EventSearchPage() {
       const difficulty = event.difficulty ? String(event.difficulty).trim() : ""
       const query = searchQuery.toLowerCase().trim()
 
-      // ★追加：主催とパートナーの判定
-      const isCosmoBaseEvent = event.organizer 
-        ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
-        : false
-      const isPartnerEvent = event.isPartner && String(event.isPartner).toUpperCase() === "TRUE"
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // ★ 修正箇所1：超・厳格な型指定と条件分岐
+      // 「: boolean」と明記し、trueかfalseしか絶対に入らないように強制します
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      const isCosmoBaseEvent: boolean = event.organizer 
+        ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase") 
+        : false;
+        
+      const isPartnerEvent: boolean = (event.isPartner === true) || (String(event.isPartner).toUpperCase() === "TRUE") 
+        ? true 
+        : false;
 
       const targetDate = event.endDate || event.date || ""
       const isPastEvent = targetDate !== "" && targetDate < todayStr
@@ -82,13 +86,9 @@ export default function EventSearchPage() {
         return false
       }
 
-      // 1. キーワード検索
       const matchQuery = !query || title.includes(query) || location.includes(query)
-      
-      // 2. 形式フィルター
       const matchType = selectedType === "all" || eventTypes.includes(selectedType)
       
-      // 3. 難易度フィルター
       let matchDifficulty = true
       if (selectedDifficulty !== "all") {
         if (difficulty === "全レベル") {
@@ -104,8 +104,7 @@ export default function EventSearchPage() {
         }
       }
 
-      // ★ 4. 主催・パートナーフィルター
-      let matchOrganizer = true
+      let matchOrganizer: boolean = true
       if (selectedOrganizer === "cosmobase") {
         matchOrganizer = isCosmoBaseEvent
       } else if (selectedOrganizer === "partner") {
@@ -160,7 +159,6 @@ export default function EventSearchPage() {
             >
               <option value="all">すべてのイベント</option>
               <option value="cosmobase">Cosmo Base主催</option>
-              {/* ★ パートナーの選択肢を追加 */}
               <option value="partner">パートナー主催</option>
               <option value="others">外部イベント</option>
             </select>
@@ -216,11 +214,16 @@ export default function EventSearchPage() {
           filteredEvents.map((event) => {
             const displayTypes = event.type ? String(event.type).split(',').map(t => t.trim()) : []
             
-            // ★ 主催・パートナー・外部のタグ出し分けロジック
-            const isCosmoBaseEvent = event.organizer 
-              ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
-              : false
-            const isPartnerEvent = event.isPartner && String(event.isPartner).toUpperCase() === "TRUE"
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            // ★ 修正箇所2：ここも同様に超・厳格な型指定を行います
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            const isCosmoBaseEvent: boolean = event.organizer 
+              ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase") 
+              : false;
+              
+            const isPartnerEvent: boolean = (event.isPartner === true) || (String(event.isPartner).toUpperCase() === "TRUE") 
+              ? true 
+              : false;
 
             let orgLabel = "外部イベント"
             let orgStyle = "bg-secondary text-muted-foreground border-border/50"
@@ -230,7 +233,7 @@ export default function EventSearchPage() {
               orgStyle = "bg-primary/20 text-primary border-primary/30"
             } else if (isPartnerEvent) {
               orgLabel = "パートナー"
-              orgStyle = "bg-emerald-500/20 text-emerald-500 border-emerald-500/30" // ★ パートナー用カラー
+              orgStyle = "bg-emerald-500/20 text-emerald-500 border-emerald-500/30"
             }
             
             return (
@@ -239,7 +242,6 @@ export default function EventSearchPage() {
                   
                   <div className="flex-1">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
-                      {/* ★ 動的に変わるタグ */}
                       <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full border ${orgStyle}`}>
                         {orgLabel}
                       </span>
