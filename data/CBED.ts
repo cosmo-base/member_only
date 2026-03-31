@@ -25,55 +25,94 @@ export interface SpaceEvent {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 2. データの取得先URLの設定
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const SPREADSHEET_API_URL = process.env.NEXT_PUBLIC_CBED_API_URL || "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJU_Qq6TICMIAhDidiH2BYlBcZBvS_Uwy4wth9tT-02RYWkVP_AufdGo0PMAbAyrHKeZrE1x0laETY/pub?gid=0&single=true&output=csv";
+// ※教えていただいたCSV公開用URLを直接セットしました！
+const SPREADSHEET_API_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJU_Qq6TICMIAhDidiH2BYlBcZBvS_Uwy4wth9tT-02RYWkVP_AufdGo0PMAbAyrHKeZrE1x0laETY/pub?gid=0&single=true&output=csv";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ★ 3. CSVをパース（変換）する専用関数
+// ★ 3. 超・強化版 CSVパーサー（セル内の改行に完全対応！）
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function parseCSV(csvText: string): SpaceEvent[] {
-  // 改行コードで分割し、空行を除外
-  const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== "");
-  if (lines.length < 2) return [];
+  const rows: string[][] = [];
+  let currentRow: string[] = [];
+  let currentVal = "";
+  let inQuotes = false;
 
-  const headers = lines[0].split(',').map(h => h.trim());
+  // 1文字ずつ読み込んで、セル内の改行と本物の改行を見分ける
+  for (let i = 0; i < csvText.length; i++) {
+    const char = csvText[i];
+    const nextChar = csvText[i + 1];
 
-  return lines.slice(1).map(line => {
-    const row: string[] = [];
-    let inQuotes = false;
-    let val = "";
-    
-    // ダブルクォーテーションで囲まれたカンマ(,)を無視する処理
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-      if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === ',' && !inQuotes) {
-        row.push(val);
-        val = "";
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        // セル内の「"」はエスケープとして処理
+        currentVal += '"';
+        i++; // 次の " をスキップ
       } else {
-        val += char;
+        // ダブルクォーテーションの開閉
+        inQuotes = !inQuotes;
       }
+    } else if (char === ',' && !inQuotes) {
+      // カンマで列を区切る
+      currentRow.push(currentVal);
+      currentVal = "";
+    } else if ((char === '\n' || char === '\r') && !inQuotes) {
+      // ダブルクォーテーションの外（＝本物の行の終わり）
+      if (char === '\r' && nextChar === '\n') {
+        i++; // \r\n の場合は \n をスキップ
+      }
+      currentRow.push(currentVal);
+      rows.push(currentRow);
+      currentRow = [];
+      currentVal = "";
+    } else {
+      // 普通の文字を連結
+      currentVal += char;
     }
-    row.push(val);
+  }
+  
+  // 最後の行の端数を追加
+  if (currentVal !== "" || currentRow.length > 0) {
+    currentRow.push(currentVal);
+    rows.push(currentRow);
+  }
+
+  if (rows.length < 2) return [];
+
+  const headers = rows[0].map(h => h.trim());
+  const events: SpaceEvent[] = [];
+
+  // 2行目以降をデータとして処理
+  for (let r = 1; r < rows.length; r++) {
+    const row = rows[r];
+    // 空行はスキップ
+    if (row.length === 1 && row[0].trim() === "") continue;
 
     const event: any = {};
     headers.forEach((header, index) => {
       let value = row[index] || "";
+      // 余白は消しつつ、セル内の改行はそのまま残す
       value = value.trim();
       
-      // 緯度経度は数値に変換
       if (header === "lat" || header === "lng") {
         event[header] = value ? parseFloat(value) : undefined;
       } else {
         event[header] = value;
       }
     });
-    return event as SpaceEvent;
-  });
+
+    // ★ 安全装置：万が一 id が空欄だった場合、ビルドが落ちないように行番号をIDにする
+    if (!event.id) {
+      event.id = `fallback-id-${r}`;
+    }
+    
+    events.push(event as SpaceEvent);
+  }
+
+  return events;
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ★ 4. データの取得処理（ハイブリッド対応）
+// ★ 4. データの取得処理
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export async function fetchEventsData(): Promise<SpaceEvent[]> {
   try {
@@ -85,14 +124,13 @@ export async function fetchEventsData(): Promise<SpaceEvent[]> {
       throw new Error("イベントデータの取得に失敗しました");
     }
 
-    // JSONとしてではなく、まずは単なる「テキスト」として受け取る
     const text = await response.text();
     
     try {
-      // もしJSON形式だったらそのまま返す
+      // JSON形式の可能性も考慮（念のため）
       return JSON.parse(text) as SpaceEvent[];
     } catch (e) {
-      // JSONエラーになったら「CSV形式だ！」と判断してパース処理へ回す
+      // JSONじゃなければCSVとして強力パース処理へ
       return parseCSV(text);
     }
     
