@@ -1,177 +1,287 @@
-// app/CBED/map/page.tsx
+// app/CBED/search/page.tsx
 "use client"
 
 import { useEffect, useState, useMemo } from "react"
-import dynamic from "next/dynamic"
 import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
+import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { MapPin, Navigation, Map as MapIcon, Loader2, ChevronRight } from "lucide-react"
+import { Search, MapPin, Calendar, Loader2, Filter, RotateCcw } from "lucide-react"
 import { fetchEventsData, SpaceEvent } from "@/data/CBED"
 
-const IMPERIAL_PALACE: [number, number] = [35.6852, 139.7528]
-
-function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
-  const R = 6371
-  const dLat = (lat2 - lat1) * (Math.PI / 180)
-  const dLon = (lon2 - lon1) * (Math.PI / 180)
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2)
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-  return R * c
-}
-
-const DynamicMap = dynamic(() => import("@/components/event-map"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex flex-col items-center justify-center h-full w-full bg-secondary/30 text-muted-foreground min-h-[400px]">
-      <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
-      <p>地図を読み込み中...</p>
-    </div>
-  ),
-})
-
-export default function MapSearchPage() {
-  const [center, setCenter] = useState<[number, number]>(IMPERIAL_PALACE)
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
-  const [mapBounds, setMapBounds] = useState<{ n: number, s: number, e: number, w: number } | null>(null)
-  const [isLocating, setIsLocating] = useState(false)
+export default function EventSearchPage() {
   const [events, setEvents] = useState<SpaceEvent[]>([])
-  const [isLoadingEvents, setIsLoadingEvents] = useState(true)
-
-  const handleGetLocation = () => {
-    setIsLocating(true)
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const loc: [number, number] = [position.coords.latitude, position.coords.longitude]
-          setUserLocation(loc)
-          setCenter(loc)
-          setIsLocating(false)
-        },
-        (error) => {
-          alert("現在地を取得できませんでした。ブラウザの位置情報許可を確認してください。")
-          setIsLocating(false)
-        }
-      )
-    } else {
-      alert("お使いのブラウザは位置情報に対応していません。")
-      setIsLocating(false)
-    }
-  }
+  const [isLoading, setIsLoading] = useState(true)
+  
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedType, setSelectedType] = useState("all") 
+  const [selectedDifficulty, setSelectedDifficulty] = useState("all")
+  const [selectedOrganizer, setSelectedOrganizer] = useState("all")
+  const [showPastEvents, setShowPastEvents] = useState(false)
 
   useEffect(() => {
     async function loadEvents() {
-      setIsLoadingEvents(true)
+      setIsLoading(true)
       const data = await fetchEventsData()
-      const mapEvents = data.filter(
-        e => typeof e.lat === 'number' && typeof e.lng === 'number'
-      )
-      setEvents(mapEvents)
-      setIsLoadingEvents(false)
+      setEvents(data)
+      setIsLoading(false)
     }
     loadEvents()
   }, [])
 
-  const visibleEvents = useMemo(() => {
-    let filtered = events
-    if (mapBounds) {
-      filtered = filtered.filter(e =>
-        // ★ e.lat! のように「!」をつけて「絶対に空じゃない」とTypeScriptに教えます
-        e.lat! <= mapBounds.n && e.lat! >= mapBounds.s &&
-        e.lng! <= mapBounds.e && e.lng! >= mapBounds.w
-      )
-    }
-    const referencePoint = userLocation || center
-    return filtered.map(event => {
-      // ★ ここも event.lat! に修正
-      const distanceKm = calculateDistance(referencePoint[0], referencePoint[1], event.lat!, event.lng!)
-      const distanceStr = distanceKm < 1
-        ? `${Math.round(distanceKm * 1000)}m`
-        : `${distanceKm.toFixed(1)}km`
-      return { ...event, distanceKm, distanceStr }
-    }).sort((a, b) => a.distanceKm - b.distanceKm)
-  }, [events, mapBounds, userLocation, center])
+  const uniqueTypes = useMemo(() => {
+    const typesSet = new Set<string>()
+    events.forEach(event => {
+      if (event.type) {
+        String(event.type).split(',').forEach(t => {
+          const trimmed = t.trim()
+          if (trimmed) typesSet.add(trimmed)
+        })
+      }
+    })
+    
+    return Array.from(typesSet).sort((a, b) => {
+      if (a === "その他") return 1;
+      if (b === "その他") return -1;
+      return 0;
+    })
+  }, [events])
+
+  const handleReset = () => {
+    setSearchQuery("")
+    setSelectedType("all")
+    setSelectedDifficulty("all")
+    setSelectedOrganizer("all")
+    setShowPastEvents(false)
+  }
+
+  const filteredEvents = useMemo(() => {
+    const d = new Date()
+    const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+
+    const filtered = events.filter((event) => {
+      const title = event.title ? String(event.title).toLowerCase() : ""
+      const location = event.location ? String(event.location).toLowerCase() : ""
+      
+      const eventTypes = event.type ? String(event.type).split(',').map(t => t.trim()) : []
+      const difficulty = event.difficulty ? String(event.difficulty).trim() : ""
+      const query = searchQuery.toLowerCase().trim()
+
+      const isCosmoBaseEvent = event.organizer 
+        ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
+        : false
+      
+      // ★ 修正箇所1: 空（undefined）の時は強制的に false を返すようにしました
+      const isPartnerEvent = event.isPartner ? String(event.isPartner).toUpperCase() === "TRUE" : false
+
+      const targetDate = event.endDate || event.date || ""
+      const isPastEvent = targetDate !== "" && targetDate < todayStr
+
+      if (!showPastEvents && isPastEvent) {
+        return false
+      }
+
+      const matchQuery = !query || title.includes(query) || location.includes(query)
+      const matchType = selectedType === "all" || eventTypes.includes(selectedType)
+      
+      let matchDifficulty = true
+      if (selectedDifficulty !== "all") {
+        if (difficulty === "全レベル") {
+          matchDifficulty = true
+        } else if (selectedDifficulty === "初心者向け") {
+          matchDifficulty = difficulty === "初心者向け"
+        } else if (selectedDifficulty === "中級者向け") {
+          matchDifficulty = difficulty === "中級者向け" || difficulty === "中級者以上"
+        } else if (selectedDifficulty === "上級者向け") {
+          matchDifficulty = difficulty === "上級者向け" || difficulty === "中級者以上"
+        } else {
+          matchDifficulty = false
+        }
+      }
+
+      let matchOrganizer = true
+      if (selectedOrganizer === "cosmobase") {
+        matchOrganizer = isCosmoBaseEvent
+      } else if (selectedOrganizer === "partner") {
+        matchOrganizer = isPartnerEvent
+      } else if (selectedOrganizer === "others") {
+        matchOrganizer = !isCosmoBaseEvent && !isPartnerEvent
+      }
+
+      return matchQuery && matchType && matchDifficulty && matchOrganizer
+    })
+
+    return filtered.sort((a, b) => {
+      const dateA = a.date || ""
+      const dateB = b.date || ""
+      return dateA.localeCompare(dateB)
+    })
+
+  }, [events, searchQuery, selectedType, selectedDifficulty, selectedOrganizer, showPastEvents])
 
   return (
-    <ContentPageLayout title="地図で探す" level={4} levelTitle="体系化" logo="CBED">
-      <div className="flex flex-col lg:flex-row gap-6 relative z-20">
+    <ContentPageLayout title="詳細検索" level={4} levelTitle="体系化" logo="CBED">
+      <div className="glass-card rounded-xl p-5 md:p-6 mb-8 border border-border/50 shadow-sm">
         
-        <div className="flex-1 glass-card rounded-xl overflow-hidden flex flex-col h-[450px] md:h-[600px] relative border border-border/50 z-30">
-          <div className="absolute top-4 left-4 right-4 z-40 flex flex-col sm:flex-row justify-between items-stretch sm:items-start gap-3 pointer-events-none">
-            <div className="bg-background/90 backdrop-blur-md px-4 py-2 rounded-lg border border-border/50 pointer-events-auto shadow-lg w-fit">
-              <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
-                <MapIcon className="w-4 h-4 text-primary" />
-                全国のイベントマップ
-              </h3>
-            </div>
-            <Button
-              onClick={handleGetLocation}
-              disabled={isLocating}
-              className="pointer-events-auto bg-primary/90 hover:bg-primary text-primary-foreground shadow-lg backdrop-blur-md w-fit"
+        <div className="flex gap-3 mb-6">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input 
+              placeholder="イベント名や会場で検索..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 bg-secondary/50 border-border/50"
+            />
+          </div>
+          <Button 
+            variant="outline" 
+            onClick={handleReset}
+            className="shrink-0 text-muted-foreground hover:text-foreground"
+            title="絞り込みをリセット"
+          >
+            <RotateCcw className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">リセット</span>
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div>
+            <span className="text-xs font-semibold text-muted-foreground block mb-2">主催・運営</span>
+            <select 
+              value={selectedOrganizer}
+              onChange={(e) => setSelectedOrganizer(e.target.value)}
+              className="w-full h-10 px-3 rounded-lg border border-border/50 bg-secondary/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
             >
-              <Navigation className={`w-4 h-4 mr-2 ${isLocating ? "animate-pulse" : ""}`} />
-              現在地から探す
+              <option value="all">すべてのイベント</option>
+              <option value="cosmobase">Cosmo Base主催</option>
+              <option value="partner">パートナー主催</option>
+              <option value="others">外部イベント</option>
+            </select>
+          </div>
+
+          <div>
+            <span className="text-xs font-semibold text-muted-foreground block mb-2">イベントの形式</span>
+            <select 
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="w-full h-10 px-3 rounded-lg border border-border/50 bg-secondary/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            >
+              <option value="all">すべての形式</option>
+              {uniqueTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <span className="text-xs font-semibold text-muted-foreground block mb-2">対象者のレベル</span>
+            <select 
+              value={selectedDifficulty}
+              onChange={(e) => setSelectedDifficulty(e.target.value)}
+              className="w-full h-10 px-3 rounded-lg border border-border/50 bg-secondary/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+            >
+              <option value="all">すべてのレベル</option>
+              <option value="初心者向け">初心者向け</option>
+              <option value="中級者向け">中級者向け</option>
+              <option value="上級者向け">上級者向け</option>
+            </select>
+          </div>
+        </div>
+
+        <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer w-max hover:opacity-80 transition-opacity">
+          <input
+            type="checkbox"
+            checked={showPastEvents}
+            onChange={(e) => setShowPastEvents(e.target.checked)}
+            className="w-4 h-4 rounded border-border/50 text-primary focus:ring-primary/50 bg-secondary/50"
+          />
+          過去のイベントも表示する
+        </label>
+      </div>
+
+      <div className="space-y-4">
+        {isLoading ? (
+          <div className="flex flex-col justify-center items-center py-20 gap-4">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">イベントを読み込み中...</p>
+          </div>
+        ) : filteredEvents.length > 0 ? (
+          filteredEvents.map((event) => {
+            const displayTypes = event.type ? String(event.type).split(',').map(t => t.trim()) : []
+            
+            const isCosmoBaseEvent = event.organizer 
+              ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
+              : false
+            
+            // ★ 修正箇所2: リスト表示用の判定部分も同様に確実に false を返すように修正
+            const isPartnerEvent = event.isPartner ? String(event.isPartner).toUpperCase() === "TRUE" : false
+
+            let orgLabel = "外部イベント"
+            let orgStyle = "bg-secondary text-muted-foreground border-border/50"
+
+            if (isCosmoBaseEvent) {
+              orgLabel = "主催イベント"
+              orgStyle = "bg-primary/20 text-primary border-primary/30"
+            } else if (isPartnerEvent) {
+              orgLabel = "パートナー"
+              orgStyle = "bg-emerald-500/20 text-emerald-500 border-emerald-500/30"
+            }
+            
+            return (
+              <Link href={`/CBED/${event.id}`} key={event.id} className="block group">
+                <div className="glass-card rounded-xl p-5 border border-border/50 hover:bg-primary/5 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm hover:shadow-md">
+                  
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full border ${orgStyle}`}>
+                        {orgLabel}
+                      </span>
+
+                      {displayTypes.map((t, idx) => (
+                        <span key={idx} className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-accent/20 text-accent border border-accent/30">
+                          {t}
+                        </span>
+                      ))}
+                      {event.difficulty && (
+                        <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-secondary border border-border/50 text-muted-foreground">
+                          {event.difficulty}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                      {event.title}
+                    </h3>
+                  </div>
+
+                  <div className="flex flex-col gap-2 text-sm text-muted-foreground md:min-w-[200px] shrink-0">
+                    {event.date && (
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-primary" />
+                        <span>{event.endDate ? `${event.date} 〜 ${event.endDate}` : event.date} {event.time}</span>
+                      </div>
+                    )}
+                    {event.location && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-accent" />
+                        <span className="line-clamp-1">{event.location}</span>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              </Link>
+            )
+          })
+        ) : (
+          <div className="text-center py-20 text-muted-foreground bg-secondary/20 rounded-xl border border-dashed border-border/50">
+            <Filter className="w-12 h-12 mx-auto mb-4 opacity-20" />
+            <p className="font-medium">条件に一致するイベントが見つかりません。</p>
+            <p className="text-sm mt-1">フィルターをリセットするか、キーワードを変えてみてください。</p>
+            <Button variant="outline" onClick={handleReset} className="mt-4">
+              絞り込みをリセット
             </Button>
           </div>
-
-          <div className="flex-1 relative w-full h-full min-h-[400px] z-0">
-            {!isLoadingEvents && (
-              <DynamicMap
-                events={events}
-                center={center}
-                onBoundsChange={setMapBounds}
-              />
-            )}
-          </div>
-        </div>
-
-        <div className="w-full lg:w-80 flex flex-col gap-4 z-20">
-          <div className="glass-card rounded-xl p-5 h-[500px] md:h-[600px] flex flex-col border border-border/50">
-            <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-accent" />
-              表示中のイベント ({visibleEvents.length}件)
-            </h3>
-
-            <div className="space-y-3 overflow-y-auto pr-2 flex-1">
-              {isLoadingEvents ? (
-                <div className="flex justify-center items-center h-32">
-                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                </div>
-              ) : visibleEvents.length > 0 ? (
-                visibleEvents.map(event => (
-                  <Link href={`/CBED/${event.id}`} key={event.id} className="block group">
-                    <div className="p-3 rounded-lg border border-border/50 hover:bg-primary/10 transition-colors cursor-pointer relative">
-                      <h4 className="font-medium text-sm text-foreground mb-1 group-hover:text-primary transition-colors pr-5">
-                        {event.title}
-                      </h4>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground absolute right-3 top-3 group-hover:text-primary transition-colors" />
-
-                      <div className="flex flex-col gap-1 text-[11px] text-muted-foreground mt-2">
-                        {event.location && (
-                          <div className="flex items-center justify-between">
-                            <span className="line-clamp-1 mr-2">{event.location}</span>
-                            <span className="text-accent font-medium shrink-0">{event.distanceStr}</span>
-                          </div>
-                        )}
-                        {(event.date || event.time) && (
-                          <div className="bg-secondary/50 w-fit px-2 py-1 rounded">
-                            {event.date} {event.time}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-                ))
-              ) : (
-                <div className="text-sm text-muted-foreground text-center mt-10">
-                  このエリアにはイベントがありません。<br />地図を移動するか縮小してみてください。
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </ContentPageLayout>
   )
