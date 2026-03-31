@@ -1,4 +1,4 @@
-// app/CBED/map/page.tsx (※118行目付近の地図エリア部分のみ抜粋ですが、全体を上書きしてOKです)
+// app/CBED/map/page.tsx
 "use client"
 
 import { useEffect, useState, useMemo } from "react"
@@ -78,13 +78,15 @@ export default function MapSearchPage() {
     let filtered = events
     if (mapBounds) {
       filtered = filtered.filter(e =>
-        e.lat <= mapBounds.n && e.lat >= mapBounds.s &&
-        e.lng <= mapBounds.e && e.lng >= mapBounds.w
+        // ★ e.lat! のように「!」をつけて「絶対に空じゃない」とTypeScriptに教えます
+        e.lat! <= mapBounds.n && e.lat! >= mapBounds.s &&
+        e.lng! <= mapBounds.e && e.lng! >= mapBounds.w
       )
     }
     const referencePoint = userLocation || center
     return filtered.map(event => {
-      const distanceKm = calculateDistance(referencePoint[0], referencePoint[1], event.lat, event.lng)
+      // ★ ここも event.lat! に修正
+      const distanceKm = calculateDistance(referencePoint[0], referencePoint[1], event.lat!, event.lng!)
       const distanceStr = distanceKm < 1
         ? `${Math.round(distanceKm * 1000)}m`
         : `${distanceKm.toFixed(1)}km`
@@ -114,7 +116,6 @@ export default function MapSearchPage() {
             </Button>
           </div>
 
-          {/* ★ ここの div が潰れないように w-full h-full min-h-[400px] を追加 */}
           <div className="flex-1 relative w-full h-full min-h-[400px] z-0">
             {!isLoadingEvents && (
               <DynamicMap
