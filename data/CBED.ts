@@ -27,7 +27,7 @@ export interface SpaceEvent {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ※「ここにGASのURL」の部分は、今まで使っていたURLをそのまま貼り付けてください。
 // もし環境変数 (.env) に入れている場合は、 process.env.NEXT_PUBLIC_XXX のままでOKです。
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJU_Qq6TICMIAhDidiH2BYlBcZBvS_Uwy4wth9tT-02RYWkVP_AufdGo0PMAbAyrHKeZrE1x0laETY/pub?gid=0&single=true&output=csv"
+const SPREADSHEET_API_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJU_Qq6TICMIAhDidiH2BYlBcZBvS_Uwy4wth9tT-02RYWkVP_AufdGo0PMAbAyrHKeZrE1x0laETY/pub?gid=0&single=true&output=csv"
 
 export async function fetchEventsData(): Promise<SpaceEvent[]> {
   try {
