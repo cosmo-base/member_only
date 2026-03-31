@@ -14,28 +14,28 @@ const formCards = [
   {
     title: "パートナー情報修正",
     description: "登録済み情報の修正・更新が必要な場合はこちらから申請してください。",
-    href: "/member-only/partner/update",
+    href: "/member_only/partner/update",
     icon: FileEdit,
     note: "", //
   },
   {
     title: "CBL（Cosmo Base Library）資料格納",
     description: "パートナー様の資料をCosmo Base Libraryにアップロードいただけます。",
-    href: "/member-only/partner/library",
+    href: "/member_only/partner/library",
     icon: FolderUp,
     note: "", 
   },
   {
     title: "イベント登壇・イベントPR申請",
     description: "Cosmo Base主催オンラインイベントへの登壇希望やPR掲載のお申し込みはこちらから。",
-    href: "/member-only/partner/event",
+    href: "/member_only/partner/event",
     icon: Mic,
     note: "", 
   },
   {
     title: "アンケート確認・市場調査内容確認依頼",
     description: "参加者に対するアンケートの確認や、参加者に対する市場調査確認のご依頼はこちらからお願いします。",
-    href: "/member-only/partner/survey",
+    href: "/member_only/partner/survey",
     icon: ClipboardList,
     note: "", 
   },
