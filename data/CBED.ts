@@ -120,12 +120,35 @@ export async function fetchEventsData(): Promise<SpaceEvent[]> {
     }
 
     const text = await response.text();
+    let parsedEvents: SpaceEvent[] = [];
     
     try {
-      return JSON.parse(text) as SpaceEvent[];
+      parsedEvents = JSON.parse(text) as SpaceEvent[];
     } catch (e) {
-      return parseCSV(text);
+      parsedEvents = parseCSV(text);
     }
+
+    // 🌟 デバッグ：ビルド画面に読み込み状況を強制出力する！
+    console.log("=========================================");
+    console.log(`✅ 読み込んだ全イベント数: ${parsedEvents.length}件`);
+    
+    const fallbackEvents = parsedEvents.filter(e => String(e.id).includes("fallback"));
+    console.log(`⚠️ IDが読み取れなかった件数: ${fallbackEvents.length}件`);
+    
+    if (fallbackEvents.length > 0) {
+      console.log(`📝 IDが読めなかった最初のイベントのタイトル: 「${fallbackEvents[0].title}」`);
+    }
+
+    // 90番付近のデータを覗き見する
+    const event90 = parsedEvents.find(e => e.id == "90" || e.id === 90);
+    if (!event90) {
+      console.log("❌ ID「90」のイベントが見つかりません！");
+    } else {
+      console.log(`✅ ID「90」は無事に読み込めています: ${event90.title}`);
+    }
+    console.log("=========================================");
+
+    return parsedEvents;
     
   } catch (error) {
     console.error("CBED fetch error:", error);
