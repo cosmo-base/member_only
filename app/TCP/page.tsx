@@ -73,9 +73,6 @@ export default function Project1000FormPage() {
             ご入力ありがとうございます。限定案内やDiscordへのご招待をお送りいたします。<br />
             Cosmo Baseの宇宙の旅へようこそ！
           </p>
-          <Button onClick={() => window.location.reload()} variant="outline" className="w-full sm:w-auto">
-            続けて回答する
-          </Button>
         </div>
       </ContentPageLayout>
     )
