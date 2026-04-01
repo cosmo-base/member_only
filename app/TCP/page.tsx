@@ -65,7 +65,7 @@ export default function Project1000FormPage() {
 
   if (isSuccess) {
     return (
-      <ContentPageLayout title="1000人乗船プロジェクト" level={1} levelTitle="参加" logo="CBED">
+      <ContentPageLayout title="1000人乗船プロジェクト" level={0} levelTitle="" logo="">
         <div className="glass-card rounded-xl p-10 max-w-2xl mx-auto border border-primary/30 text-center animate-in fade-in zoom-in duration-500">
           <CheckCircle2 className="w-20 h-20 text-emerald-500 mx-auto mb-6" />
           <h2 className="text-3xl font-bold text-foreground mb-4">乗船手続きが完了しました！</h2>
@@ -82,7 +82,7 @@ export default function Project1000FormPage() {
   }
 
   return (
-    <ContentPageLayout title="1000人乗船プロジェクト" level={} levelTitle="" logo="">
+    <ContentPageLayout title="1000人乗船プロジェクト" level={0} levelTitle="" logo="">
       <div className="max-w-3xl mx-auto">
         
         <div className="mb-8 text-center">
