@@ -10,8 +10,8 @@ import Link from "next/link"
 // ★ 1. スライダー用の画像をすべて直接インポートする
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 import welcomeImg from "../public/images/slider-welcome.jpg"
-import openingImg from "../public/images/slider-opening.jpg"
-import eventsImg from "../public/images/slider-events.jpg"
+import openingImg from "../public/CBOP.png"
+import TCPImg from "../public/CB_TCP.png"
 import partnerImg from "../public/images/slider-partner.jpg"
 import feedbackImg from "../public/images/slider-feedback.jpg"
 
@@ -32,10 +32,10 @@ const slides = [
   },
   {
     id: 2,
-    title: "おすすめのイベント",
-    description: "今月注目の宇宙イベントをピックアップ。見逃せない観測会や講演会をチェック！",
-    image: eventsImg,
-    href: "/ittoide",
+    title: "",
+    description: "",
+    image: TCPImg,
+    href: "/tcp",
   },
   {
     id: 3,
