@@ -25,8 +25,8 @@ const slides = [
   },
   {
     id: 1,
-    title: "オープニング企画実施中",
-    description: "Cosmo Base参加者ページのオープンを記念して、様々な企画を実施中です。ぜひご参加ください！",
+    title: "",
+    description: "",
     image: openingImg,
     href: "https://cosmo-base.github.io/opening/",
   },
@@ -35,7 +35,7 @@ const slides = [
     title: "",
     description: "",
     image: TCPImg,
-    href: "/tcp",
+    href: "/TCP",
   },
   {
     id: 3,
