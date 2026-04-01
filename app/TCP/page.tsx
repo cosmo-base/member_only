@@ -1,4 +1,4 @@
-// app/TCP/page.tsx (※お好みのパスで作成してください)
+// app/TCP/page.tsx
 "use client"
 
 import { useState } from "react"
@@ -82,7 +82,7 @@ export default function Project1000FormPage() {
   }
 
   return (
-    <ContentPageLayout title="1000人乗船プロジェクト" level={1} levelTitle="参加" logo="CBED">
+    <ContentPageLayout title="1000人乗船プロジェクト" level={} levelTitle="" logo="">
       <div className="max-w-3xl mx-auto">
         
         <div className="mb-8 text-center">
@@ -111,7 +111,7 @@ export default function Project1000FormPage() {
               <label className="block text-sm font-bold text-foreground mb-2">
                 フリガナ <span className="text-red-500 ml-1">*</span>
               </label>
-              <Input required type="text" name="kana" value={formData.kana} onChange={handleChange} placeholder="ウチュウ タロウ" className="bg-secondary/50" />
+              <Input required type="text" name="kana" value={formData.kana} onChange={handleChange} placeholder="コスモ タロウ" className="bg-secondary/50" />
             </div>
 
             <div>
@@ -142,7 +142,7 @@ export default function Project1000FormPage() {
               <label className="block text-sm font-bold text-foreground mb-2">
                 主な活動地域 <span className="text-red-500 ml-1">*</span>
               </label>
-              <Input required type="text" name="region" value={formData.region} onChange={handleChange} placeholder="東京都、オンライン中心 など" className="bg-secondary/50" />
+              <Input required type="text" name="region" value={formData.region} onChange={handleChange} placeholder="東京都、種子島 など" className="bg-secondary/50" />
             </div>
 
             <div>
