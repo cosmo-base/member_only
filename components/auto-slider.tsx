@@ -7,12 +7,12 @@ import Image from "next/image"
 import Link from "next/link"
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ★ 1. スライダー用の画像をすべて直接インポートする
+// スライダー用の画像をすべて直接インポートする
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 import welcomeImg from "../public/images/slider-welcome.jpg"
 import openingImg from "../public/CBOP.png"
 import TCPImg from "../public/CB_TCP.png"
-import partnerImg from "../public/images/slider-partner.jpg"
+import partnerImg from "../public/CBAstroKIT.png"
 import feedbackImg from "../public/images/slider-feedback.jpg"
 
 const slides = [
@@ -39,8 +39,8 @@ const slides = [
   },
   {
     id: 3,
-    title: "パートナーからのお知らせ",
-    description: "Cosmo Baseのパートナー企業・団体からの最新情報をお届けします。",
+    title: "",
+    description: "",
     image: partnerImg,
     href: "https://fsifofficial.github.io/CosmoBase/partners",
   },
@@ -123,7 +123,7 @@ export function AutoSlider() {
           >
             <div className="relative aspect-[1280/670] overflow-hidden rounded-xl">
               <Image
-                src={slide.image} // ★ 3. ここには既にインポートされたオブジェクトが渡されます
+                src={slide.image}
                 alt={slide.title}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
