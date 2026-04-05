@@ -1,5 +1,5 @@
 // partner/page.tsx
-import {  FileEdit,  FolderUp,  Mic,  ClipboardList,Person,} from "lucide-react"
+import {  FileEdit,  FolderUp,  Mic,  ClipboardList,Users} from "lucide-react"
 import { StarBackground } from "@/components/star-background"
 import { Header } from "@/components/header"
 import { AdminNotice } from "@/components/admin-notice"
@@ -38,7 +38,7 @@ const formCards = [
     title: "メンバー申請",
     description: "Discordでパートナー限定チャンネルに招待いたします。こちらのフォームより申請をお願いします。",
     href: "/member_only/partner/member",
-    icon: Person,
+    icon: Users,
     note: "", 
   },
 ]
