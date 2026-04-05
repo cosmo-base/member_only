@@ -1,10 +1,5 @@
 // partner/page.tsx
-import {
-  FileEdit,
-  FolderUp,
-  Mic,
-  ClipboardList,
-} from "lucide-react"
+import {  FileEdit,  FolderUp,  Mic,  ClipboardList,Person,} from "lucide-react"
 import { StarBackground } from "@/components/star-background"
 import { Header } from "@/components/header"
 import { AdminNotice } from "@/components/admin-notice"
@@ -37,6 +32,13 @@ const formCards = [
     description: "参加者に対するアンケートの確認や、参加者に対する市場調査確認のご依頼はこちらからお願いします。",
     href: "/member_only/partner/survey",
     icon: ClipboardList,
+    note: "", 
+  },
+  {
+    title: "メンバー申請",
+    description: "Discordでパートナー限定チャンネルに招待いたします。こちらのフォームより申請をお願いします。",
+    href: "/member_only/partner/member",
+    icon: Person,
     note: "", 
   },
 ]
