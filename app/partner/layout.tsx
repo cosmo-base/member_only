@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: {
-    absolute: " | Cosmo Baseパートナーページ", 
+    absolute: "Cosmo Baseパートナーページ", 
   },
 }
 
