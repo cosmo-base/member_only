@@ -55,7 +55,7 @@ export default function PartnerDashboard() {
           {/* Welcome Section */}
           <div className="text-center mb-10">
             <h1 className="text-3xl md:text-4xl font-bold mb-3 text-balance">
-              パートナーマイページ
+              パートナーページ
             </h1>
             <p className="text-muted-foreground text-lg">
               宇宙を、楽しむ。
