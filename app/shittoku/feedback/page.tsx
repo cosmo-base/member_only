@@ -246,7 +246,7 @@ export default function ShittokuSurveyPage() {
               <p className="text-xs text-muted-foreground mb-3">受付や進行の導線はいかがでしたか？</p>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-1 gap-3">
               {[
                 "スムーズだった",
                 "概ね問題なかった",
