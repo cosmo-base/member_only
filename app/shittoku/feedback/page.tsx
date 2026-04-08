@@ -252,7 +252,7 @@ export default function ShittokuSurveyPage() {
                 "概ね問題なかった",
                 "改善の余地がある"
               ].map((option) => (
-                <label key={option} className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-secondary/20 hover:bg-secondary/50 cursor-pointer transition-colors w-fit pr-6">
+                <label key={option} className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-secondary/20 hover:bg-secondary/50 cursor-pointer transition-colors">
                   <input
                     required
                     type="radio"
