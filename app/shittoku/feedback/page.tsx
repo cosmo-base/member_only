@@ -128,12 +128,12 @@ export default function ShittokuSurveyPage() {
             <label className="flex items-center text-sm font-bold text-foreground mb-3">
               イベント名称 <RequiredBadge />
             </label>
-            <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-1 gap-3">
               {[
                 "Cosmo Baseで宇宙知っトク#002(4/8)"
                 // 今後イベントが増えたらここに追加できます
               ].map((option) => (
-                <label key={option} className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-secondary/20 hover:bg-secondary/50 cursor-pointer transition-colors w-fit pr-6">
+                <label key={option} className="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-secondary/20 hover:bg-secondary/50 cursor-pointer transition-colors">
                   <input
                     required
                     type="radio"
