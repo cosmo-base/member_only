@@ -156,7 +156,7 @@ export default function ShittokuSurveyPage() {
             <label className="flex items-center text-base font-bold text-foreground mb-3">
               1. 今回のイベントの満足度を教えてください。 <RequiredBadge />
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-1 gap-3">
               {[
                 "5：非常に満足",
                 "4：満足",
