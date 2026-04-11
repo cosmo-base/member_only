@@ -144,13 +144,12 @@ export default function SpaceTypeDiagnosis() {
 
   const renderScaleQuestion = (q: any, index: number, qsList: any[]) => {
     // 5択の円形ボタンデータ (左が+2, 右が-2となるように配置)
-    // q.invertがtrueの場合は、左を「そう思う(内部値-2)」、右を「思わない(内部値+2)」にする
     const circleOptions = [
-      { val: q.invert ? -2 : 2, size: 'w-12 h-12', label: '+2' },
+      { val: q.invert ? -2 : 2, size: 'w-12 h-12', label: 'とてもそう思う' },
       { val: q.invert ? -1 : 1, size: 'w-10 h-10', label: '' },
       { val: 0, size: 'w-8 h-8', label: '0' }, // 真ん中は最も小さい
       { val: q.invert ? 1 : -1, size: 'w-10 h-10', label: '' },
-      { val: q.invert ? 2 : -2, size: 'w-12 h-12', label: '-2' },
+      { val: q.invert ? 2 : -2, size: 'w-12 h-12', label: '全くそう思わない' },
     ];
 
     return (
@@ -237,7 +236,7 @@ export default function SpaceTypeDiagnosis() {
         {step === 'loading' && (
           <div className="flex flex-col items-center justify-center min-h-[80vh] text-center animate-pulse">
             <div className="w-16 h-16 border-4 border-[#EEEEFF] border-t-transparent rounded-full animate-spin mb-6"></div>
-            <p className="text-lg font-bold">軌道計算中...</p>
+            <p className="text-lg font-bold">診断中...</p>
             <p className="text-sm opacity-70 mt-2">あなたの宇宙の関わり方を分析しています</p>
           </div>
         )}
@@ -246,19 +245,25 @@ export default function SpaceTypeDiagnosis() {
           const { typeStr, scores } = calculateResult();
           const tData = typesData[typeStr];
           
-          // 左をR, V, X, Iに固定するためのスライダー計算
-          const getBarPos = (score: number, isLeftNegative: boolean) => {
-            // スコアは-8 〜 +8。
-            // isLeftNegativeがfalseの場合 (R, V, I): スコア+側が左(0%)
-            // isLeftNegativeがtrueの場合 (X): スコア-側が左(0%) ※元のロジックでMが+, Xが-のため
-            return isLeftNegative ? ((score + 8) / 16) * 100 : ((8 - score) / 16) * 100;
+          // 新しいパラメーター計算ロジック
+          const getAxisResult = (score: number, leftLabel: string, rightLabel: string, axisName: string, isLeftNegative: boolean) => {
+            // スコア(-8〜8)から左側の割合を計算
+            const leftRatio = isLeftNegative ? ((8 - score) / 16) * 100 : ((score + 8) / 16) * 100;
+            const dominant = leftRatio >= 50 ? leftLabel : rightLabel;
+            const perc = leftRatio >= 50 ? Math.round(leftRatio) : Math.round(100 - leftRatio);
+            
+            let strength = 'バランス型';
+            if (perc >= 80) strength = 'かなり強め';
+            else if (perc >= 60) strength = '強め';
+
+            return { axisName, leftLabel, rightLabel, dominant, perc, strength };
           };
 
           const axisResults = [
-            { left: 'R (ロマン)', right: 'P (実用)', pos: getBarPos(scores.rp, false) },
-            { left: 'V (受動)', right: 'A (能動)', pos: getBarPos(scores.va, false) },
-            { left: 'X (マクロ)', right: 'M (ミクロ)', pos: getBarPos(scores.mx, true) },
-            { left: 'I (個人)', right: 'S (社会)', pos: getBarPos(scores.is, false) },
+            getAxisResult(scores.rp, 'R', 'P', '関心', false),
+            getAxisResult(scores.va, 'V', 'A', '行動', false),
+            getAxisResult(scores.mx, 'X', 'M', '視点', true),
+            getAxisResult(scores.is, 'I', 'S', '距離', false),
           ];
 
           return (
@@ -281,31 +286,33 @@ export default function SpaceTypeDiagnosis() {
                 {tData.catchphrase}
               </div>
 
-              {/* 新しい分析パラメーターUI (スライダー風) */}
-              <div className="bg-[#111144] p-6 rounded-xl mb-8 border border-[#EEEEFF]/10">
-                <h3 className="font-bold border-b border-[#EEEEFF]/20 pb-2 mb-6 text-center">分析パラメーター</h3>
-                <div className="space-y-6">
+              {/* 改修版：分析パラメーターUI (-が灰色、=が白色で繋がったバー) */}
+              <div className="bg-[#111144] p-5 sm:p-6 rounded-xl mb-8 border border-[#EEEEFF]/10 shadow-lg">
+                <h3 className="font-bold border-b border-[#EEEEFF]/20 pb-3 mb-6 text-center text-lg">分析パラメーター</h3>
+                <div className="space-y-4 sm:space-y-5">
                   {axisResults.map((ar, idx) => (
-                    <div key={idx} className="flex items-center text-xs sm:text-sm font-bold">
-                      <span className="w-20 text-right opacity-90">{ar.left}</span>
-                      <div className="flex-1 mx-3 relative h-[6px] bg-[#000033] rounded-full">
-                        {/* 中央の基準線 */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-0.5 h-3 bg-[#EEEEFF]/20"></div>
-                        {/* 現在地のインジケーター */}
-                        <div 
-                          className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-[#FCE877] rounded-full shadow-[0_0_8px_#FCE877] transition-all duration-1000 z-10" 
-                          style={{ left: `calc(${ar.pos}% - 8px)` }}
-                        />
-                        {/* 軌跡のバー */}
-                        <div 
-                          className="absolute top-0 bottom-0 bg-[#EEEEFF]/30 rounded-full transition-all duration-1000"
-                          style={{
-                            left: ar.pos < 50 ? `${ar.pos}%` : '50%',
-                            right: ar.pos > 50 ? `${100 - ar.pos}%` : '50%'
-                          }}
-                        />
+                    <div key={idx} className="flex items-center text-sm sm:text-base font-bold">
+                      <span className="w-10 sm:w-12 opacity-70 font-normal text-xs sm:text-sm">{ar.axisName}</span>
+                      
+                      <span className={`w-5 sm:w-6 text-right ${ar.dominant === ar.leftLabel ? 'text-[#FCE877]' : 'text-[#EEEEFF]'}`}>
+                        {ar.leftLabel}
+                      </span>
+                      
+                      <div className="flex-1 mx-2 sm:mx-3 h-3 bg-[#EEEEFF]/20 rounded-full overflow-hidden relative shadow-inner">
+                        {ar.dominant === ar.leftLabel ? (
+                          <div className="absolute top-0 left-0 h-full bg-[#EEEEFF] transition-all duration-1000" style={{ width: `${ar.perc}%` }} />
+                        ) : (
+                          <div className="absolute top-0 right-0 h-full bg-[#EEEEFF] transition-all duration-1000" style={{ width: `${ar.perc}%` }} />
+                        )}
                       </div>
-                      <span className="w-20 text-left opacity-90">{ar.right}</span>
+                      
+                      <span className={`w-5 sm:w-6 text-left ${ar.dominant === ar.rightLabel ? 'text-[#FCE877]' : 'text-[#EEEEFF]'}`}>
+                        {ar.rightLabel}
+                      </span>
+                      
+                      <span className="w-28 sm:w-32 text-[10px] sm:text-xs text-right opacity-90 font-normal tracking-tighter sm:tracking-normal">
+                        ({ar.dominant} {ar.strength}({ar.perc}%))
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -331,18 +338,26 @@ export default function SpaceTypeDiagnosis() {
                 </div>
               </div>
 
-              {/* 各タイプの詳細 note リンク (リッチ化) */}
-              <div className="mt-10">
-                <a 
-                  href={`https://note.com/cosmobase/n/type_${typeStr.toLowerCase()}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="group flex flex-col items-center justify-center bg-gradient-to-br from-[#2D2D66] to-[#111144] border border-[#EEEEFF]/30 p-6 rounded-2xl shadow-xl hover:shadow-[0_0_20px_rgba(238,238,255,0.15)] hover:border-[#EEEEFF]/60 transition-all duration-300"
-                >
-                  <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">📖</span>
-                  <span className="text-lg font-bold mb-1">各タイプの詳細をnoteで読む</span>
-                  <span className="text-sm opacity-70">さらに詳しい解説や、同じタイプの人の傾向をチェック</span>
-                </a>
+              {/* 改修版：各タイプの詳細 note リンク (リッチなボタン) */}
+              <div className="mt-12 mb-8 text-center bg-[#111144] p-6 sm:p-8 rounded-2xl border border-[#EEEEFF]/20 shadow-xl relative overflow-hidden">
+                <div className="relative z-10">
+                  <h3 className="text-xl font-bold mb-3">さらに詳しい分析を知りたい方へ</h3>
+                  <p className="text-sm opacity-80 mb-6 leading-relaxed">
+                    各タイプの詳細な解説や、同じタイプの人の傾向を<br className="hidden sm:block" />noteで公開しています。
+                  </p>
+                  <a 
+                    href={`https://note.com/cosmobase/n/type_${typeStr.toLowerCase()}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="inline-flex items-center justify-center gap-2 bg-[#2cb696] text-white font-bold py-4 px-8 rounded-full shadow-[0_4px_20px_rgba(44,182,150,0.4)] hover:scale-105 hover:bg-[#259c80] transition-all duration-300 w-full sm:w-auto group"
+                  >
+                    <span className="bg-white text-[#2cb696] text-xs font-black px-2 py-1 rounded-md tracking-wider group-hover:scale-110 transition-transform">note</span>
+                    <span className="text-base sm:text-lg">で詳細を読む</span>
+                    <svg className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                </div>
               </div>
 
               {/* Cosmo Baseへの導線CTA */}
