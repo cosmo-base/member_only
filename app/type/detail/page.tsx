@@ -6,7 +6,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Menu, X, Users, BookOpen, Database, Globe, HelpCircle, Twitter, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
+import footerLogo from "../../../public/images/cosmo-base-logo.png"
 import logoImg from "../../../public/images/cosmo-base-logo.png"
 import cbIcon from "../../../public/CB_icon.png"
 import xIcon from "../../../public/X.png"
