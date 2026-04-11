@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { Menu, X, Users, BookOpen, Globe, HelpCircle } from "lucide-react"
+import { Menu, X, Users, BookOpen, Globe, HelpCircle, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 import logoImg from "../../../public/images/cosmo-base-logo.png"
@@ -386,9 +386,15 @@ export default function SpaceTypeDiagnosis() {
 
         {step === 'page3' && (
           <div className="animate-fade-in pb-20">
-            <h2 className="text-xl font-bold mb-6 text-center">質問 (3/3ページ)</h2>
+            <h2 className="text-xl font-bold mb-3 text-center">質問 (3/3ページ)</h2>
+            <div className="bg-[#83CBEB]/10 border border-[#83CBEB]/30 rounded-xl p-4 mb-8 flex items-start gap-3">
+              <Info className="w-5 h-5 text-[#83CBEB] shrink-0 mt-0.5" />
+              <p className="text-sm text-[#EEEEFF]/90 leading-relaxed">
+                最後のページです！<br className="sm:hidden" />ここからは、以下の考え方に<br className="hidden sm:block" /><strong>「どれくらい当てはまるか」</strong>を直感で選んでください。
+              </p>
+            </div>
+
             {page3Qs.map((q, i) => renderScaleQuestion(q, i, page3Qs))}
-            {/* ★修正: グラデーションを廃止し、水色のシンプルなボタンに変更 */}
             <button disabled={!isPageComplete(page3Qs)} onClick={handleFinish} className={`w-full py-4 rounded-full font-bold transition-all ${isPageComplete(page3Qs) ? 'bg-[#83CBEB] hover:bg-[#6CB6D9] text-[#000033] shadow-[0_0_20px_rgba(131,203,235,0.4)]' : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'}`}>
               結果を見る
             </button>
@@ -516,17 +522,17 @@ export default function SpaceTypeDiagnosis() {
                 </div>
               </div>
 
-              {/* Cosmo Baseへの導線CTA */}
+              {/* Cosmo Baseの導線CTA */}
               <div className="mt-8 p-6 border-2 border-[#EEEEFF] rounded-2xl text-center bg-gradient-to-b from-[#111144] to-[#000033] shadow-2xl relative overflow-hidden">
-                <h3 className="text-2xl font-bold mb-3 z-10 relative">Cosmo Baseに参加する</h3>
-                <p className="text-sm mb-6 opacity-90 z-10 relative">宇宙を「遠い存在」から「自分の選択肢」へ。<br/>専門知識ゼロでも歓迎のオープンコミュニティです。</p>
+                <h3 className="text-2xl font-bold mb-3 z-10 relative">Cosmo Baseで共有する</h3>
+                <p className="text-sm mb-6 opacity-90 z-10 relative">#雑談 チャンネルであなたのタイプを共有してみましょう。</p>
                 <a 
-                  href="https://discord.gg/4tW8RcFkrK" 
+                  href="https://discord.gg/XW7CwvQmju" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="relative z-10 inline-block bg-[#EEEEFF] text-[#000033] font-bold py-4 px-8 rounded-full hover:scale-105 transition-transform"
                 >
-                  Discordに参加する (無料)
+                  Discordへ
                 </a>
               </div>
 
