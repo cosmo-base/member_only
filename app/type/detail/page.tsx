@@ -1,12 +1,13 @@
+// app/type/detail/page.tsx
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { Menu, X, Users, BookOpen, Database, Globe, HelpCircle, Twitter, ChevronLeft } from "lucide-react"
+import { Menu, X, Users, BookOpen, Globe, HelpCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import footerLogo from "../../../public/images/cosmo-base-logo.png"
+
 import logoImg from "../../../public/images/cosmo-base-logo.png"
 import cbIcon from "../../../public/CB_icon.png"
 import xIcon from "../../../public/X.png"
@@ -154,13 +155,13 @@ export default function SpaceTypeDiagnosis() {
   );
 
   const renderScaleQuestion = (q: any, index: number, qsList: any[]) => {
-    // 5択の円形ボタンデータ (左が+2, 右が-2となるように配置)
+    // 5択の円形ボタンデータ
     const circleOptions = [
-      { val: q.invert ? -2 : 2, size: 'w-12 h-12', label: 'とてもそう思う' },
-      { val: q.invert ? -1 : 1, size: 'w-10 h-10', label: '' },
-      { val: 0, size: 'w-8 h-8', label: '0' }, // 真ん中は最も小さい
-      { val: q.invert ? 1 : -1, size: 'w-10 h-10', label: '' },
-      { val: q.invert ? 2 : -2, size: 'w-12 h-12', label: '全くそう思わない' },
+      { val: q.invert ? -2 : 2, size: 'w-12 h-12' },
+      { val: q.invert ? -1 : 1, size: 'w-10 h-10' },
+      { val: 0, size: 'w-8 h-8' },
+      { val: q.invert ? 1 : -1, size: 'w-10 h-10' },
+      { val: q.invert ? 2 : -2, size: 'w-12 h-12' },
     ];
 
     return (
@@ -168,8 +169,8 @@ export default function SpaceTypeDiagnosis() {
         <p className="font-bold mb-6 text-center leading-relaxed">{q.text}</p>
         
         <div className="flex justify-between items-center px-1 sm:px-4">
-          <div className="text-center w-10">
-            <span className="text-lg font-bold text-[#EEEEFF]">+2</span>
+          <div className="text-center w-14 sm:w-20 shrink-0">
+            <span className="text-[10px] sm:text-xs font-bold text-[#EEEEFF] leading-tight block">とても<br/>そう思う</span>
           </div>
 
           <div className="flex items-center justify-center gap-2 sm:gap-4 flex-1">
@@ -179,9 +180,9 @@ export default function SpaceTypeDiagnosis() {
                 <button
                   key={i}
                   onClick={() => handleSelect(q.id, opt.val, q.axis, qsList, index)}
-                  className={`rounded-full transition-all duration-300 flex items-center justify-center ${opt.size} ${
+                  className={`rounded-full transition-all duration-300 flex items-center justify-center shrink-0 ${opt.size} ${
                     isSelected 
-                      ? 'bg-[#83CBEB] border-none shadow-[0_0_15px_rgba(252,232,119,0.6)] scale-110' 
+                      ? 'bg-[#83CBEB] border-none shadow-[0_0_15px_rgba(131,203,235,0.6)] scale-110' 
                       : 'bg-transparent border-2 border-[#EEEEFF]/30 hover:border-[#EEEEFF]/70'
                   }`}
                 />
@@ -189,8 +190,8 @@ export default function SpaceTypeDiagnosis() {
             })}
           </div>
 
-          <div className="text-center w-10">
-            <span className="text-lg font-bold text-[#EEEEFF]/60">-2</span>
+          <div className="text-center w-14 sm:w-20 shrink-0">
+            <span className="text-[10px] sm:text-xs font-bold text-[#EEEEFF]/60 leading-tight block">全くそう<br/>思わない</span>
           </div>
         </div>
       </div>
@@ -202,24 +203,17 @@ export default function SpaceTypeDiagnosis() {
 
   return (
     <div className="min-h-screen bg-[#000033] text-[#EEEEFF] font-sans flex flex-col">
-      <header className="p-4 border-b border-[#EEEEFF]/20 text-center">
-         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Back button + Logo - Left */}
-        <div className="flex items-center gap-2">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            <Image
-              src={logoImg}
-              alt="Cosmo Base"
-              className="h-10 w-auto"
-              priority
-              loading="eager"
-            />
-            <span className="text-xs text-muted-foreground border-l border-border pl-3 hidden sm:block">
-              参加者ページ
-            </span>
-          </Link>
-        </div>
+      <header className="p-4 border-b border-[#EEEEFF]/20 text-center relative z-50 bg-[#000033]">
+         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between relative">
+           <div className="flex items-center gap-2">
+             {/* Logo */}
+             <Link href="/" className="flex items-center gap-3">
+               <Image src={logoImg} alt="Cosmo Base" className="h-10 w-auto" priority loading="eager"/>
+               <span className="text-xs text-muted-foreground border-l border-border pl-3 hidden sm:block">
+                 参加者ページ
+               </span>
+             </Link>
+           </div>
 
         {/* Right side buttons */}
         <div className="flex items-center gap-2">
@@ -254,7 +248,7 @@ export default function SpaceTypeDiagnosis() {
       {/* Dropdown menu - right half only */}
       {isMenuOpen && (
         <div className="absolute top-full right-0 w-full sm:w-[320px] bg-background/95 backdrop-blur-xl border-b border-l border-border/50 rounded-bl-2xl shadow-2xl animate-in slide-in-from-top-2 fade-in duration-200">
-          <nav className="p-3">
+          <nav className="p-3 text-left">
             <ul className="flex flex-col gap-1">
 
               <li>
@@ -394,7 +388,8 @@ export default function SpaceTypeDiagnosis() {
           <div className="animate-fade-in pb-20">
             <h2 className="text-xl font-bold mb-6 text-center">質問 (3/3ページ)</h2>
             {page3Qs.map((q, i) => renderScaleQuestion(q, i, page3Qs))}
-            <button disabled={!isPageComplete(page3Qs)} onClick={handleFinish} className={`w-full py-4 rounded-full font-bold transition-all ${isPageComplete(page3Qs) ? 'bg-gradient-to-r from-[#83CBEB] to-[#F5E69C] text-[#000033] shadow-[0_0_20px_rgba(252,232,119,0.4)]' : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'}`}>
+            {/* ★修正: グラデーションを廃止し、水色のシンプルなボタンに変更 */}
+            <button disabled={!isPageComplete(page3Qs)} onClick={handleFinish} className={`w-full py-4 rounded-full font-bold transition-all ${isPageComplete(page3Qs) ? 'bg-[#83CBEB] hover:bg-[#6CB6D9] text-[#000033] shadow-[0_0_20px_rgba(131,203,235,0.4)]' : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'}`}>
               結果を見る
             </button>
           </div>
@@ -412,9 +407,7 @@ export default function SpaceTypeDiagnosis() {
           const { typeStr, scores } = calculateResult();
           const tData = typesData[typeStr];
           
-          // 新しいパラメーター計算ロジック
           const getAxisResult = (score: number, leftLabel: string, rightLabel: string, axisName: string, isLeftNegative: boolean) => {
-            // スコア(-8〜8)から左側の割合を計算
             const leftRatio = isLeftNegative ? ((8 - score) / 16) * 100 : ((score + 8) / 16) * 100;
             const dominant = leftRatio >= 50 ? leftLabel : rightLabel;
             const perc = leftRatio >= 50 ? Math.round(leftRatio) : Math.round(100 - leftRatio);
@@ -427,10 +420,10 @@ export default function SpaceTypeDiagnosis() {
           };
 
           const axisResults = [
-            getAxisResult(scores.rp, 'R', 'P', '関心', false),
-            getAxisResult(scores.va, 'V', 'A', '行動', false),
-            getAxisResult(scores.mx, 'X', 'M', '視点', true),
-            getAxisResult(scores.is, 'I', 'S', '距離', false),
+            getAxisResult(scores.rp, 'ロマン', '実用', '関心', false),
+            getAxisResult(scores.va, '受動', '能動', '行動', false),
+            getAxisResult(scores.mx, 'ミクロ', 'マクロ', '視点', true),
+            getAxisResult(scores.is, '個人', '社会', '距離', false),
           ];
 
           return (
@@ -456,9 +449,9 @@ export default function SpaceTypeDiagnosis() {
                 <div className="space-y-4 sm:space-y-5">
                   {axisResults.map((ar, idx) => (
                     <div key={idx} className="flex items-center text-sm sm:text-base font-bold">
-                      <span className="w-10 sm:w-12 opacity-70 font-normal text-xs sm:text-sm">{ar.axisName}</span>
+                      <span className="w-10 sm:w-12 opacity-70 font-normal text-xs sm:text-sm shrink-0">{ar.axisName}</span>
                       
-                      <span className={`w-5 sm:w-6 text-right ${ar.dominant === ar.leftLabel ? 'text-[#83CBEB]' : 'text-[#EEEEFF]'}`}>
+                      <span className={`w-14 sm:w-16 text-right shrink-0 ${ar.dominant === ar.leftLabel ? 'text-[#83CBEB]' : 'text-[#EEEEFF]'}`}>
                         {ar.leftLabel}
                       </span>
                       
@@ -470,12 +463,12 @@ export default function SpaceTypeDiagnosis() {
                         )}
                       </div>
                       
-                      <span className={`w-5 sm:w-6 text-left ${ar.dominant === ar.rightLabel ? 'text-[#83CBEB]' : 'text-[#EEEEFF]'}`}>
+                      <span className={`w-14 sm:w-16 text-left shrink-0 ${ar.dominant === ar.rightLabel ? 'text-[#83CBEB]' : 'text-[#EEEEFF]'}`}>
                         {ar.rightLabel}
                       </span>
                       
-                      <span className="w-28 sm:w-32 text-[10px] sm:text-xs text-right opacity-90 font-normal tracking-tighter sm:tracking-normal">
-                        ({ar.dominant} {ar.strength}({ar.perc}%))
+                      <span className="w-24 sm:w-32 text-[10px] sm:text-xs text-right opacity-90 font-normal tracking-tighter sm:tracking-normal shrink-0">
+                        ({ar.strength}: {ar.perc}%)
                       </span>
                     </div>
                   ))}
@@ -502,7 +495,7 @@ export default function SpaceTypeDiagnosis() {
                 </div>
               </div>
 
-              {/* 改修版：各タイプの詳細 note リンク (リッチなボタン) */}
+              {/* 各タイプの詳細 note リンク */}
               <div className="mt-12 mb-8 text-center bg-[#111144] p-6 sm:p-8 rounded-2xl border border-[#EEEEFF]/20 shadow-xl relative overflow-hidden">
                 <div className="relative z-10">
                   <h3 className="text-xl font-bold mb-3">さらに詳しい分析を知りたい方へ</h3>
@@ -515,8 +508,7 @@ export default function SpaceTypeDiagnosis() {
                     rel="noopener noreferrer" 
                     className="inline-flex items-center justify-center gap-2 bg-[#2cb696] text-white font-bold py-4 px-8 rounded-full shadow-[0_4px_20px_rgba(44,182,150,0.4)] hover:scale-105 hover:bg-[#259c80] transition-all duration-300 w-full sm:w-auto group"
                   >
-                    <span className="bg-white text-[#2cb696] text-xs font-black px-2 py-1 rounded-md tracking-wider group-hover:scale-110 transition-transform">note</span>
-                    <span className="text-base sm:text-lg">で詳細を読む</span>
+                    <span className="text-base sm:text-lg">詳細を読む</span>
                     <svg className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
@@ -548,14 +540,14 @@ export default function SpaceTypeDiagnosis() {
         })()}
         </div>
       </main>
-      <footer className="p-6 border-t border-[#EEEEFF]/20 text-center text-sm opacity-70">
+      <footer className="p-6 border-t border-[#EEEEFF]/20 text-center text-sm opacity-70 bg-[#000033]">
         <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-4">
             <Image
-              src={footerLogo}
+              src={logoImg}
               alt="Cosmo Base"
               className="h-8 w-auto opacity-70"
             />
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-[#EEEEFF] opacity-70">
               &copy; 2026 Cosmo Base. All rights reserved.
             </p>
           </div>
