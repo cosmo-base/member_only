@@ -1,6 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import Image from "next/image"
+import { Menu, X, Users, BookOpen, Database, Globe, HelpCircle, Twitter, ChevronLeft } from "lucide-react"
+import { Button } from "@/components/ui/button"
+
+import logoImg from "../public/images/cosmo-base-logo.png"
+import cbIcon from "../public/CB_icon.png"
+import xIcon from "../public/X.png"
+import instaIcon from "../public/Instagram.png"
+import noteIcon from "../public/note.png"
 
 // --- データ定義 ---
 
@@ -170,7 +181,7 @@ export default function SpaceTypeDiagnosis() {
                   onClick={() => handleSelect(q.id, opt.val, q.axis, qsList, index)}
                   className={`rounded-full transition-all duration-300 flex items-center justify-center ${opt.size} ${
                     isSelected 
-                      ? 'bg-[#FCE877] border-none shadow-[0_0_15px_rgba(252,232,119,0.6)] scale-110' 
+                      ? 'bg-[#83CBEB] border-none shadow-[0_0_15px_rgba(252,232,119,0.6)] scale-110' 
                       : 'bg-transparent border-2 border-[#EEEEFF]/30 hover:border-[#EEEEFF]/70'
                   }`}
                 />
@@ -186,17 +197,173 @@ export default function SpaceTypeDiagnosis() {
     );
   };
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const router = useRouter()
+
   return (
-    <div className="min-h-screen bg-[#000033] text-[#EEEEFF] font-sans p-4 sm:p-8 flex justify-center">
-      <div className="max-w-2xl w-full">
-        
-        {step === 'start' && (
-          <div className="flex flex-col items-center justify-center min-h-[80vh] text-center animate-fade-in">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-6 tracking-wider">宇宙タイプ診断</h1>
-            <p className="mb-8 opacity-80 leading-relaxed">
-              あなたの「関心」や「関わり方」から<br />
-              16種類のタイプを分析します。
-            </p>
+    <div className="min-h-screen bg-[#000033] text-[#EEEEFF] font-sans flex flex-col">
+      <header className="p-4 border-b border-[#EEEEFF]/20 text-center">
+         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+        {/* Back button + Logo - Left */}
+        <div className="flex items-center gap-2">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3">
+            <Image
+              src={logoImg}
+              alt="Cosmo Base"
+              className="h-10 w-auto"
+              priority
+              loading="eager"
+            />
+            <span className="text-xs text-muted-foreground border-l border-border pl-3 hidden sm:block">
+              参加者ページ
+            </span>
+          </Link>
+        </div>
+
+        {/* Right side buttons */}
+        <div className="flex items-center gap-2">
+          {/* Partners button */}
+          <a href="https://fsifofficial.github.io/CosmoBase/partners">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              <Users className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">パートナー一覧</span>
+            </Button>
+          </a>
+
+          {/* Usage guide button */}
+          <Link href="/guide">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              <HelpCircle className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">使い方</span>
+            </Button>
+          </Link>
+
+          {/* Hamburger menu button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </Button>
+        </div>
+      </div>
+
+      {/* Dropdown menu - right half only */}
+      {isMenuOpen && (
+        <div className="absolute top-full right-0 w-full sm:w-[320px] bg-background/95 backdrop-blur-xl border-b border-l border-border/50 rounded-bl-2xl shadow-2xl animate-in slide-in-from-top-2 fade-in duration-200">
+          <nav className="p-3">
+            <ul className="flex flex-col gap-1">
+
+              <li>
+                <a
+                  href="https://fsifofficial.github.io/CosmoBase/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
+                >
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
+                    <img src={cbIcon.src} className="w-5 h-5 object-contain" alt="Cosmo Base" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground group-hover:text-primary transition-colors">Cosmo Base</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">公式サイト</p>
+                  </div>
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="https://cosmo-base.github.io/library/index.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
+                >
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
+                    <BookOpen className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground group-hover:text-primary transition-colors">Cosmo Base Library</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">宇宙の知識を体系的に学ぶ</p>
+                  </div>
+                </a>
+              </li>
+
+              {/* 区切り線 */}
+              <div className="h-px w-full bg-border/50 my-1 rounded-full" />
+
+              <li>
+                <a
+                  href="https://x.com/CosmoBase"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
+                >
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
+                    <img src={xIcon.src} alt="X" className="w-4 h-4 object-contain" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground group-hover:text-primary transition-colors">X (Twitter)</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">最新情報をチェック</p>
+                  </div>
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="https://www.instagram.com/cosmobase.official/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
+                >
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
+                    <img src={instaIcon.src} alt="Instagram" className="w-5 h-5 object-contain" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground group-hover:text-primary transition-colors">Instagram</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">活動の様子をチェック</p>
+                  </div>
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="https://note.com/cosmobase"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
+                >
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
+                    <img src={noteIcon.src} alt="note" className="w-5 h-5 object-contain" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground group-hover:text-primary transition-colors">note</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">記事を読む</p>
+                  </div>
+                </a>
+              </li>
+
+            </ul>
+          </nav>
+        </div>
+      )}
+      </header>
+      <main className="flex-1 p-4 sm:p-8 flex justify-center">
+        <div className="max-w-2xl w-full">
+          {step === 'start' && (
+            <div className="flex flex-col items-center justify-center min-h-[80vh] text-center animate-fade-in">
+              <img src="/member_only/CBtype_logo.png" alt="宇宙タイプ診断" className="w-64 sm:w-80 h-auto mb-6 drop-shadow-lg"/>
+              <p className="mb-8 opacity-80 leading-relaxed">
+                あなたの「関心」や「関わり方」から<br />
+                16種類のタイプを分析します。
+              </p>
             <button onClick={() => handleStepChange('page1')} className="bg-[#EEEEFF] text-[#000033] font-bold py-4 px-10 rounded-full hover:scale-105 transition-transform">
               診断を始める
             </button>
@@ -227,7 +394,7 @@ export default function SpaceTypeDiagnosis() {
           <div className="animate-fade-in pb-20">
             <h2 className="text-xl font-bold mb-6 text-center">質問 (3/3ページ)</h2>
             {page3Qs.map((q, i) => renderScaleQuestion(q, i, page3Qs))}
-            <button disabled={!isPageComplete(page3Qs)} onClick={handleFinish} className={`w-full py-4 rounded-full font-bold transition-all ${isPageComplete(page3Qs) ? 'bg-gradient-to-r from-[#FCE877] to-[#F5E69C] text-[#000033] shadow-[0_0_20px_rgba(252,232,119,0.4)]' : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'}`}>
+            <button disabled={!isPageComplete(page3Qs)} onClick={handleFinish} className={`w-full py-4 rounded-full font-bold transition-all ${isPageComplete(page3Qs) ? 'bg-gradient-to-r from-[#83CBEB] to-[#F5E69C] text-[#000033] shadow-[0_0_20px_rgba(252,232,119,0.4)]' : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'}`}>
               結果を見る
             </button>
           </div>
@@ -277,16 +444,13 @@ export default function SpaceTypeDiagnosis() {
               {/* キャラクター画像エリア */}
               <div className="w-full h-64 flex flex-col items-center justify-center rounded-2xl mb-8 relative overflow-hidden shadow-2xl" style={{ backgroundColor: tData.color }}>
                 <span className="text-8xl drop-shadow-lg z-10">{tData.emoji}</span>
-                <div className="absolute inset-0 flex items-end justify-center pb-4 opacity-50 z-0">
-                  <span className="text-black font-bold text-sm bg-white/50 px-3 py-1 rounded-full">※キャラクター画像配置エリア ({typeStr})</span>
-                </div>
               </div>
 
               <div className="text-center bg-[#EEEEFF] text-[#000033] py-4 px-2 rounded-xl font-bold text-lg mb-8 shadow-md">
                 {tData.catchphrase}
               </div>
 
-              {/* 改修版：分析パラメーターUI (-が灰色、=が白色で繋がったバー) */}
+              {/* 分析パラメーターUI */}
               <div className="bg-[#111144] p-5 sm:p-6 rounded-xl mb-8 border border-[#EEEEFF]/10 shadow-lg">
                 <h3 className="font-bold border-b border-[#EEEEFF]/20 pb-3 mb-6 text-center text-lg">分析パラメーター</h3>
                 <div className="space-y-4 sm:space-y-5">
@@ -294,7 +458,7 @@ export default function SpaceTypeDiagnosis() {
                     <div key={idx} className="flex items-center text-sm sm:text-base font-bold">
                       <span className="w-10 sm:w-12 opacity-70 font-normal text-xs sm:text-sm">{ar.axisName}</span>
                       
-                      <span className={`w-5 sm:w-6 text-right ${ar.dominant === ar.leftLabel ? 'text-[#FCE877]' : 'text-[#EEEEFF]'}`}>
+                      <span className={`w-5 sm:w-6 text-right ${ar.dominant === ar.leftLabel ? 'text-[#83CBEB]' : 'text-[#EEEEFF]'}`}>
                         {ar.leftLabel}
                       </span>
                       
@@ -306,7 +470,7 @@ export default function SpaceTypeDiagnosis() {
                         )}
                       </div>
                       
-                      <span className={`w-5 sm:w-6 text-left ${ar.dominant === ar.rightLabel ? 'text-[#FCE877]' : 'text-[#EEEEFF]'}`}>
+                      <span className={`w-5 sm:w-6 text-left ${ar.dominant === ar.rightLabel ? 'text-[#83CBEB]' : 'text-[#EEEEFF]'}`}>
                         {ar.rightLabel}
                       </span>
                       
@@ -382,8 +546,20 @@ export default function SpaceTypeDiagnosis() {
             </div>
           );
         })()}
-
-      </div>
+        </div>
+      </main>
+      <footer className="p-6 border-t border-[#EEEEFF]/20 text-center text-sm opacity-70">
+        <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-4">
+            <Image
+              src={footerLogo}
+              alt="Cosmo Base"
+              className="h-8 w-auto opacity-70"
+            />
+            <p className="text-sm text-muted-foreground">
+              &copy; 2026 Cosmo Base. All rights reserved.
+            </p>
+          </div>
+      </footer>
       
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes fade-in {
