@@ -7,11 +7,11 @@ import Image from "next/image"
 import { Menu, X, Users, BookOpen, Database, Globe, HelpCircle, Twitter, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
-import logoImg from "../../public/images/cosmo-base-logo.png"
-import cbIcon from "../../public/CB_icon.png"
-import xIcon from "../../public/X.png"
-import instaIcon from "../../public/Instagram.png"
-import noteIcon from "../../public/note.png"
+import logoImg from "../../../public/images/cosmo-base-logo.png"
+import cbIcon from "../../../public/CB_icon.png"
+import xIcon from "../../../public/X.png"
+import instaIcon from "../../../public/Instagram.png"
+import noteIcon from "../../../public/note.png"
 
 // --- データ定義 ---
 
