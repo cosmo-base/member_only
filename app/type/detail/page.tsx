@@ -16,13 +16,13 @@ import noteIcon from "../../../public/note.png"
 
 // --- データ定義 ---
 
-// ★修正: noteUrl を追加して個別のランダムURLに対応
+// noteUrlはtypesData内の各タイプごとに設定するようにしました
 const typesData: Record<string, any> = {
   RVXI: { typeTitle: "宇宙ロマン志向", roleName: "夢想家タイプ", catchphrase: "宇宙を“楽しむ才能”を持っている人", analysis: "宇宙の美しい画像や神秘的な話に触れるだけで心が満たされるタイプ。「実用性」や「役に立つか」という話になると、少し距離を感じてしまうかも？", strength: "理由なく純粋に宇宙を楽しめる“感性”は一番の価値です。", mottainai: "「自分は詳しくないから」と、感じたワクワクを自分の中だけで終わらせてしまうこと。", firstStep: "好きな宇宙の画像を1枚保存してみる。", cta: "「#写真・画像」チャンネルで誰かの投稿にスタンプを押すか、まずは数十秒で終わる「毎日宇宙クイズ」を解いて、宇宙の面白さに少しだけ触れてみましょう。", emoji: "🌌", color: "#D1B3E8", noteUrl: "" },
   RVXS: { typeTitle: "未来観察志向", roleName: "観測者タイプ", catchphrase: "宇宙の“未来を見届ける”人", analysis: "「人類が月へ」「宇宙旅行」など、未来のワクワクする話が好き。でも、ロケットの仕組みなどの細かい話になると、少し難しく感じてしまうかも。", strength: "大きな流れや、未来の可能性を楽しむ“全体を見る力”を持っています。", mottainai: "「難しそう」という理由だけで、情報からそっと離れてしまうこと。", firstStep: "週に1回だけ、宇宙のトピックを眺めてみる。", cta: "「週刊宇宙ニュース」を流し読みして、気になった見出しを1つ見つけるか、自分の「宇宙タイプ診断」の結果をSNSでシェアして未来の仲間を探してみましょう。", emoji: "🌕", color: "#BCA2DC", noteUrl: "" },
-  RVMI: { typeTitle: "天体愛好志向", roleName: "探訪者タイプ", catchphrase: "宇宙の“美しさを発見する”人", analysis: "「綺麗」「かっこいい」といった直感で動く感性型。星空や造形の細かな魅力に気づける人です。ただ、その感動を誰かと共有する機会が少ないのでは？", strength: "人が気づかない宇宙の魅力を見つける“独自の視点”。", mottainai: "素敵なものを見つけたのに、誰にも教えないこと。", firstStep: "「これ好きかも」という直感を大事にする。", cta: "「#天文・観測」チャンネルや「Cosmo Base Library（CBL）」で、お気に入りの画像を1つ探してブックマークしてみましょう。", emoji: "🪐", color: "#E4C3F0", noteUrl: "n9a8b7c6d5e" },
+  RVMI: { typeTitle: "天体愛好志向", roleName: "探訪者タイプ", catchphrase: "宇宙の“美しさを発見する”人", analysis: "「綺麗」「かっこいい」といった直感で動く感性型。星空や造形の細かな魅力に気づける人です。ただ、その感動を誰かと共有する機会が少ないのでは？", strength: "人が気づかない宇宙の魅力を見つける“独自の視点”。", mottainai: "素敵なものを見つけたのに、誰にも教えないこと。", firstStep: "「これ好きかも」という直感を大事にする。", cta: "「#天文・観測」チャンネルや「Cosmo Base Library（CBL）」で、お気に入りの画像を1つ探してブックマークしてみましょう。", emoji: "🪐", color: "#E4C3F0", noteUrl: "" },
   RVMS: { typeTitle: "探査共感志向", roleName: "見守り手タイプ", catchphrase: "宇宙への“挑戦を応援する”人", analysis: "自分が前に出るより、挑戦している人やプロジェクトを応援するのが好きなタイプ。でも心の奥底には「自分も少し関わってみたい」気持ちがあるのでは？", strength: "誰かの熱意に寄り添える“共感力”。", mottainai: "完全なROM専（見るだけ）に徹して、自分の存在を消してしまうこと。", firstStep: "「すごい！」「がんばれ」と心の中でエールを送る。", cta: "「#宇宙開発」で応援スタンプを押したり、周りの友人に「宇宙タイプ診断」を勧めて、それぞれの宇宙の楽しみ方を共有してみましょう。", emoji: "🌠", color: "#C5B9D6", noteUrl: "" },
-  RAXI: { typeTitle: "宇宙探求志向", roleName: "探求者タイプ", catchphrase: "宇宙の“謎を深掘りする”人", analysis: "「宇宙人はいる？」「ブラックホールの中は？」など、答えのない問いを考えるのが好き。でも、頭の中で考えて満足してしまい、人に話すことが少ないのでは？", strength: "疑問をトコトン深掘りできる“知的好奇心”。", mottainai: "アウトプットせずに、自分の頭の中だけで完結させてしまうこと。", firstStep: "ふと思った素朴な疑問を言葉にしてみる。", cta: "「Cosmo Baseで宇宙教えて（#質問部屋）」で、「ずっと気になってたんだけど…」と気軽な疑問を1つ投げてみましょう。", emoji: "🛸", color: "#F2F2C4", noteUrl: "n7c9b1a3d5f" },
+  RAXI: { typeTitle: "宇宙探求志向", roleName: "探求者タイプ", catchphrase: "宇宙の“謎を深掘りする”人", analysis: "「宇宙人はいる？」「ブラックホールの中は？」など、答えのない問いを考えるのが好き。でも、頭の中で考えて満足してしまい、人に話すことが少ないのでは？", strength: "疑問をトコトン深掘りできる“知的好奇心”。", mottainai: "アウトプットせずに、自分の頭の中だけで完結させてしまうこと。", firstStep: "ふと思った素朴な疑問を言葉にしてみる。", cta: "「Cosmo Baseで宇宙教えて（#質問部屋）」で、「ずっと気になってたんだけど…」と気軽な疑問を1つ投げてみましょう。", emoji: "🛸", color: "#F2F2C4", noteUrl: "" },
   RAXS: { typeTitle: "宇宙伝道志向", roleName: "語り部タイプ", catchphrase: "宇宙の“面白さを翻訳する”人", analysis: "「これ面白い！」と思ったことを誰かに伝えたくなる人。ただ、完璧に説明しようとして、うまく言葉にできず止まってしまうことはありませんか？", strength: "自分のワクワクを他人に伝播させる“伝える力”。", mottainai: "綺麗にまとめようと準備しすぎて、結局発信をやめてしまうこと。", firstStep: "1行だけでいいから、面白かったことを人に言う。", cta: "「#エンタメ」チャンネルで面白かったニュースをつぶやいたり、自分の「宇宙タイプ診断」結果と一緒にCosmo Baseの魅力を発信してみましょう。", emoji: "🎙️", color: "#F5E69C", noteUrl: "" },
   RAMI: { typeTitle: "趣味没頭志向", roleName: "職人タイプ", catchphrase: "宇宙への愛を“形にする”人", analysis: "模型を作ったり、写真を撮ったり、調べたことをまとめたりするのが好きなタイプ。でも、完成するまで人に見せるのをためらっていませんか？", strength: "好きなことに徹底的に向き合える“没頭力”。", mottainai: "100%完成するまで、誰にも見せずに隠しておくこと。", firstStep: "「いま、こんなの作ってる（調べてる）」と見せてみる。", cta: "「#写真・画像」に制作途中のものをシェアするか、「毎日宇宙クイズ」に挑戦して、自分のマニアックな知識をこっそりアップデートしてみましょう。", emoji: "📸", color: "#E8E8B6", noteUrl: "" },
   RAMS: { typeTitle: "宇宙カルチャー志向", roleName: "仕掛け人タイプ", catchphrase: "宇宙で“熱狂を生み出す”人", analysis: "「こんなことやったら面白そう！」とアイデアを出すのが得意。でも、自分一人でやり切るのは少し苦手で、誰かと一緒に盛り上がりたいタイプですよね？", strength: "人を巻き込んで企画を動かす“巻き込み力”。", mottainai: "アイデアを思いついたのに、「どうせ無理か」と寝かせてしまうこと。", firstStep: "「これやりたい！」と声に出してみる。", cta: "「#雑談」で「こんなイベント面白くない？」と提案するか、「宇宙タイプ診断」をシェアして、一緒に盛り上がれる仲間を探してみましょう。", emoji: "🎉", color: "#FCE877", noteUrl: "" },
@@ -125,6 +125,28 @@ export default function SpaceTypeDiagnosis() {
 
   const handleFinish = () => {
     handleStepChange('loading');
+    
+    const { typeStr, scores } = calculateResult();
+
+    // ★ データ収集 (GASへの送信)
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbybYdsNkpDom6Titu1BNtmR3sOCid2TZ3823Wh1ZZ6GhIWJmyrXrLOZRXa7BtwUiJJG/exec";
+
+    const payload: any = {};
+    for (let i = 1; i <= 24; i++) {
+      payload[`Q${i}`] = answers[`q${i}`]?.val ?? "";
+    }
+    payload.RP = scores.rp;
+    payload.VA = scores.va;
+    payload.MX = scores.mx;
+    payload.IS = scores.is;
+    payload.type = typeStr;
+
+    fetch(GAS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+    }).catch(error => { console.error("データ送信エラー:", error); });
+
     setTimeout(() => {
       handleStepChange('result');
     }, 2000);
@@ -135,7 +157,6 @@ export default function SpaceTypeDiagnosis() {
   const renderBinaryQuestion = (q: any, index: number, qsList: any[]) => (
     <div id={`q-${q.id}`} key={q.id} className="mb-8 p-5 bg-[#111144] rounded-2xl border border-[#EEEEFF]/20 shadow-lg">
       <p className="font-bold mb-4 text-center leading-relaxed">{q.text}</p>
-      {/* 2択を横並びに */}
       <div className="grid grid-cols-2 gap-3">
         {q.options.map((opt: any) => {
           const isSelected = answers[q.id]?.val === opt.val;
@@ -156,7 +177,6 @@ export default function SpaceTypeDiagnosis() {
   );
 
   const renderScaleQuestion = (q: any, index: number, qsList: any[]) => {
-    // 5択の円形ボタンデータ
     const circleOptions = [
       { val: q.invert ? -2 : 2, size: 'w-12 h-12' },
       { val: q.invert ? -1 : 1, size: 'w-10 h-10' },
@@ -168,12 +188,10 @@ export default function SpaceTypeDiagnosis() {
     return (
       <div id={`q-${q.id}`} key={q.id} className="mb-8 p-5 bg-[#111144] rounded-2xl border border-[#EEEEFF]/20 shadow-lg">
         <p className="font-bold mb-6 text-center leading-relaxed">{q.text}</p>
-        
         <div className="flex justify-between items-center px-1 sm:px-4">
           <div className="text-center w-14 sm:w-20 shrink-0">
             <span className="text-[10px] sm:text-xs font-bold text-[#EEEEFF] leading-tight block">とても<br/>そう思う</span>
           </div>
-
           <div className="flex items-center justify-center gap-2 sm:gap-4 flex-1">
             {circleOptions.map((opt, i) => {
               const isSelected = answers[q.id]?.val === opt.val;
@@ -190,7 +208,6 @@ export default function SpaceTypeDiagnosis() {
               );
             })}
           </div>
-
           <div className="text-center w-14 sm:w-20 shrink-0">
             <span className="text-[10px] sm:text-xs font-bold text-[#EEEEFF]/60 leading-tight block">全くそう<br/>思わない</span>
           </div>
@@ -207,7 +224,6 @@ export default function SpaceTypeDiagnosis() {
       <header className="p-4 border-b border-[#EEEEFF]/20 text-center relative z-50 bg-[#000033]">
          <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between relative">
            <div className="flex items-center gap-2">
-             {/* Logo */}
              <Link href="/" className="flex items-center gap-3">
                <Image src={logoImg} alt="Cosmo Base" className="h-10 w-auto" priority loading="eager"/>
                <span className="text-xs text-muted-foreground border-l border-border pl-3 hidden sm:block">
@@ -215,51 +231,30 @@ export default function SpaceTypeDiagnosis() {
                </span>
              </Link>
            </div>
-
-        {/* Right side buttons */}
         <div className="flex items-center gap-2">
-          {/* Partners button */}
           <a href="https://fsifofficial.github.io/CosmoBase/partners">
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               <Users className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">パートナー一覧</span>
             </Button>
           </a>
-
-          {/* Usage guide button */}
           <Link href="/guide">
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               <HelpCircle className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">使い方</span>
             </Button>
           </Link>
-
-          {/* Hamburger menu button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-muted-foreground hover:text-foreground"
-          >
+          <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-muted-foreground hover:text-foreground">
             {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </div>
       </div>
-
-      {/* Dropdown menu - right half only */}
       {isMenuOpen && (
         <div className="absolute top-full right-0 w-full sm:w-[320px] bg-background/95 backdrop-blur-xl border-b border-l border-border/50 rounded-bl-2xl shadow-2xl animate-in slide-in-from-top-2 fade-in duration-200">
           <nav className="p-3 text-left">
             <ul className="flex flex-col gap-1">
-
               <li>
-                <a
-                  href="https://fsifofficial.github.io/CosmoBase/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
-                >
+                <a href="https://fsifofficial.github.io/CosmoBase/" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
                     <img src={cbIcon.src} className="w-5 h-5 object-contain" alt="Cosmo Base" />
                   </div>
@@ -269,15 +264,8 @@ export default function SpaceTypeDiagnosis() {
                   </div>
                 </a>
               </li>
-
               <li>
-                <a
-                  href="https://cosmo-base.github.io/library/index.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
-                >
+                <a href="https://cosmo-base.github.io/library/index.html" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
                     <BookOpen className="w-5 h-5 text-primary" />
                   </div>
@@ -287,18 +275,9 @@ export default function SpaceTypeDiagnosis() {
                   </div>
                 </a>
               </li>
-
-              {/* 区切り線 */}
               <div className="h-px w-full bg-border/50 my-1 rounded-full" />
-
               <li>
-                <a
-                  href="https://x.com/CosmoBase"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
-                >
+                <a href="https://x.com/CosmoBase" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
                     <img src={xIcon.src} alt="X" className="w-4 h-4 object-contain" />
                   </div>
@@ -308,15 +287,8 @@ export default function SpaceTypeDiagnosis() {
                   </div>
                 </a>
               </li>
-
               <li>
-                <a
-                  href="https://www.instagram.com/cosmobase.official/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
-                >
+                <a href="https://www.instagram.com/cosmobase.official/" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
                     <img src={instaIcon.src} alt="Instagram" className="w-5 h-5 object-contain" />
                   </div>
@@ -326,15 +298,8 @@ export default function SpaceTypeDiagnosis() {
                   </div>
                 </a>
               </li>
-
               <li>
-                <a
-                  href="https://note.com/cosmobase"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group"
-                >
+                <a href="https://note.com/cosmobase" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
                     <img src={noteIcon.src} alt="note" className="w-5 h-5 object-contain" />
                   </div>
@@ -344,7 +309,6 @@ export default function SpaceTypeDiagnosis() {
                   </div>
                 </a>
               </li>
-
             </ul>
           </nav>
         </div>
@@ -368,15 +332,12 @@ export default function SpaceTypeDiagnosis() {
         {step === 'page1' && (
           <div className="animate-fade-in pb-20">
             <h2 className="text-xl font-bold mb-3 text-center">質問 (1/3ページ)</h2>
-            
-            {/* ★追加: 1ページ目の案内文 */}
             <div className="bg-[#83CBEB]/10 border border-[#83CBEB]/30 rounded-xl p-4 mb-8 flex items-start gap-3">
               <Info className="w-5 h-5 text-[#83CBEB] shrink-0 mt-0.5" />
               <p className="text-sm text-[#EEEEFF]/90 leading-relaxed">
                 考え込まずに、<br className="hidden sm:block" /><strong>「直感で近いもの」</strong>を選んで進めてください。
               </p>
             </div>
-
             {page1Qs.map((q, i) => renderBinaryQuestion(q, i, page1Qs))}
             <button disabled={!isPageComplete(page1Qs)} onClick={() => handleStepChange('page2')} className={`w-full py-4 rounded-full font-bold transition-all ${isPageComplete(page1Qs) ? 'bg-[#EEEEFF] text-[#000033] shadow-[0_0_20px_rgba(238,238,255,0.3)]' : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'}`}>
               次へ
@@ -387,15 +348,12 @@ export default function SpaceTypeDiagnosis() {
         {step === 'page2' && (
           <div className="animate-fade-in pb-20">
             <h2 className="text-xl font-bold mb-3 text-center">質問 (2/3ページ)</h2>
-            
-            {/* ★追加: 2ページ目の案内文 */}
             <div className="bg-[#83CBEB]/10 border border-[#83CBEB]/30 rounded-xl p-4 mb-8 flex items-start gap-3">
               <Info className="w-5 h-5 text-[#83CBEB] shrink-0 mt-0.5" />
               <p className="text-sm text-[#EEEEFF]/90 leading-relaxed">
                 引き続き、<br className="hidden sm:block" /><strong>「直感で近いもの」</strong>を選んで進めてください。
               </p>
             </div>
-
             {page2Qs.map((q, i) => renderBinaryQuestion(q, i, page2Qs))}
             <button disabled={!isPageComplete(page2Qs)} onClick={() => handleStepChange('page3')} className={`w-full py-4 rounded-full font-bold transition-all ${isPageComplete(page2Qs) ? 'bg-[#EEEEFF] text-[#000033] shadow-[0_0_20px_rgba(238,238,255,0.3)]' : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'}`}>
               次へ
@@ -406,14 +364,12 @@ export default function SpaceTypeDiagnosis() {
         {step === 'page3' && (
           <div className="animate-fade-in pb-20">
             <h2 className="text-xl font-bold mb-3 text-center">質問 (3/3ページ)</h2>
-            
             <div className="bg-[#83CBEB]/10 border border-[#83CBEB]/30 rounded-xl p-4 mb-8 flex items-start gap-3">
               <Info className="w-5 h-5 text-[#83CBEB] shrink-0 mt-0.5" />
               <p className="text-sm text-[#EEEEFF]/90 leading-relaxed">
                 最後のページです！<br className="sm:hidden" />ここからは、以下の考え方に<br className="hidden sm:block" /><strong>「どれくらい当てはまるか」</strong>を直感で選んでください。
               </p>
             </div>
-
             {page3Qs.map((q, i) => renderScaleQuestion(q, i, page3Qs))}
             <button disabled={!isPageComplete(page3Qs)} onClick={handleFinish} className={`w-full py-4 rounded-full font-bold transition-all ${isPageComplete(page3Qs) ? 'bg-[#83CBEB] hover:bg-[#6CB6D9] text-[#000033] shadow-[0_0_20px_rgba(131,203,235,0.4)]' : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'}`}>
               結果を見る
@@ -437,11 +393,9 @@ export default function SpaceTypeDiagnosis() {
             const leftRatio = isLeftNegative ? ((8 - score) / 16) * 100 : ((score + 8) / 16) * 100;
             const dominant = leftRatio >= 50 ? leftLabel : rightLabel;
             const perc = leftRatio >= 50 ? Math.round(leftRatio) : Math.round(100 - leftRatio);
-            
             let strength = 'バランス型';
             if (perc >= 80) strength = 'かなり強め';
             else if (perc >= 60) strength = '強め';
-
             return { axisName, leftLabel, rightLabel, dominant, perc, strength };
           };
 
@@ -454,43 +408,33 @@ export default function SpaceTypeDiagnosis() {
 
           return (
             <div className="animate-fade-in pb-12">
-              
-              {/* ★追加: 結果画面上部のロゴ */}
               <div className="flex justify-center mb-6">
                 <img src="/member_only/CBtype_logo.png" alt="宇宙タイプ診断" className="w-48 sm:w-56 h-auto drop-shadow-md"/>
               </div>
-
               <h2 className="text-center text-sm tracking-widest opacity-80 mb-2">あなたの診断結果</h2>
-              <h1 className="text-3xl font-bold text-center mb-6">
-                <span className="block text-lg font-normal mb-1">{tData.emoji}{tData.typeTitle}</span>
+              <h1 className="text-3xl font-bold text-center mb-6">{tData.emoji}
+                <span className="block text-lg font-normal mb-1">{tData.typeTitle}</span>
                 {tData.roleName}
               </h1>
-
-              {/* キャラクター画像エリア */}
               <div className="w-full h-64 flex flex-col items-center justify-center rounded-2xl mb-8 relative overflow-hidden shadow-2xl" style={{ backgroundColor: tData.color }}>
                 <img 
                   src={`/member_only/type/${typeStr}.png`} 
                   alt={tData.typeTitle} 
-                  className="w-full h-full object-contain z-10 p-4 drop-shadow-lg transition-transform hover:scale-105 duration-300"
+                  className="w-full h-full object-contain z-10 p-4 drop-shadow-lg transition-transform duration-300"
                 />
               </div>
-
               <div className="text-center bg-[#EEEEFF] text-[#000033] py-4 px-2 rounded-xl font-bold text-lg mb-8 shadow-md">
                 {tData.catchphrase}
               </div>
-
-              {/* 分析パラメーターUI */}
               <div className="bg-[#111144] p-5 sm:p-6 rounded-xl mb-8 border border-[#EEEEFF]/10 shadow-lg">
                 <h3 className="font-bold border-b border-[#EEEEFF]/20 pb-3 mb-6 text-center text-lg">分析パラメーター</h3>
                 <div className="space-y-4 sm:space-y-5">
                   {axisResults.map((ar, idx) => (
                     <div key={idx} className="flex items-center text-sm sm:text-base font-bold">
                       <span className="w-10 sm:w-12 opacity-70 font-normal text-xs sm:text-sm shrink-0">{ar.axisName}</span>
-                      
                       <span className={`w-14 sm:w-16 text-right shrink-0 ${ar.dominant === ar.leftLabel ? 'text-[#83CBEB]' : 'text-[#EEEEFF]'}`}>
                         {ar.leftLabel}
                       </span>
-                      
                       <div className="flex-1 mx-2 sm:mx-3 h-3 bg-[#EEEEFF]/20 rounded-full overflow-hidden relative shadow-inner">
                         {ar.dominant === ar.leftLabel ? (
                           <div className="absolute top-0 left-0 h-full bg-[#EEEEFF] transition-all duration-1000" style={{ width: `${ar.perc}%` }} />
@@ -498,11 +442,9 @@ export default function SpaceTypeDiagnosis() {
                           <div className="absolute top-0 right-0 h-full bg-[#EEEEFF] transition-all duration-1000" style={{ width: `${ar.perc}%` }} />
                         )}
                       </div>
-                      
                       <span className={`w-14 sm:w-16 text-left shrink-0 ${ar.dominant === ar.rightLabel ? 'text-[#83CBEB]' : 'text-[#EEEEFF]'}`}>
                         {ar.rightLabel}
                       </span>
-                      
                       <span className="w-24 sm:w-32 text-[10px] sm:text-xs text-right opacity-90 font-normal tracking-tighter sm:tracking-normal shrink-0">
                         ({ar.dominant}{ar.strength}: {ar.perc}%)
                       </span>
@@ -510,7 +452,6 @@ export default function SpaceTypeDiagnosis() {
                   ))}
                 </div>
               </div>
-
               <div className="space-y-6">
                 <div>
                   <h3 className="text-xl font-bold mb-2 flex items-center"><span className="text-xl mr-2">🔎</span> 分析</h3>
@@ -530,21 +471,11 @@ export default function SpaceTypeDiagnosis() {
                   <p className="text-sm opacity-80 leading-relaxed border-t border-[#EEEEFF]/20 pt-3">{tData.cta}</p>
                 </div>
               </div>
-
-              {/* 各タイプの詳細 note リンク */}
               <div className="mt-12 mb-8 text-center bg-[#111144] p-6 sm:p-8 rounded-2xl border border-[#EEEEFF]/20 shadow-xl relative overflow-hidden">
                 <div className="relative z-10">
                   <h3 className="text-xl font-bold mb-3">さらに詳しい分析を知りたい方へ</h3>
-                  <p className="text-sm opacity-80 mb-6 leading-relaxed">
-                    各タイプの詳細な解説や、同じタイプの人の傾向を<br className="hidden sm:block" />noteで公開しています。
-                  </p>
-                  <a 
-                    // ★修正: typesDataから noteUrl を読み込んで正しいURLを生成
-                    href={`https://note.com/cosmobase/n/${tData.noteUrl}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center justify-center gap-2 bg-[#2cb696] text-white font-bold py-4 px-8 rounded-full shadow-[0_4px_20px_rgba(44,182,150,0.4)] hover:scale-105 hover:bg-[#259c80] transition-all duration-300 w-full sm:w-auto group"
-                  >
+                  <p className="text-sm opacity-80 mb-6 leading-relaxed">各タイプの詳細な解説や、同じタイプの人の傾向を<br className="hidden sm:block" />noteで公開しています。</p>
+                  <a href={`https://note.com/cosmobase/n/${tData.noteUrl}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-[#2cb696] text-white font-bold py-4 px-8 rounded-full shadow-[0_4px_20px_rgba(44,182,150,0.4)] hover:scale-105 hover:bg-[#259c80] transition-all duration-300 w-full sm:w-auto group">
                     <span className="text-base sm:text-lg">詳細を読む</span>
                     <svg className="w-5 h-5 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -552,27 +483,16 @@ export default function SpaceTypeDiagnosis() {
                   </a>
                 </div>
               </div>
-
-              {/* Cosmo Baseの導線CTA */}
               <div className="mt-8 p-6 border-2 border-[#EEEEFF] rounded-2xl text-center bg-gradient-to-b from-[#111144] to-[#000033] shadow-2xl relative overflow-hidden">
                 <h3 className="text-2xl font-bold mb-3 z-10 relative">Cosmo Baseで共有する</h3>
                 <p className="text-sm mb-6 opacity-90 z-10 relative">#雑談 チャンネルであなたのタイプを共有してみましょう。</p>
-                <a 
-                  href="https://discord.gg/XW7CwvQmju" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="relative z-10 inline-flex items-center justify-center gap-2 bg-[#EEEEFF] text-[#000033] font-bold py-4 px-8 rounded-full hover:scale-105 transition-transform"
-                >
-                  {/* ★追加: Discordアイコン */}
+                <a href="https://discord.gg/XW7CwvQmju" target="_blank" rel="noopener noreferrer" className="relative z-10 inline-flex items-center justify-center gap-2 bg-[#EEEEFF] text-[#000033] font-bold py-4 px-8 rounded-full hover:scale-105 transition-transform">
                   <MessageSquare className="w-5 h-5" fill="currentColor" />
                   Discordへ
                 </a>
               </div>
-
               <div className="mt-12 text-center">
-                <button onClick={() => handleStepChange('start')} className="text-sm opacity-50 hover:opacity-100 transition-opacity underline">
-                  最初からやり直す
-                </button>
+                <button onClick={() => handleStepChange('start')} className="text-sm opacity-50 hover:opacity-100 transition-opacity underline">最初からやり直す</button>
               </div>
             </div>
           );
@@ -581,25 +501,13 @@ export default function SpaceTypeDiagnosis() {
       </main>
       <footer className="p-6 border-t border-[#EEEEFF]/20 text-center text-sm opacity-70 bg-[#000033]">
         <div className="max-w-5xl mx-auto px-4 flex flex-col items-center gap-4">
-            <Image
-              src={logoImg}
-              alt="Cosmo Base"
-              className="h-8 w-auto opacity-70"
-            />
-            <p className="text-sm text-[#EEEEFF] opacity-70">
-              &copy; 2026 Cosmo Base. All rights reserved.
-            </p>
+            <Image src={logoImg} alt="Cosmo Base" className="h-8 w-auto opacity-70" />
+            <p className="text-sm text-[#EEEEFF] opacity-70">&copy; 2026 Cosmo Base. All rights reserved.</p>
           </div>
       </footer>
-      
       <style dangerouslySetInnerHTML={{__html: `
-        @keyframes fade-in {
-          0% { opacity: 0; transform: translateY(10px); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-out forwards;
-        }
+        @keyframes fade-in { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
       `}} />
     </div>
   );
