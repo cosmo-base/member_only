@@ -462,13 +462,17 @@ export default function SpaceTypeDiagnosis() {
 
               <h2 className="text-center text-sm tracking-widest opacity-80 mb-2">あなたの診断結果</h2>
               <h1 className="text-3xl font-bold text-center mb-6">
-                <span className="block text-lg font-normal mb-1">{tData.typeTitle}</span>
+                <span className="block text-lg font-normal mb-1">{tData.emoji}{tData.typeTitle}</span>
                 {tData.roleName}
               </h1>
 
               {/* キャラクター画像エリア */}
               <div className="w-full h-64 flex flex-col items-center justify-center rounded-2xl mb-8 relative overflow-hidden shadow-2xl" style={{ backgroundColor: tData.color }}>
-                <span className="text-8xl drop-shadow-lg z-10">{tData.emoji}</span>
+                <img 
+                  src={`/member_only/type/${typeStr}.png`} 
+                  alt={tData.typeTitle} 
+                  className="w-full h-full object-contain z-10 p-4 drop-shadow-lg transition-transform hover:scale-105 duration-300"
+                />
               </div>
 
               <div className="text-center bg-[#EEEEFF] text-[#000033] py-4 px-2 rounded-xl font-bold text-lg mb-8 shadow-md">
