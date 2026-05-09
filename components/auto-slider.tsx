@@ -12,7 +12,7 @@ import Link from "next/link"
 import welcomeImg from "../public/images/slider-welcome.jpg"
 import openingImg from "../public/CBOP.png"
 import TCPImg from "../public/CB_TCP.png"
-import partnerImg from "../public/CBAstroKIT.png"
+import partnerImg from "../public/CBP.png"
 import feedbackImg from "../public/images/slider-feedback.jpg"
 
 const slides = [
