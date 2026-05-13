@@ -10,7 +10,6 @@ import Link from "next/link"
 // スライダー用の画像をすべて直接インポートする
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 import welcomeImg from "../public/images/slider-welcome.jpg"
-import openingImg from "../public/CBOP.png"
 import TCPImg from "../public/CB_TCP.png"
 import partnerImg from "../public/CBP.png"
 import feedbackImg from "../public/images/slider-feedback.jpg"
@@ -27,25 +26,18 @@ const slides = [
     id: 1,
     title: "",
     description: "",
-    image: openingImg,
-    href: "https://cosmo-base.github.io/opening/",
-  },
-  {
-    id: 2,
-    title: "",
-    description: "",
     image: TCPImg,
     href: "/TCP",
   },
   {
-    id: 3,
+    id: 2,
     title: "",
     description: "",
     image: partnerImg,
     href: "https://fsifofficial.github.io/CosmoBase/partners",
   },
   {
-    id: 4,
+    id: 3,
     title: "意見箱",
     description: "Cosmo Baseへのご意見・ご要望をお聞かせください。より良いコミュニティーづくりにご協力ください。",
     image: feedbackImg,
