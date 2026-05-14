@@ -11,6 +11,7 @@ import { fetchEventsData, SpaceEvent } from "@/data/CBED"
 
 const IMPERIAL_PALACE: [number, number] = [35.6852, 139.7528]
 
+// 距離計算の関数
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371
   const dLat = (lat2 - lat1) * (Math.PI / 180)
@@ -20,6 +21,30 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
     Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2)
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
   return R * c
+}
+
+// 過去のイベントかどうかを判定する関数
+function isPastEvent(dateStr?: string, endDateStr?: string): boolean {
+  // endDateがあればそれを、なければdateを使用
+  const targetStr = endDateStr || dateStr;
+  if (!targetStr) return false; // 日付情報がないものは念のため表示する
+
+  // YYYY/MM/DD, YYYY-MM-DD, YYYY年MM月DD日 などのフォーマットから年月日を抽出
+  const match = targetStr.match(/(\d{4})[-/年\.]\s*(\d{1,2})[-/月\.]\s*(\d{1,2})/);
+  if (!match) return false; // パースできない形式も念のため表示する
+
+  const year = parseInt(match[1], 10);
+  const month = parseInt(match[2], 10) - 1; // JSのDateの月は0始まり
+  const day = parseInt(match[3], 10);
+  
+  const eventDate = new Date(year, month, day);
+  
+  // 今日の日付を取得し、時間を0時0分0秒にリセット
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // イベントの日付が今日より前なら過去と判定
+  return eventDate < today;
 }
 
 const DynamicMap = dynamic(() => import("@/components/event-map"), {
@@ -65,8 +90,9 @@ export default function MapSearchPage() {
     async function loadEvents() {
       setIsLoadingEvents(true)
       const data = await fetchEventsData()
+      // ★ 緯度経度が設定されており、かつ「過去のイベントではない」ものだけを抽出
       const mapEvents = data.filter(
-        e => typeof e.lat === 'number' && typeof e.lng === 'number'
+        e => typeof e.lat === 'number' && typeof e.lng === 'number' && !isPastEvent(e.date, e.endDate)
       )
       setEvents(mapEvents)
       setIsLoadingEvents(false)
@@ -78,7 +104,6 @@ export default function MapSearchPage() {
     let filtered = events
     if (mapBounds) {
       filtered = filtered.filter(e =>
-        // ★ TypeScriptに「絶対入ってる！」と教えるための !
         e.lat! <= mapBounds.n && e.lat! >= mapBounds.s &&
         e.lng! <= mapBounds.e && e.lng! >= mapBounds.w
       )
