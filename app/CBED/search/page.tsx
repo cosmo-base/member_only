@@ -23,7 +23,11 @@ export default function EventSearchPage() {
     async function loadEvents() {
       setIsLoading(true)
       const data = await fetchEventsData()
-      setEvents(data)
+      
+      // ★修正: タイトルが空っぽ（IDだけが入っている行など）のデータを完全に除外
+      const validEvents = data.filter(e => e.title && String(e.title).trim() !== "")
+      
+      setEvents(validEvents)
       setIsLoading(false)
     }
     loadEvents()
@@ -233,7 +237,6 @@ export default function EventSearchPage() {
               <Link href={`/CBED/${event.id}`} key={event.id} className="block group">
                 <div className="glass-card rounded-xl p-5 border border-border/50 hover:bg-primary/5 transition-colors flex flex-col md:flex-row md:items-start justify-between gap-4 shadow-sm hover:shadow-md">
                   
-                  {/* ★ 修正ポイント： min-w-0 を追加してタイトルが潰れるのを防ぐ */}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full border ${orgStyle}`}>
@@ -251,13 +254,11 @@ export default function EventSearchPage() {
                         </span>
                       )}
                     </div>
-                    {/* ★ 修正ポイント： break-words を追加して長すぎる単語を改行させる */}
                     <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors break-words">
                       {event.title}
                     </h3>
                   </div>
 
-                  {/* ★ 修正ポイント： 右側の横幅を md:w-[280px] に固定し、要素を上揃えにする */}
                   <div className="flex flex-col gap-2 text-sm text-muted-foreground w-full md:w-[280px] shrink-0">
                     {(event.date || event.time) && (
                       <div className="flex items-start gap-2">
