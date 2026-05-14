@@ -51,7 +51,7 @@ export default function DiagnosisPage() {
             5つの質問でサクッと診断。まずはお気軽に試してみてください。
             結果はSNSでシェアできます。
           </p>
-          <a href="https://cosmo-base.github.io/opening/projects/space-type/content">
+          <Link href="/content/">
             <Button className="w-full bg-primary/70 hover:bg-primary/60 text-primary-foreground">
               簡易診断を始める
             </Button>
@@ -70,7 +70,7 @@ export default function DiagnosisPage() {
           <p className="text-muted-foreground text-sm mb-6">
             24の質問で詳細に分析。あなたの宇宙への興味の傾向を多角的に診断します。おすすめコンテンツも紹介。
           </p>
-          {/*<Link href="/diagnosis/full">*/}
+          {/*<Link href="/detail/">*/}
           <Button className="w-full" variant="outline">
             近日公開{/*完全診断を始める*/}
           </Button>
