@@ -51,7 +51,7 @@ export default function DiagnosisPage() {
             5つの質問でサクッと診断。まずはお気軽に試してみてください。
             結果はSNSでシェアできます。
           </p>
-          <Link href="/content/">
+          <Link href="/type/content/">
             <Button className="w-full bg-primary/70 hover:bg-primary/60 text-primary-foreground">
               簡易診断を始める
             </Button>
