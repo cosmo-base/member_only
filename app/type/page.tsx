@@ -55,7 +55,7 @@ export default function DiagnosisPage() {
             <Button className="w-full bg-primary/70 hover:bg-primary/60 text-primary-foreground">
               簡易診断を始める
             </Button>
-          </a>
+          </Link>
         </div>
 
         <div className="glass-card rounded-xl p-6 border-2 border-accent/30">
