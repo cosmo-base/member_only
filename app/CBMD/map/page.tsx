@@ -10,8 +10,8 @@ import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { sampleFacilities, regions, facilityTypes } from "@/lib/data"
-import type { Facility } from "@/lib/data"
+import { sampleFacilities, regions, facilityTypes } from "@/lib/CBMD"
+import type { Facility } from "@/lib/CBMD"
 
 const JAPAN_TOPO_JSON = "https://raw.githubusercontent.com/dataofjapan/land/master/japan.topojson"
 
@@ -334,7 +334,7 @@ export default function MapPage() {
                         <TagBadge key={tag}>{tag}</TagBadge>
                       ))}
                     </div>
-                    <Link href={`/facility/${selectedFacility.id}`}>
+                    <Link href={`/CBMD/facility/${selectedFacility.id}`}>
                       <Button className="w-full bg-primary/20 text-primary hover:bg-primary/30">
                         詳細を見る
                         <ExternalLink className="w-4 h-4 ml-2" />

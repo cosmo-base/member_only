@@ -9,7 +9,7 @@ import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { sampleFacilities, spacecraftTags, categoryTags, regions, facilityTypes } from "@/lib/data"
+import { sampleFacilities, spacecraftTags, categoryTags, regions, facilityTypes } from "@/lib/CBMD"
 
 function SearchContent() {
   const searchParams = useSearchParams()
@@ -248,7 +248,7 @@ function SearchContent() {
           {filteredFacilities.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredFacilities.map((facility) => (
-                <Link key={facility.id} href={`/facility/${facility.id}`}>
+                <Link key={facility.id} href={`/CBMD/facility/${facility.id}`}>
                   <GlassCard hover className="h-full">
                     <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden flex items-center justify-center">
                       <MapPin className="w-8 h-8 text-muted-foreground" />

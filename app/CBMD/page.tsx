@@ -4,7 +4,7 @@ import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
-import { sampleFacilities, sampleEvents, spacecraftTags } from "@/lib/data"
+import { sampleFacilities, sampleEvents, spacecraftTags } from "@/lib/CBMD"
 
 export default function MuseumPage() {
   const featuredFacilities = sampleFacilities.slice(0, 4)
@@ -39,7 +39,7 @@ export default function MuseumPage() {
 
             {/* Main Navigation Buttons */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
-              <Link href="/map">
+              <Link href="/CBMD/map">
                 <GlassCard hover className="h-full">
                   <div className="flex flex-col items-center gap-4 py-4">
                     <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center glow">
@@ -53,7 +53,7 @@ export default function MuseumPage() {
                 </GlassCard>
               </Link>
 
-              <Link href="/search">
+              <Link href="/CBMD/search">
                 <GlassCard hover className="h-full">
                   <div className="flex flex-col items-center gap-4 py-4">
                     <div className="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center">
@@ -67,7 +67,7 @@ export default function MuseumPage() {
                 </GlassCard>
               </Link>
 
-              <Link href="/database">
+              <Link href="/CBMD/database">
                 <GlassCard hover className="h-full">
                   <div className="flex flex-col items-center gap-4 py-4">
                     <div className="w-16 h-16 rounded-2xl bg-chart-3/20 flex items-center justify-center">
@@ -101,7 +101,7 @@ export default function MuseumPage() {
                 <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">注目施設</h2>
                 <p className="text-muted-foreground">人気の宇宙関連施設をピックアップ</p>
               </div>
-              <Link href="/database">
+              <Link href="/CBMD/database">
                 <Button variant="ghost" className="text-primary hover:text-primary/80">
                   すべて見る
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -111,7 +111,7 @@ export default function MuseumPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {featuredFacilities.map((facility) => (
-                <Link key={facility.id} href={`/facility/${facility.id}`}>
+                <Link key={facility.id} href={`/CBMD/facility/${facility.id}`}>
                   <GlassCard hover className="h-full">
                     <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden">
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground">
@@ -175,7 +175,7 @@ export default function MuseumPage() {
                 <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">最近追加された施設</h2>
                 <p className="text-muted-foreground">新しく登録された施設情報</p>
               </div>
-              <Link href="/database">
+              <Link href="/CBMD/database">
                 <Button variant="ghost" className="text-primary hover:text-primary/80">
                   すべて見る
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -185,7 +185,7 @@ export default function MuseumPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {recentFacilities.map((facility) => (
-                <Link key={facility.id} href={`/facility/${facility.id}`}>
+                <Link key={facility.id} href={`/CBMD/facility/${facility.id}`}>
                   <GlassCard hover className="h-full">
                     <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden flex items-center justify-center">
                       <MapPin className="w-8 h-8 text-muted-foreground" />
@@ -215,7 +215,7 @@ export default function MuseumPage() {
 
             <div className="flex flex-wrap justify-center gap-3">
               {spacecraftTags.map((tag) => (
-                <Link key={tag} href={`/search?tag=${encodeURIComponent(tag)}`}>
+                <Link key={tag} href={`/CBMD/search?tag=${encodeURIComponent(tag)}`}>
                   <button className="glass px-6 py-3 rounded-full text-foreground font-medium hover:bg-primary/20 hover:text-primary transition-all duration-300 hover:glow">
                     {tag}
                   </button>

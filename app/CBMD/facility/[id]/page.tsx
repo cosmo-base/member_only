@@ -8,7 +8,7 @@ import {
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
-import { sampleFacilities } from "@/lib/data"
+import { sampleFacilities } from "@/lib/CBMD"
 import { ContentPageLayout } from "@/components/content-page-layout"
 
 interface FacilityPageProps {
@@ -42,7 +42,7 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
       <main className="relative z-10 pt-24 pb-12">
         {/* Back Button */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-          <Link href="/database">
+          <Link href="/CBMD/database">
             <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
               <ChevronLeft className="w-4 h-4 mr-1" />
               一覧に戻る
@@ -93,7 +93,7 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
                 <h2 className="text-lg font-semibold text-foreground mb-3">展示タグ</h2>
                 <div className="flex flex-wrap gap-2">
                   {facility.tags.map((tag) => (
-                    <Link key={tag} href={`/search?tag=${encodeURIComponent(tag)}`}>
+                    <Link key={tag} href={`/CBMD/search?tag=${encodeURIComponent(tag)}`}>
                       <button className="glass px-4 py-2 rounded-full text-foreground text-sm font-medium hover:bg-primary/20 hover:text-primary transition-all">
                         {tag}
                       </button>

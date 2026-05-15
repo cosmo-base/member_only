@@ -9,7 +9,7 @@ import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { sampleFacilities, regions, facilityTypes } from "@/lib/data"
+import { sampleFacilities, regions, facilityTypes } from "@/lib/CBMD"
 
 type SortType = "name" | "region" | "updated"
 type ViewMode = "card" | "table"
@@ -221,7 +221,7 @@ export default function DatabasePage() {
               {viewMode === "card" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {sortedFacilities.map((facility) => (
-                    <Link key={facility.id} href={`/facility/${facility.id}`}>
+                    <Link key={facility.id} href={`/CBMD/facility/${facility.id}`}>
                       <GlassCard hover className="h-full">
                         <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden flex items-center justify-center">
                           <MapPin className="w-8 h-8 text-muted-foreground" />
@@ -308,7 +308,7 @@ export default function DatabasePage() {
                             {facility.updatedAt}
                           </td>
                           <td className="py-4 px-4">
-                            <Link href={`/facility/${facility.id}`}>
+                            <Link href={`/CBMD/facility/${facility.id}`}>
                               <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
                                 <ExternalLink className="w-4 h-4" />
                               </Button>
