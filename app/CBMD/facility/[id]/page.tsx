@@ -1,3 +1,4 @@
+// app/CBMD/facility/[id]/page.tsx
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { 
@@ -8,7 +9,7 @@ import {
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
-import { sampleFacilities } from "@/lib/CBMD"
+import { fetchFacilitiesData } from "@/lib/CBMD"
 import { ContentPageLayout } from "@/components/content-page-layout"
 
 interface FacilityPageProps {
@@ -18,14 +19,16 @@ interface FacilityPageProps {
 }
 
 export async function generateStaticParams() {
-  return sampleFacilities.map((facility) => ({
+  const facilities = await fetchFacilitiesData()
+  return facilities.map((facility) => ({
     id: facility.id,
   }))
 }
 
 export default async function FacilityPage({ params }: FacilityPageProps) {
   const { id } = await params
-  const facility = sampleFacilities.find((f) => f.id === id)
+  const facilities = await fetchFacilitiesData()
+  const facility = facilities.find((f) => f.id === id)
 
   if (!facility) {
     notFound()
@@ -105,76 +108,33 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
               {/* Description */}
               <GlassCard>
                 <h2 className="text-lg font-semibold text-foreground mb-4">施設紹介</h2>
-                <p className="text-muted-foreground leading-relaxed">{facility.description}</p>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{facility.description}</p>
               </GlassCard>
 
-              {/* Planetarium Section */}
-              {facility.planetarium && (
-                <GlassCard>
-                  <div className="flex items-center gap-2 mb-4">
-                    <Star className="w-5 h-5 text-accent" />
-                    <h2 className="text-lg font-semibold text-foreground">プラネタリウム情報</h2>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-sm font-medium text-foreground mb-2">上映タイトル</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {facility.planetarium.titles.map((title, index) => (
-                          <TagBadge key={index}>{title}</TagBadge>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <h3 className="text-sm font-medium text-foreground mb-1">上映時間</h3>
-                        <p className="text-muted-foreground">{facility.planetarium.duration}</p>
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium text-foreground mb-1">スケジュール</h3>
-                        <p className="text-muted-foreground">{facility.planetarium.schedule}</p>
-                      </div>
-                    </div>
-                  </div>
-                </GlassCard>
-              )}
-
-              {/* Events Section */}
+              {/* Events Section (CBEDから自動連携されたものがここに表示されます) */}
               {facility.events && facility.events.length > 0 && (
                 <GlassCard>
                   <div className="flex items-center gap-2 mb-4">
                     <Calendar className="w-5 h-5 text-accent" />
-                    <h2 className="text-lg font-semibold text-foreground">イベント情報</h2>
+                    <h2 className="text-lg font-semibold text-foreground">連携イベント情報</h2>
                   </div>
                   <div className="space-y-4">
                     {facility.events.map((event, index) => (
-                      <div key={index} className="glass-strong rounded-xl p-4">
-                        <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <h3 className="font-medium text-foreground mb-1">{event.title}</h3>
-                            <p className="text-sm text-muted-foreground">{event.description}</p>
+                      <Link href={`/CBED/${event.id}`} key={index}>
+                        <div className="glass-strong rounded-xl p-4 hover:bg-primary/10 transition-colors cursor-pointer mb-3">
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <h3 className="font-medium text-foreground mb-1 group-hover:text-primary">{event.title}</h3>
+                            </div>
+                            <TagBadge variant="accent">{event.date}</TagBadge>
                           </div>
-                          <TagBadge variant="accent">{event.date}</TagBadge>
                         </div>
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 </GlassCard>
               )}
 
-              {/* Gallery Placeholder */}
-              <GlassCard>
-                <h2 className="text-lg font-semibold text-foreground mb-4">ギャラリー</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div
-                      key={i}
-                      className="aspect-square rounded-xl bg-secondary/30 flex items-center justify-center"
-                    >
-                      <ImageIcon className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                  ))}
-                </div>
-              </GlassCard>
             </div>
 
             {/* Sidebar */}
