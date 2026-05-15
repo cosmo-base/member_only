@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/CBMD/layout,_N_T_/CBMD/facility/layout,_N_T_/CBMD/facility/[id]/layout,_N_T_/CBMD/facility/[id]/page,_N_T_/CBMD/facility/tanegashima-space-center"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/CBMD/facility/$d$id/__PAGE__",
+    "/CBMD/facility/$d$id",
+    "/CBMD/facility",
+    "/CBMD",
+    "/_index",
+    "/_head"
+  ]
+}

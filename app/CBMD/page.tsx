@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { Map, Search, Database, ArrowRight, Calendar, Sparkles, MapPin } from "lucide-react"
-import { StarField } from "@/components/star-field"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
