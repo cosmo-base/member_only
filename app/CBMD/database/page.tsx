@@ -1,20 +1,24 @@
+// app/CBMD/database/page.tsx
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import Link from "next/link"
-import { MapPin, Star, Calendar, ArrowUpDown, Grid3X3, List, Filter, ExternalLink } from "lucide-react"
+import { MapPin, Star, Calendar, ArrowUpDown, Grid3X3, List, Filter, ExternalLink, Loader2 } from "lucide-react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { sampleFacilities, regions, facilityTypes } from "@/lib/CBMD"
+import { fetchFacilitiesData, regions, facilityTypes, Facility } from "@/lib/CBMD"
 
 type SortType = "name" | "region" | "updated"
 type ViewMode = "card" | "table"
 
 export default function DatabasePage() {
+  const [facilities, setFacilities] = useState<Facility[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
   const [sortBy, setSortBy] = useState<SortType>("name")
   const [viewMode, setViewMode] = useState<ViewMode>("card")
   const [selectedRegions, setSelectedRegions] = useState<string[]>([])
@@ -22,8 +26,17 @@ export default function DatabasePage() {
   const [hasEvent, setHasEvent] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
 
+  useEffect(() => {
+    async function loadData() {
+      const data = await fetchFacilitiesData()
+      setFacilities(data)
+      setIsLoading(false)
+    }
+    loadData()
+  }, [])
+
   const sortedFacilities = useMemo(() => {
-    let filtered = [...sampleFacilities]
+    let filtered = [...facilities]
 
     if (selectedRegions.length > 0) {
       filtered = filtered.filter((f) => selectedRegions.includes(f.region))
@@ -49,7 +62,7 @@ export default function DatabasePage() {
           return 0
       }
     })
-  }, [sortBy, selectedRegions, selectedCategories, hasEvent])
+  }, [facilities, sortBy, selectedRegions, selectedCategories, hasEvent])
 
   const handleRegionToggle = (region: string) => {
     setSelectedRegions((prev) =>
@@ -89,7 +102,6 @@ export default function DatabasePage() {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* View Mode Toggle */}
               <div className="glass rounded-lg p-1 flex">
                 <button
                   onClick={() => setViewMode("card")}
@@ -109,7 +121,6 @@ export default function DatabasePage() {
                 </button>
               </div>
 
-              {/* Mobile Filter Toggle */}
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
@@ -131,7 +142,6 @@ export default function DatabasePage() {
                   </Button>
                 </div>
 
-                {/* Sort Options */}
                 <div className="space-y-4">
                   <div>
                     <Label className="text-sm font-medium text-foreground mb-2 block">並び替え</Label>
@@ -157,7 +167,6 @@ export default function DatabasePage() {
                     </div>
                   </div>
 
-                  {/* Region Filter */}
                   <div>
                     <Label className="text-sm font-medium text-foreground mb-2 block">地方</Label>
                     <div className="space-y-2">
@@ -168,10 +177,7 @@ export default function DatabasePage() {
                             checked={selectedRegions.includes(region.name)}
                             onCheckedChange={() => handleRegionToggle(region.name)}
                           />
-                          <Label
-                            htmlFor={`region-${region.name}`}
-                            className="text-sm text-muted-foreground cursor-pointer"
-                          >
+                          <Label htmlFor={`region-${region.name}`} className="text-sm text-muted-foreground cursor-pointer">
                             {region.name}
                           </Label>
                         </div>
@@ -179,7 +185,6 @@ export default function DatabasePage() {
                     </div>
                   </div>
 
-                  {/* Category Filter */}
                   <div>
                     <Label className="text-sm font-medium text-foreground mb-2 block">施設カテゴリ</Label>
                     <div className="space-y-2">
@@ -190,10 +195,7 @@ export default function DatabasePage() {
                             checked={selectedCategories.includes(type)}
                             onCheckedChange={() => handleCategoryToggle(type)}
                           />
-                          <Label
-                            htmlFor={`category-${type}`}
-                            className="text-sm text-muted-foreground cursor-pointer"
-                          >
+                          <Label htmlFor={`category-${type}`} className="text-sm text-muted-foreground cursor-pointer">
                             {type}
                           </Label>
                         </div>
@@ -201,7 +203,6 @@ export default function DatabasePage() {
                     </div>
                   </div>
 
-                  {/* Event Filter */}
                   <div className="flex items-center space-x-2">
                     <Checkbox
                       id="has-event"
@@ -218,7 +219,12 @@ export default function DatabasePage() {
 
             {/* Content */}
             <div>
-              {viewMode === "card" ? (
+              {isLoading ? (
+                <div className="flex flex-col justify-center items-center py-20 gap-4">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">読み込み中...</p>
+                </div>
+              ) : viewMode === "card" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {sortedFacilities.map((facility) => (
                     <Link key={facility.id} href={`/CBMD/facility/${facility.id}`}>
