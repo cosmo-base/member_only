@@ -3,9 +3,7 @@
 import { useState, useMemo } from "react"
 import Link from "next/link"
 import { MapPin, Star, Calendar, ArrowUpDown, Grid3X3, List, Filter, ExternalLink } from "lucide-react"
-import { StarField } from "@/components/star-field"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
+import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
@@ -72,10 +70,13 @@ export default function DatabasePage() {
   }
 
   return (
+   <ContentPageLayout
+      title="Cosmo Base Museum Database"
+      level={4}
+      levelTitle="体系化"
+      logo="CBMD"
+   >
     <div className="min-h-screen relative">
-      <StarField />
-      <Header />
-
       <main className="relative z-10 pt-24 pb-12 px-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -323,8 +324,7 @@ export default function DatabasePage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
+   </ContentPageLayout>
   )
 }
