@@ -5,13 +5,11 @@ import {
   ExternalLink, Globe, Image as ImageIcon,
   Star, ChevronLeft, Twitter, Instagram, Youtube
 } from "lucide-react"
-import { StarField } from "@/components/star-field"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
 import { sampleFacilities } from "@/lib/data"
+import { ContentPageLayout } from "@/components/content-page-layout"
 
 interface FacilityPageProps {
   params: Promise<{
@@ -34,10 +32,13 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
   }
 
   return (
+   <ContentPageLayout
+      title="Cosmo Base Museum Database"
+      level={4}
+      levelTitle="体系化"
+      logo="CBMD"
+   >
     <div className="min-h-screen relative">
-      <StarField />
-      <Header />
-
       <main className="relative z-10 pt-24 pb-12">
         {/* Back Button */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
@@ -286,8 +287,7 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
+   </ContentPageLayout>
   )
 }
