@@ -1,14 +1,21 @@
+// app/CBMD/page.tsx
 import Link from "next/link"
 import { Map, Search, Database, ArrowRight, Calendar, Sparkles, MapPin } from "lucide-react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
-import { sampleFacilities, sampleEvents, spacecraftTags } from "@/lib/CBMD"
+import { fetchFacilitiesData, spacecraftTags } from "@/lib/CBMD"
+import { fetchEventsData } from "@/data/CBED"
 
-export default function MuseumPage() {
-  const featuredFacilities = sampleFacilities.slice(0, 4)
-  const recentFacilities = sampleFacilities.slice(4, 8)
+export default async function MuseumPage() {
+  const facilities = await fetchFacilitiesData()
+  const events = await fetchEventsData()
+  
+  const featuredFacilities = facilities.slice(0, 4)
+  const recentFacilities = [...facilities].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 4)
+  const recentEvents = events.slice(0, 3) // 最新のイベントを3つ取得
+
   return (
     <ContentPageLayout
       title="Cosmo Base Museum Database"
@@ -148,20 +155,21 @@ export default function MuseumPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {sampleEvents.map((event) => (
-                <GlassCard key={event.id} hover>
-                  <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden flex items-center justify-center">
-                    <Calendar className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs text-primary font-medium mb-1">{event.date}</p>
-                      <h3 className="font-semibold text-foreground line-clamp-2">{event.title}</h3>
-                      <p className="text-sm text-muted-foreground mt-1">{event.facilityName}</p>
+              {recentEvents.map((event) => (
+                <Link href={`/CBED/${event.id}`} key={event.id}>
+                  <GlassCard hover className="h-full">
+                    <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden flex items-center justify-center">
+                      <Calendar className="w-8 h-8 text-muted-foreground" />
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">{event.description}</p>
-                  </div>
-                </GlassCard>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-xs text-primary font-medium mb-1">{event.date}</p>
+                        <h3 className="font-semibold text-foreground line-clamp-2">{event.title}</h3>
+                        <p className="text-sm text-muted-foreground mt-1">{event.location}</p>
+                      </div>
+                    </div>
+                  </GlassCard>
+                </Link>
               ))}
             </div>
           </div>
