@@ -1,22 +1,23 @@
 import Link from "next/link"
 import { Map, Search, Database, ArrowRight, Calendar, Sparkles, MapPin } from "lucide-react"
 import { StarField } from "@/components/star-field"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
+import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
 import { sampleFacilities, sampleEvents, spacecraftTags } from "@/lib/data"
 
-export default function HomePage() {
+export default function MuseumPage() {
   const featuredFacilities = sampleFacilities.slice(0, 4)
   const recentFacilities = sampleFacilities.slice(4, 8)
-
   return (
+    <ContentPageLayout
+      title="Cosmo Base Museum Database"
+      level={4}
+      levelTitle="体系化"
+      logo="CBMD"
+    >
     <div className="min-h-screen relative">
-      <StarField />
-      <Header />
-
       <main className="relative z-10">
         {/* Hero Section */}
         <section className="min-h-screen flex items-center justify-center pt-16 px-4">
@@ -225,8 +226,7 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
+    </ContentPageLayout>
   )
 }
