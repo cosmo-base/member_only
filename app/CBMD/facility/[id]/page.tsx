@@ -18,10 +18,18 @@ interface FacilityPageProps {
   }>
 }
 
+// ★修正: export function generateStaticParams を Next.js が正しく認識できるようにしました！
 export async function generateStaticParams() {
   const facilities = await fetchFacilitiesData()
+  
+  // 施設データが存在しない場合は空配列を返す（エラー防止）
+  if (!facilities || facilities.length === 0) {
+    return []
+  }
+
+  // Next.jsのルールに沿って、{ id: "文字列" } の配列を返す
   return facilities.map((facility) => ({
-    id: facility.id,
+    id: String(facility.id),
   }))
 }
 
@@ -55,11 +63,20 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
 
         {/* Hero Image */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-          <div className="aspect-[21/9] rounded-3xl bg-secondary/30 overflow-hidden flex items-center justify-center glass">
-            <div className="text-center">
-              <ImageIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">施設画像</p>
-            </div>
+          <div className="aspect-[21/9] rounded-3xl bg-secondary/30 overflow-hidden flex items-center justify-center glass relative">
+            {/* ★修正: スプレッドシートから取得した画像があれば表示し、なければプレースホルダー */}
+            {facility.image && facility.image !== "/images/placeholder.jpg" ? (
+              <img 
+                src={facility.image} 
+                alt={facility.name} 
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="text-center">
+                <ImageIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">画像準備中</p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -92,23 +109,27 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
               </div>
 
               {/* Tags */}
-              <div>
-                <h2 className="text-lg font-semibold text-foreground mb-3">展示タグ</h2>
-                <div className="flex flex-wrap gap-2">
-                  {facility.tags.map((tag) => (
-                    <Link key={tag} href={`/CBMD/search?tag=${encodeURIComponent(tag)}`}>
-                      <button className="glass px-4 py-2 rounded-full text-foreground text-sm font-medium hover:bg-primary/20 hover:text-primary transition-all">
-                        {tag}
-                      </button>
-                    </Link>
-                  ))}
+              {facility.tags && facility.tags.length > 0 && (
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground mb-3">展示タグ</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {facility.tags.map((tag) => (
+                      <Link key={tag} href={`/CBMD/search?tag=${encodeURIComponent(tag)}`}>
+                        <button className="glass px-4 py-2 rounded-full text-foreground text-sm font-medium hover:bg-primary/20 hover:text-primary transition-all">
+                          {tag}
+                        </button>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Description */}
               <GlassCard>
                 <h2 className="text-lg font-semibold text-foreground mb-4">施設紹介</h2>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{facility.description}</p>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                  {facility.description || "施設の説明は現在準備中です。"}
+                </p>
               </GlassCard>
 
               {/* Events Section (CBEDから自動連携されたものがここに表示されます) */}
@@ -147,78 +168,80 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
                     <Clock className="w-5 h-5 text-primary mt-0.5" />
                     <div>
                       <h3 className="text-sm font-medium text-foreground">営業時間</h3>
-                      <p className="text-sm text-muted-foreground">{facility.openingHours}</p>
+                      <p className="text-sm text-muted-foreground">{facility.openingHours || "お問い合わせください"}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Calendar className="w-5 h-5 text-primary mt-0.5" />
                     <div>
                       <h3 className="text-sm font-medium text-foreground">休館日</h3>
-                      <p className="text-sm text-muted-foreground">{facility.closedDays}</p>
+                      <p className="text-sm text-muted-foreground">{facility.closedDays || "お問い合わせください"}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <DollarSign className="w-5 h-5 text-primary mt-0.5" />
                     <div>
                       <h3 className="text-sm font-medium text-foreground">入館料</h3>
-                      <p className="text-sm text-muted-foreground">{facility.admissionFee}</p>
+                      <p className="text-sm text-muted-foreground">{facility.admissionFee || "お問い合わせください"}</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <Train className="w-5 h-5 text-primary mt-0.5" />
                     <div>
                       <h3 className="text-sm font-medium text-foreground">アクセス</h3>
-                      <p className="text-sm text-muted-foreground">{facility.access}</p>
+                      <p className="text-sm text-muted-foreground">{facility.access || "お問い合わせください"}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Links */}
-                <div className="mt-6 pt-6 border-t border-border/30">
-                  <h3 className="text-sm font-medium text-foreground mb-3">リンク</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {facility.website && (
-                      <a
-                        href={facility.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"
-                      >
-                        <Globe className="w-5 h-5" />
-                      </a>
-                    )}
-                    {facility.twitter && (
-                      <a
-                        href={`https://twitter.com/${facility.twitter}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"
-                      >
-                        <Twitter className="w-5 h-5" />
-                      </a>
-                    )}
-                    {facility.instagram && (
-                      <a
-                        href={`https://instagram.com/${facility.instagram}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"
-                      >
-                        <Instagram className="w-5 h-5" />
-                      </a>
-                    )}
-                    {facility.youtube && (
-                      <a
-                        href={`https://youtube.com/${facility.youtube}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"
-                      >
-                        <Youtube className="w-5 h-5" />
-                      </a>
-                    )}
+                {(facility.website || facility.twitter || facility.instagram || facility.youtube) && (
+                  <div className="mt-6 pt-6 border-t border-border/30">
+                    <h3 className="text-sm font-medium text-foreground mb-3">リンク</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {facility.website && (
+                        <a
+                          href={facility.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"
+                        >
+                          <Globe className="w-5 h-5" />
+                        </a>
+                      )}
+                      {facility.twitter && (
+                        <a
+                          href={facility.twitter.startsWith('http') ? facility.twitter : `https://twitter.com/${facility.twitter}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"
+                        >
+                          <Twitter className="w-5 h-5" />
+                        </a>
+                      )}
+                      {facility.instagram && (
+                        <a
+                          href={facility.instagram.startsWith('http') ? facility.instagram : `https://instagram.com/${facility.instagram}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"
+                        >
+                          <Instagram className="w-5 h-5" />
+                        </a>
+                      )}
+                      {facility.youtube && (
+                        <a
+                          href={facility.youtube.startsWith('http') ? facility.youtube : `https://youtube.com/${facility.youtube}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"
+                        >
+                          <Youtube className="w-5 h-5" />
+                        </a>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* CTA Button */}
                 {facility.website && (
@@ -237,11 +260,13 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
                 )}
 
                 {/* Last Updated */}
-                <div className="mt-6 pt-4 border-t border-border/30">
-                  <p className="text-xs text-muted-foreground text-center">
-                    最終更新: {facility.updatedAt}
-                  </p>
-                </div>
+                {facility.updatedAt && (
+                  <div className="mt-6 pt-4 border-t border-border/30">
+                    <p className="text-xs text-muted-foreground text-center">
+                      最終更新: {facility.updatedAt}
+                    </p>
+                  </div>
+                )}
               </GlassCard>
             </div>
           </div>
