@@ -18,19 +18,22 @@ interface FacilityPageProps {
   }>
 }
 
-// ★修正: export function generateStaticParams を Next.js が正しく認識できるようにしました！
+// ★修正: export function generateStaticParams を Next.js が確実に認識・実行できる形に調整しました。
 export async function generateStaticParams() {
-  const facilities = await fetchFacilitiesData()
-  
-  // 施設データが存在しない場合は空配列を返す（エラー防止）
-  if (!facilities || facilities.length === 0) {
-    return []
-  }
+  try {
+    const facilities = await fetchFacilitiesData();
+    
+    if (!facilities || facilities.length === 0) {
+      return [];
+    }
 
-  // Next.jsのルールに沿って、{ id: "文字列" } の配列を返す
-  return facilities.map((facility) => ({
-    id: String(facility.id),
-  }))
+    return facilities.map((facility) => ({
+      id: String(facility.id),
+    }));
+  } catch (error) {
+    console.error("Error in generateStaticParams:", error);
+    return [];
+  }
 }
 
 export default async function FacilityPage({ params }: FacilityPageProps) {
@@ -64,7 +67,6 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
         {/* Hero Image */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
           <div className="aspect-[21/9] rounded-3xl bg-secondary/30 overflow-hidden flex items-center justify-center glass relative">
-            {/* ★修正: スプレッドシートから取得した画像があれば表示し、なければプレースホルダー */}
             {facility.image && facility.image !== "/images/placeholder.jpg" ? (
               <img 
                 src={facility.image} 
