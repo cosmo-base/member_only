@@ -1,30 +1,43 @@
+// app/CBMD/search/page.tsx
 "use client"
 
-import { useState, useMemo, Suspense } from "react"
+import { useState, useMemo, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { Search, MapPin, Star, Calendar, X } from "lucide-react"
+import { Search, MapPin, Star, Calendar, X, Loader2 } from "lucide-react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { sampleFacilities, spacecraftTags, categoryTags, regions, facilityTypes } from "@/lib/CBMD"
+import { fetchFacilitiesData, spacecraftTags, categoryTags, regions, facilityTypes, Facility } from "@/lib/CBMD"
 
 function SearchContent() {
   const searchParams = useSearchParams()
   const initialTag = searchParams.get("tag") || ""
   
+  const [facilities, setFacilities] = useState<Facility[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTags, setSelectedTags] = useState<string[]>(initialTag ? [initialTag] : [])
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
   const [selectedPrefecture, setSelectedPrefecture] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
+  useEffect(() => {
+    async function loadData() {
+      const data = await fetchFacilitiesData()
+      setFacilities(data)
+      setIsLoading(false)
+    }
+    loadData()
+  }, [])
+
   const allTags = [...spacecraftTags, ...categoryTags]
 
   const filteredFacilities = useMemo(() => {
-    return sampleFacilities.filter((facility) => {
+    return facilities.filter((facility) => {
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
         const matchesName = facility.name.toLowerCase().includes(query)
@@ -45,7 +58,7 @@ function SearchContent() {
 
       return true
     })
-  }, [searchQuery, selectedTags, selectedRegion, selectedPrefecture, selectedCategory])
+  }, [facilities, searchQuery, selectedTags, selectedRegion, selectedPrefecture, selectedCategory])
 
   const handleTagToggle = (tag: string) => {
     setSelectedTags((prev) =>
@@ -78,7 +91,6 @@ function SearchContent() {
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">検索で探す</h1>
             <p className="text-muted-foreground mb-8">地域、カテゴリ、タグで施設を検索</p>
 
-            {/* Main Search Input */}
             <div className="max-w-2xl mx-auto relative">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -93,10 +105,8 @@ function SearchContent() {
             </div>
           </div>
 
-          {/* Filter Section */}
           <GlassCard className="mb-8">
             <div className="space-y-6">
-              {/* Region Filter */}
               <div>
                 <h3 className="text-sm font-medium text-foreground mb-3">地方で絞り込み</h3>
                 <div className="flex flex-wrap gap-2">
@@ -119,7 +129,6 @@ function SearchContent() {
                 </div>
               </div>
 
-              {/* Prefecture Filter */}
               {selectedRegion && (
                 <div>
                   <h3 className="text-sm font-medium text-foreground mb-3">都道府県で絞り込み</h3>
@@ -143,7 +152,6 @@ function SearchContent() {
                 </div>
               )}
 
-              {/* Category Filter */}
               <div>
                 <h3 className="text-sm font-medium text-foreground mb-3">施設カテゴリ</h3>
                 <div className="flex flex-wrap gap-2">
@@ -163,7 +171,6 @@ function SearchContent() {
                 </div>
               </div>
 
-              {/* Tag Search */}
               <div>
                 <h3 className="text-sm font-medium text-foreground mb-3">タグで検索</h3>
                 <div className="flex flex-wrap gap-2">
@@ -183,7 +190,6 @@ function SearchContent() {
                 </div>
               </div>
 
-              {/* Active Filters */}
               {hasActiveFilters && (
                 <div className="flex items-center gap-2 pt-4 border-t border-border/30">
                   <span className="text-sm text-muted-foreground">適用中:</span>
@@ -237,15 +243,18 @@ function SearchContent() {
             </div>
           </GlassCard>
 
-          {/* Results Count */}
           <div className="mb-6">
             <p className="text-muted-foreground">
               <span className="text-primary font-semibold text-xl">{filteredFacilities.length}</span> 件の施設が見つかりました
             </p>
           </div>
 
-          {/* Results Grid */}
-          {filteredFacilities.length > 0 ? (
+          {isLoading ? (
+            <div className="flex flex-col justify-center items-center py-20 gap-4">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground">施設を読み込み中...</p>
+            </div>
+          ) : filteredFacilities.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredFacilities.map((facility) => (
                 <Link key={facility.id} href={`/CBMD/facility/${facility.id}`}>
@@ -255,7 +264,7 @@ function SearchContent() {
                     </div>
                     <div className="space-y-3">
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <TagBadge variant="primary">{facility.category}</TagBadge>
                           {facility.hasPlanetarium && (
                             <TagBadge variant="accent">
