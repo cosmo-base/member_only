@@ -63,13 +63,6 @@ function SearchContent() {
 
   const hasActiveFilters = searchQuery || selectedTags.length > 0 || selectedRegion || selectedPrefecture || selectedCategory
 
-  import { ContentPageLayout } from "@/components/content-page-layout"
-    <ContentPageLayout
-      title="Cosmo Base Museum Database"
-      level={4}
-      levelTitle="体系化"
-      logo="CBMD"
-    >
   return (
       <ContentPageLayout
         title="Cosmo Base Museum Database"
