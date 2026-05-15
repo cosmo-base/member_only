@@ -4,9 +4,7 @@ import { useState, useMemo, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Search, MapPin, Star, Calendar, X } from "lucide-react"
-import { StarField } from "@/components/star-field"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
+import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Input } from "@/components/ui/input"
@@ -65,13 +63,23 @@ function SearchContent() {
 
   const hasActiveFilters = searchQuery || selectedTags.length > 0 || selectedRegion || selectedPrefecture || selectedCategory
 
+  import { ContentPageLayout } from "@/components/content-page-layout"
+    <ContentPageLayout
+      title="Cosmo Base Museum Database"
+      level={4}
+      levelTitle="体系化"
+      logo="CBMD"
+    >
   return (
-    <div className="min-h-screen relative">
-      <StarField />
-      <Header />
-
-      <main className="relative z-10 pt-24 pb-12 px-4">
-        <div className="max-w-7xl mx-auto">
+      <ContentPageLayout
+        title="Cosmo Base Museum Database"
+        level={4}
+        levelTitle="体系化"
+        logo="CBMD"
+        >
+        <div className="min-h-screen relative">
+          <main className="relative z-10 pt-24 pb-12 px-4">
+            <div className="max-w-7xl mx-auto">
           {/* Search Header */}
           <div className="text-center mb-12">
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">検索で探す</h1>
@@ -296,11 +304,10 @@ function SearchContent() {
               </Button>
             </GlassCard>
           )}
+            </div>
+          </main>
         </div>
-      </main>
-
-      <Footer />
-    </div>
+      </ContentPageLayout>
   )
 }
 
