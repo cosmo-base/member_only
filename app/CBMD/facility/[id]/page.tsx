@@ -3,8 +3,8 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { 
   MapPin, Clock, Calendar, DollarSign, Train, 
-  ExternalLink, Globe,
-  Star, ChevronLeft, Twitter, Instagram, Youtube
+  ExternalLink, Globe, Image as ImageIcon,
+  Star, ChevronLeft, Twitter, Instagram, Youtube, Home, Map as MapIcon, Search, Database
 } from "lucide-react"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
@@ -44,7 +44,34 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
       logo="CBMD"
    >
     <div className="min-h-screen relative">
-      <main className="relative z-10 pt-24 pb-12">
+      <main className="relative z-10 pt-8 pb-12">
+        
+        {/* ★追加: CBMD共通ナビゲーション */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 border-b border-border/30 pb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <Link href="/CBMD">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <Home className="w-4 h-4 mr-2" /> トップ
+              </Button>
+            </Link>
+            <Link href="/CBMD/map">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <MapIcon className="w-4 h-4 mr-2" /> マップ
+              </Button>
+            </Link>
+            <Link href="/CBMD/search">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <Search className="w-4 h-4 mr-2" /> 検索
+              </Button>
+            </Link>
+            <Link href="/CBMD/database">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <Database className="w-4 h-4 mr-2" /> データベース一覧
+              </Button>
+            </Link>
+          </div>
+        </div>
+
         {/* Back Button */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
           <Link href="/CBMD/database">
@@ -55,7 +82,7 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
           </Link>
         </div>
 
-        {/* Hero Image (★追加: 画像がない場合は枠ごと非表示) */}
+        {/* Hero Image (★修正: 画像がない場合は枠ごと非表示) */}
         {facility.image && facility.image !== "/images/placeholder.jpg" && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
             <div className="aspect-[21/9] rounded-3xl bg-secondary/30 overflow-hidden flex items-center justify-center glass relative">
@@ -122,7 +149,7 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
                 </GlassCard>
               )}
 
-              {/* Events Section (★追加: クライアントコンポーネントで過去イベントの折りたたみを実現) */}
+              {/* Events Section */}
               {facility.events && facility.events.length > 0 && (
                 <LinkedEvents events={facility.events} />
               )}
