@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import Link from "next/link"
-import { MapPin, Star, Calendar, ArrowUpDown, Grid3X3, List, Filter, ExternalLink, Loader2 } from "lucide-react"
+import { MapPin, Star, Calendar, ArrowUpDown, Grid3X3, List, Filter, ExternalLink, Loader2, Home, Map as MapIcon, Search, Database } from "lucide-react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
@@ -37,50 +37,23 @@ export default function DatabasePage() {
 
   const sortedFacilities = useMemo(() => {
     let filtered = [...facilities]
-
-    if (selectedRegions.length > 0) {
-      filtered = filtered.filter((f) => selectedRegions.includes(f.region))
-    }
-
-    if (selectedCategories.length > 0) {
-      filtered = filtered.filter((f) => selectedCategories.includes(f.category))
-    }
-
-    if (hasEvent) {
-      filtered = filtered.filter((f) => f.hasEvent)
-    }
+    if (selectedRegions.length > 0) filtered = filtered.filter((f) => selectedRegions.includes(f.region))
+    if (selectedCategories.length > 0) filtered = filtered.filter((f) => selectedCategories.includes(f.category))
+    if (hasEvent) filtered = filtered.filter((f) => f.hasEvent)
 
     return filtered.sort((a, b) => {
       switch (sortBy) {
-        case "name":
-          return a.nameKana.localeCompare(b.nameKana, "ja")
-        case "region":
-          return a.region.localeCompare(b.region, "ja")
-        case "updated":
-          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        default:
-          return 0
+        case "name": return a.nameKana.localeCompare(b.nameKana, "ja")
+        case "region": return a.region.localeCompare(b.region, "ja")
+        case "updated": return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        default: return 0
       }
     })
   }, [facilities, sortBy, selectedRegions, selectedCategories, hasEvent])
 
-  const handleRegionToggle = (region: string) => {
-    setSelectedRegions((prev) =>
-      prev.includes(region) ? prev.filter((r) => r !== region) : [...prev, region]
-    )
-  }
-
-  const handleCategoryToggle = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
-    )
-  }
-
-  const clearFilters = () => {
-    setSelectedRegions([])
-    setSelectedCategories([])
-    setHasEvent(false)
-  }
+  const handleRegionToggle = (region: string) => setSelectedRegions((prev) => prev.includes(region) ? prev.filter((r) => r !== region) : [...prev, region])
+  const handleCategoryToggle = (category: string) => setSelectedCategories((prev) => prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category])
+  const clearFilters = () => { setSelectedRegions([]); setSelectedCategories([]); setHasEvent(false) }
 
   return (
    <ContentPageLayout
@@ -90,7 +63,34 @@ export default function DatabasePage() {
       logo="CBMD"
    >
     <div className="min-h-screen relative">
-      <main className="relative z-10 pt-24 pb-12 px-4">
+      <main className="relative z-10 pt-8 pb-12 px-4">
+
+        {/* ★追加: CBMD共通ナビゲーション */}
+        <div className="max-w-7xl mx-auto mb-8 border-b border-border/30 pb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <Link href="/CBMD">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <Home className="w-4 h-4 mr-2" /> トップ
+              </Button>
+            </Link>
+            <Link href="/CBMD/map">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <MapIcon className="w-4 h-4 mr-2" /> マップ
+              </Button>
+            </Link>
+            <Link href="/CBMD/search">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <Search className="w-4 h-4 mr-2" /> 検索
+              </Button>
+            </Link>
+            <Link href="/CBMD/database">
+              <Button variant="ghost" size="sm" className="bg-primary/20 text-primary hover:bg-primary/30 font-bold">
+                <Database className="w-4 h-4 mr-2" /> データベース一覧
+              </Button>
+            </Link>
+          </div>
+        </div>
+
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -105,17 +105,13 @@ export default function DatabasePage() {
               <div className="glass rounded-lg p-1 flex">
                 <button
                   onClick={() => setViewMode("card")}
-                  className={`p-2 rounded-md transition-all ${
-                    viewMode === "card" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`p-2 rounded-md transition-all ${viewMode === "card" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   <Grid3X3 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode("table")}
-                  className={`p-2 rounded-md transition-all ${
-                    viewMode === "table" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`p-2 rounded-md transition-all ${viewMode === "table" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   <List className="w-4 h-4" />
                 </button>
@@ -137,9 +133,7 @@ export default function DatabasePage() {
               <GlassCard>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-foreground">フィルター</h2>
-                  <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">
-                    クリア
-                  </Button>
+                  <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">クリア</Button>
                 </div>
 
                 <div className="space-y-4">
@@ -154,14 +148,9 @@ export default function DatabasePage() {
                         <button
                           key={option.value}
                           onClick={() => setSortBy(option.value as SortType)}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${
-                            sortBy === option.value
-                              ? "bg-primary/20 text-primary"
-                              : "bg-secondary/30 text-muted-foreground hover:bg-secondary/50"
-                          }`}
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${sortBy === option.value ? "bg-primary/20 text-primary" : "bg-secondary/30 text-muted-foreground hover:bg-secondary/50"}`}
                         >
-                          {option.label}
-                          <ArrowUpDown className="w-3 h-3" />
+                          {option.label}<ArrowUpDown className="w-3 h-3" />
                         </button>
                       ))}
                     </div>
@@ -172,14 +161,8 @@ export default function DatabasePage() {
                     <div className="space-y-2">
                       {regions.map((region) => (
                         <div key={region.name} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`region-${region.name}`}
-                            checked={selectedRegions.includes(region.name)}
-                            onCheckedChange={() => handleRegionToggle(region.name)}
-                          />
-                          <Label htmlFor={`region-${region.name}`} className="text-sm text-muted-foreground cursor-pointer">
-                            {region.name}
-                          </Label>
+                          <Checkbox id={`region-${region.name}`} checked={selectedRegions.includes(region.name)} onCheckedChange={() => handleRegionToggle(region.name)} />
+                          <Label htmlFor={`region-${region.name}`} className="text-sm text-muted-foreground cursor-pointer">{region.name}</Label>
                         </div>
                       ))}
                     </div>
@@ -190,28 +173,16 @@ export default function DatabasePage() {
                     <div className="space-y-2">
                       {facilityTypes.map((type) => (
                         <div key={type} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`category-${type}`}
-                            checked={selectedCategories.includes(type)}
-                            onCheckedChange={() => handleCategoryToggle(type)}
-                          />
-                          <Label htmlFor={`category-${type}`} className="text-sm text-muted-foreground cursor-pointer">
-                            {type}
-                          </Label>
+                          <Checkbox id={`category-${type}`} checked={selectedCategories.includes(type)} onCheckedChange={() => handleCategoryToggle(type)} />
+                          <Label htmlFor={`category-${type}`} className="text-sm text-muted-foreground cursor-pointer">{type}</Label>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="has-event"
-                      checked={hasEvent}
-                      onCheckedChange={(checked) => setHasEvent(checked === true)}
-                    />
-                    <Label htmlFor="has-event" className="text-sm text-muted-foreground cursor-pointer">
-                      イベント開催中のみ
-                    </Label>
+                    <Checkbox id="has-event" checked={hasEvent} onCheckedChange={(checked) => setHasEvent(checked === true)} />
+                    <Label htmlFor="has-event" className="text-sm text-muted-foreground cursor-pointer">イベント開催中のみ</Label>
                   </div>
                 </div>
               </GlassCard>
@@ -237,10 +208,7 @@ export default function DatabasePage() {
                             <div className="flex items-center gap-2 mb-2 flex-wrap">
                               <TagBadge variant="primary">{facility.category}</TagBadge>
                               {facility.hasPlanetarium && (
-                                <TagBadge variant="accent">
-                                  <Star className="w-3 h-3 mr-1" />
-                                  プラネタリウム
-                                </TagBadge>
+                                <TagBadge variant="accent"><Star className="w-3 h-3 mr-1" />プラネタリウム</TagBadge>
                               )}
                             </div>
                             <h3 className="font-semibold text-foreground line-clamp-2">{facility.name}</h3>
@@ -250,18 +218,11 @@ export default function DatabasePage() {
                             </p>
                           </div>
                           <div className="flex flex-wrap gap-1">
-                            {facility.tags.slice(0, 3).map((tag) => (
-                              <TagBadge key={tag}>{tag}</TagBadge>
-                            ))}
+                            {facility.tags.slice(0, 3).map((tag) => <TagBadge key={tag}>{tag}</TagBadge>)}
                           </div>
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
                             <span>更新: {facility.updatedAt}</span>
-                            {facility.hasEvent && (
-                              <span className="flex items-center gap-1 text-accent">
-                                <Calendar className="w-3 h-3" />
-                                イベント
-                              </span>
-                            )}
+                            {facility.hasEvent && <span className="flex items-center gap-1 text-accent"><Calendar className="w-3 h-3" />イベント</span>}
                           </div>
                         </div>
                       </GlassCard>
@@ -288,12 +249,8 @@ export default function DatabasePage() {
                             <div>
                               <span className="font-medium text-foreground">{facility.name}</span>
                               <div className="flex items-center gap-2 mt-1">
-                                {facility.hasPlanetarium && (
-                                  <Star className="w-3 h-3 text-accent" />
-                                )}
-                                {facility.hasEvent && (
-                                  <Calendar className="w-3 h-3 text-accent" />
-                                )}
+                                {facility.hasPlanetarium && <Star className="w-3 h-3 text-accent" />}
+                                {facility.hasEvent && <Calendar className="w-3 h-3 text-accent" />}
                               </div>
                             </div>
                           </td>
@@ -305,14 +262,10 @@ export default function DatabasePage() {
                           </td>
                           <td className="py-4 px-4 hidden lg:table-cell">
                             <div className="flex flex-wrap gap-1">
-                              {facility.tags.slice(0, 2).map((tag) => (
-                                <TagBadge key={tag}>{tag}</TagBadge>
-                              ))}
+                              {facility.tags.slice(0, 2).map((tag) => <TagBadge key={tag}>{tag}</TagBadge>)}
                             </div>
                           </td>
-                          <td className="py-4 px-4 text-sm text-muted-foreground">
-                            {facility.updatedAt}
-                          </td>
+                          <td className="py-4 px-4 text-sm text-muted-foreground">{facility.updatedAt}</td>
                           <td className="py-4 px-4">
                             <Link href={`/CBMD/facility/${facility.id}`}>
                               <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
