@@ -27,7 +27,8 @@ export interface Facility {
   updatedAt: string
 }
 
-const CBMD_SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDvzMbN9CNa_PXwmre1IFid8fw7rD2yG0IlBnifsjtrtDN0cy3n-nQlEFvKQbE4w06TXTHoZ4edpzj/pub?gid=0&single=true&output=csv&v=1";
+// ★修正: 末尾の固定パラメータを削除し、関数内で動的にタイムスタンプを付与できるようにします
+const CBMD_SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDvzMbN9CNa_PXwmre1IFid8fw7rD2yG0IlBnifsjtrtDN0cy3n-nQlEFvKQbE4w06TXTHoZ4edpzj/pub?gid=0&single=true&output=csv";
 
 export const facilityTypes = ["科学館", "博物館", "美術館", "JAXA関連施設", "大学展示", "プラネタリウム", "天文台", "イベント施設"]
 export const categoryTags = ["地球", "リモートセンシング", "プラネタリウム", "望遠鏡", "天文・天体", "ロケット", "人工衛星", "地球観測", "宇宙ステーション"]
@@ -122,8 +123,11 @@ function parseFacilityCSV(csvText: string): any[] {
 
 export async function fetchFacilitiesData(): Promise<Facility[]> {
   try {
+    // ★修正: URLの末尾に毎回異なるタイムスタンプを付与し、Next.jsやGitHub Actionsのキャッシュを完全に強制破壊します
+    const cacheBusterUrl = `${CBMD_SPREADSHEET_BASE_URL}&_t=${Date.now()}`;
+    
     const [facilitiesRes, allEvents] = await Promise.all([
-      fetch(CBMD_SPREADSHEET_URL), // ★修正: { next: { revalidate: 60 } } を削除して完全静的化
+      fetch(cacheBusterUrl),
       fetchEventsData()
     ]);
 
@@ -132,7 +136,6 @@ export async function fetchFacilitiesData(): Promise<Facility[]> {
     const text = await facilitiesRes.text();
     const rawFacilities = parseFacilityCSV(text);
 
-    // ★追加: CBEDと同じように成功ログを出す
     console.log(`✅ CBMD.ts: スプレッドシートから ${rawFacilities.length} 件の施設データを読み込みました！`);
 
     return rawFacilities.map(raw => {
