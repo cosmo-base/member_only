@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "react-simple-maps"
-import { MapPin, X, ExternalLink, Filter, Loader2 } from "lucide-react"
+import { MapPin, X, ExternalLink, Filter, Loader2, Home, Map as MapIcon, Search, Database } from "lucide-react"
 import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
@@ -45,7 +45,7 @@ export default function MapPage() {
   const [hasEvent, setHasEvent] = useState(false)
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null)
   const [showFilters, setShowFilters] = useState(false)
-  const [mapZoom, setMapZoom] = useState(1) // ★追加: ズーム状態を管理
+  const [mapZoom, setMapZoom] = useState(1)
 
   useEffect(() => {
     async function loadData() {
@@ -97,7 +97,34 @@ export default function MapPage() {
       logo="CBMD"
     >
     <div className="min-h-screen relative">
-      <main className="relative z-10 pt-24 pb-12 px-4">
+      <main className="relative z-10 pt-8 pb-12 px-4">
+        
+        {/* ★追加: CBMD共通ナビゲーション */}
+        <div className="max-w-7xl mx-auto mb-8 border-b border-border/30 pb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <Link href="/CBMD">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <Home className="w-4 h-4 mr-2" /> トップ
+              </Button>
+            </Link>
+            <Link href="/CBMD/map">
+              <Button variant="ghost" size="sm" className="bg-primary/20 text-primary hover:bg-primary/30 font-bold">
+                <MapIcon className="w-4 h-4 mr-2" /> マップ
+              </Button>
+            </Link>
+            <Link href="/CBMD/search">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <Search className="w-4 h-4 mr-2" /> 検索
+              </Button>
+            </Link>
+            <Link href="/CBMD/database">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <Database className="w-4 h-4 mr-2" /> データベース一覧
+              </Button>
+            </Link>
+          </div>
+        </div>
+
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">地図から探す</h1>
@@ -105,19 +132,13 @@ export default function MapPage() {
           </div>
 
           <div className="lg:grid lg:grid-cols-[320px_1fr] gap-6">
-            {/* Mobile Filter Toggle */}
             <div className="lg:hidden mb-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className="w-full glass border-border/30"
-              >
+              <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="w-full glass border-border/30">
                 <Filter className="w-4 h-4 mr-2" />
                 フィルター {filteredFacilities.length}件
               </Button>
             </div>
 
-            {/* Filters Sidebar */}
             <aside className={`${showFilters ? "block" : "hidden"} lg:block space-y-6 mb-6 lg:mb-0`}>
               <GlassCard>
                 <div className="flex items-center justify-between mb-4">
@@ -127,7 +148,6 @@ export default function MapPage() {
                   </Button>
                 </div>
 
-                {/* Region Filter */}
                 <div className="space-y-4">
                   <div>
                     <Label className="text-sm font-medium text-foreground mb-2 block">地方</Label>
@@ -151,83 +171,56 @@ export default function MapPage() {
                     </div>
                   </div>
 
-                  {/* Prefecture Filter */}
                   {selectedRegion && (
                     <div>
                       <Label className="text-sm font-medium text-foreground mb-2 block">都道府県</Label>
                       <div className="flex flex-wrap gap-2">
-                        {regions
-                          .find((r) => r.name === selectedRegion)
-                          ?.prefectures.map((pref) => (
-                            <button
-                              key={pref}
-                              onClick={() => setSelectedPrefecture(selectedPrefecture === pref ? null : pref)}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                                selectedPrefecture === pref
-                                  ? "bg-primary/20 text-primary"
-                                  : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"
-                              }`}
-                            >
-                              {pref}
-                            </button>
-                          ))}
+                        {regions.find((r) => r.name === selectedRegion)?.prefectures.map((pref) => (
+                          <button
+                            key={pref}
+                            onClick={() => setSelectedPrefecture(selectedPrefecture === pref ? null : pref)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                              selectedPrefecture === pref
+                                ? "bg-primary/20 text-primary"
+                                : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"
+                            }`}
+                          >
+                            {pref}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   )}
 
-                  {/* Category Filter */}
                   <div>
                     <Label className="text-sm font-medium text-foreground mb-2 block">展示カテゴリ</Label>
                     <div className="space-y-2">
                       {facilityTypes.map((type) => (
                         <div key={type} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={type}
-                            checked={selectedCategories.includes(type)}
-                            onCheckedChange={() => handleCategoryToggle(type)}
-                          />
-                          <Label htmlFor={type} className="text-sm text-muted-foreground cursor-pointer">
-                            {type}
-                          </Label>
+                          <Checkbox id={type} checked={selectedCategories.includes(type)} onCheckedChange={() => handleCategoryToggle(type)} />
+                          <Label htmlFor={type} className="text-sm text-muted-foreground cursor-pointer">{type}</Label>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* Additional Filters */}
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="planetarium"
-                        checked={hasPlanetarium}
-                        onCheckedChange={(checked) => setHasPlanetarium(checked === true)}
-                      />
-                      <Label htmlFor="planetarium" className="text-sm text-muted-foreground cursor-pointer">
-                        プラネタリウムあり
-                      </Label>
+                      <Checkbox id="planetarium" checked={hasPlanetarium} onCheckedChange={(checked) => setHasPlanetarium(checked === true)} />
+                      <Label htmlFor="planetarium" className="text-sm text-muted-foreground cursor-pointer">プラネタリウムあり</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="event"
-                        checked={hasEvent}
-                        onCheckedChange={(checked) => setHasEvent(checked === true)}
-                      />
-                      <Label htmlFor="event" className="text-sm text-muted-foreground cursor-pointer">
-                        イベント開催中
-                      </Label>
+                      <Checkbox id="event" checked={hasEvent} onCheckedChange={(checked) => setHasEvent(checked === true)} />
+                      <Label htmlFor="event" className="text-sm text-muted-foreground cursor-pointer">イベント開催中</Label>
                     </div>
                   </div>
                 </div>
-
                 <div className="mt-6 pt-4 border-t border-border/30">
-                  <p className="text-sm text-muted-foreground">
-                    <span className="text-primary font-semibold">{filteredFacilities.length}</span> 件の施設が見つかりました
-                  </p>
+                  <p className="text-sm text-muted-foreground"><span className="text-primary font-semibold">{filteredFacilities.length}</span> 件の施設が見つかりました</p>
                 </div>
               </GlassCard>
             </aside>
 
-            {/* Map Container */}
             <div className="relative">
               {isLoading ? (
                 <GlassCard className="p-2 sm:p-4 flex flex-col items-center justify-center min-h-[400px]">
@@ -237,12 +230,7 @@ export default function MapPage() {
               ) : (
                 <GlassCard className="p-2 sm:p-4">
                   <div className="aspect-[4/3] sm:aspect-video rounded-xl overflow-hidden bg-background/50">
-                    <ComposableMap
-                      projection="geoMercator"
-                      projectionConfig={{ center: [137, 38], scale: 1800 }}
-                      style={{ width: "100%", height: "100%" }}
-                    >
-                      {/* ★追加: onMoveEndでズーム率を更新 */}
+                    <ComposableMap projection="geoMercator" projectionConfig={{ center: [137, 38], scale: 1800 }} style={{ width: "100%", height: "100%" }}>
                       <ZoomableGroup onMoveEnd={({ zoom }) => setMapZoom(zoom)}>
                         <Geographies geography={JAPAN_TOPO_JSON}>
                           {({ geographies }) =>
@@ -253,22 +241,13 @@ export default function MapPage() {
                                 fill="oklch(0.2 0.03 260)"
                                 stroke="oklch(0.35 0.04 260 / 0.5)"
                                 strokeWidth={0.5}
-                                style={{
-                                  default: { outline: "none" },
-                                  hover: { fill: "oklch(0.25 0.04 260)", outline: "none" },
-                                  pressed: { outline: "none" },
-                                }}
+                                style={{ default: { outline: "none" }, hover: { fill: "oklch(0.25 0.04 260)", outline: "none" }, pressed: { outline: "none" } }}
                               />
                             ))
                           }
                         </Geographies>
                         {markers.map(({ facility, coordinates }) => (
-                          <Marker
-                            key={facility.id}
-                            coordinates={coordinates as [number, number]}
-                            onClick={() => setSelectedFacility(facility)}
-                          >
-                            {/* ★追加: ズーム率の逆数をかけて大きさを相殺する */}
+                          <Marker key={facility.id} coordinates={coordinates as [number, number]} onClick={() => setSelectedFacility(facility)}>
                             <g style={{ transform: `scale(${1 / mapZoom})` }}>
                               <g className="cursor-pointer transition-transform hover:scale-125" style={{ transform: "translate(-12px, -24px)" }}>
                                 <circle r={8} cx={12} cy={20} fill="oklch(0.7 0.15 220)" stroke="oklch(0.9 0.05 220)" strokeWidth={2} className="drop-shadow-lg" />
@@ -283,33 +262,25 @@ export default function MapPage() {
                 </GlassCard>
               )}
 
-              {/* Selected Facility Card */}
               {selectedFacility && (
                 <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80">
                   <GlassCard className="glass-strong">
                     <div className="flex items-start justify-between mb-3">
                       <TagBadge variant="primary">{selectedFacility.category}</TagBadge>
-                      <button
-                        onClick={() => setSelectedFacility(null)}
-                        className="text-muted-foreground hover:text-foreground transition-colors"
-                      >
+                      <button onClick={() => setSelectedFacility(null)} className="text-muted-foreground hover:text-foreground transition-colors">
                         <X className="w-5 h-5" />
                       </button>
                     </div>
                     <h3 className="font-semibold text-foreground mb-1">{selectedFacility.name}</h3>
                     <p className="text-sm text-muted-foreground mb-3">
-                      <MapPin className="w-3 h-3 inline mr-1" />
-                      {selectedFacility.address}
+                      <MapPin className="w-3 h-3 inline mr-1" />{selectedFacility.address}
                     </p>
                     <div className="flex flex-wrap gap-1 mb-4">
-                      {selectedFacility.tags.slice(0, 4).map((tag) => (
-                        <TagBadge key={tag}>{tag}</TagBadge>
-                      ))}
+                      {selectedFacility.tags.slice(0, 4).map((tag) => <TagBadge key={tag}>{tag}</TagBadge>)}
                     </div>
                     <Link href={`/CBMD/facility/${selectedFacility.id}`}>
                       <Button className="w-full bg-primary/20 text-primary hover:bg-primary/30">
-                        詳細を見る
-                        <ExternalLink className="w-4 h-4 ml-2" />
+                        詳細を見る <ExternalLink className="w-4 h-4 ml-2" />
                       </Button>
                     </Link>
                   </GlassCard>
