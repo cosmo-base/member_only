@@ -3,8 +3,10 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "react-simple-maps"
-import { MapPin, X, ExternalLink, Filter, Loader2, Home, Map as MapIcon, Search, Database } from "lucide-react"
+import useSupercluster from "use-supercluster"
+import { MapPin, X, ExternalLink, Filter, Loader2, Home, Map as MapIcon, Search, Database, Navigation } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
@@ -14,6 +16,16 @@ import { Label } from "@/components/ui/label"
 import { fetchFacilitiesData, regions, facilityTypes, Facility } from "@/lib/CBMD"
 
 const JAPAN_TOPO_JSON = "https://raw.githubusercontent.com/dataofjapan/land/master/japan.topojson"
+const IMPERIAL_PALACE: [number, number] = [139.7528, 35.6852]
+
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371
+  const dLat = (lat2 - lat1) * (Math.PI / 180)
+  const dLon = (lon2 - lon1) * (Math.PI / 180)
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+  return R * c
+}
 
 const prefectureCoordinates: Record<string, [number, number]> = {
   "北海道": [141.3469, 43.0642], "青森県": [140.7402, 40.8246], "岩手県": [141.1527, 39.7036],
@@ -38,6 +50,13 @@ export default function MapPage() {
   const [facilities, setFacilities] = useState<Facility[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
+  const [center, setCenter] = useState<[number, number]>(IMPERIAL_PALACE)
+  const [mapZoom, setMapZoom] = useState(1)
+  const [mapBounds, setMapBounds] = useState<[number, number, number, number] | null>(null)
+  
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
+  const [isLocating, setIsLocating] = useState(false)
+
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
   const [selectedPrefecture, setSelectedPrefecture] = useState<string | null>(null)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
@@ -45,7 +64,6 @@ export default function MapPage() {
   const [hasEvent, setHasEvent] = useState(false)
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null)
   const [showFilters, setShowFilters] = useState(false)
-  const [mapZoom, setMapZoom] = useState(1)
 
   useEffect(() => {
     async function loadData() {
@@ -56,8 +74,30 @@ export default function MapPage() {
     loadData()
   }, [])
 
+  const handleGetLocation = () => {
+    setIsLocating(true)
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const loc: [number, number] = [position.coords.longitude, position.coords.latitude]
+          setUserLocation(loc)
+          setCenter(loc)
+          setMapZoom(4)
+          setIsLocating(false)
+        },
+        () => {
+          alert("現在地を取得できませんでした。ブラウザの位置情報許可を確認してください。")
+          setIsLocating(false)
+        }
+      )
+    } else {
+      alert("お使いのブラウザは位置情報に対応していません。")
+      setIsLocating(false)
+    }
+  }
+
   const filteredFacilities = useMemo(() => {
-    return facilities.filter((facility) => {
+    const filtered = facilities.filter((facility) => {
       if (selectedRegion && facility.region !== selectedRegion) return false
       if (selectedPrefecture && facility.prefecture !== selectedPrefecture) return false
       if (selectedCategories.length > 0 && !selectedCategories.includes(facility.category)) return false
@@ -65,41 +105,60 @@ export default function MapPage() {
       if (hasEvent && !facility.hasEvent) return false
       return true
     })
-  }, [facilities, selectedRegion, selectedPrefecture, selectedCategories, hasPlanetarium, hasEvent])
 
-  const markers = filteredFacilities.map((facility) => {
-    const coords = prefectureCoordinates[facility.prefecture]
-    return {
-      facility,
-      coordinates: coords || [139.6917, 35.6895],
+    if (userLocation) {
+      return filtered.map(facility => {
+        const coords = prefectureCoordinates[facility.prefecture] || IMPERIAL_PALACE
+        const dist = calculateDistance(userLocation[1], userLocation[0], coords[1], coords[0])
+        return { ...facility, _distance: dist }
+      }).sort((a, b) => (a._distance || 0) - (b._distance || 0))
     }
+    return filtered
+  }, [facilities, selectedRegion, selectedPrefecture, selectedCategories, hasPlanetarium, hasEvent, userLocation])
+
+  const points = useMemo(() => {
+    return filteredFacilities.map(facility => {
+      const baseCoords = prefectureCoordinates[facility.prefecture] || IMPERIAL_PALACE
+      const hash = facility.id.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)
+      const offsetLng = (hash % 100) * 0.0005
+      const offsetLat = ((hash / 100) % 100) * 0.0005
+      
+      // ★修正1: as const と型アサーションを使ってTypeScriptを納得させる
+      return {
+        type: "Feature" as const,
+        properties: { cluster: false, facilityId: facility.id, facility },
+        geometry: { type: "Point" as const, coordinates: [baseCoords[0] + offsetLng, baseCoords[1] + offsetLat] }
+      }
+    })
+  }, [filteredFacilities])
+
+  const bounds = mapBounds || [120, 20, 150, 50]
+
+  const { clusters } = useSupercluster({
+    points,
+    bounds,
+    zoom: mapZoom,
+    options: { radius: 40, maxZoom: 20 }
   })
 
   const handleCategoryToggle = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
-    )
+    setSelectedCategories((prev) => prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category])
   }
 
   const clearFilters = () => {
-    setSelectedRegion(null)
-    setSelectedPrefecture(null)
-    setSelectedCategories([])
-    setHasPlanetarium(false)
-    setHasEvent(false)
+    setSelectedRegion(null); setSelectedPrefecture(null); setSelectedCategories([]); setHasPlanetarium(false); setHasEvent(false);
   }
 
   return (
     <ContentPageLayout
       title="Cosmo Base Museum Database"
-      level={4}
-      levelTitle="体系化"
+      level={3}
+      levelTitle="リアル体験"
       logo="CBMD"
     >
     <div className="min-h-screen relative">
       <main className="relative z-10 pt-8 pb-12 px-4">
         
-        {/* ★追加: CBMD共通ナビゲーション */}
         <div className="max-w-7xl mx-auto mb-8 border-b border-border/30 pb-4">
           <div className="flex flex-wrap items-center gap-2">
             <Link href="/CBMD">
@@ -126,16 +185,25 @@ export default function MapPage() {
         </div>
 
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">地図から探す</h1>
-            <p className="text-muted-foreground">日本地図上で宇宙関連施設を探索</p>
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">地図から探す</h1>
+              <p className="text-muted-foreground">日本地図上で宇宙関連施設を探索</p>
+            </div>
+            <Button
+              onClick={handleGetLocation}
+              disabled={isLocating}
+              className="bg-primary/20 text-primary hover:bg-primary/30 font-bold"
+            >
+              <Navigation className={`w-4 h-4 mr-2 ${isLocating ? "animate-pulse" : ""}`} />
+              現在地から探す
+            </Button>
           </div>
 
           <div className="lg:grid lg:grid-cols-[320px_1fr] gap-6">
             <div className="lg:hidden mb-4">
               <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="w-full glass border-border/30">
-                <Filter className="w-4 h-4 mr-2" />
-                フィルター {filteredFacilities.length}件
+                <Filter className="w-4 h-4 mr-2" /> フィルター {filteredFacilities.length}件
               </Button>
             </div>
 
@@ -143,11 +211,8 @@ export default function MapPage() {
               <GlassCard>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-foreground">検索フィルター</h2>
-                  <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">
-                    クリア
-                  </Button>
+                  <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">クリア</Button>
                 </div>
-
                 <div className="space-y-4">
                   <div>
                     <Label className="text-sm font-medium text-foreground mb-2 block">地方</Label>
@@ -155,22 +220,14 @@ export default function MapPage() {
                       {regions.map((region) => (
                         <button
                           key={region.name}
-                          onClick={() => {
-                            setSelectedRegion(selectedRegion === region.name ? null : region.name)
-                            setSelectedPrefecture(null)
-                          }}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                            selectedRegion === region.name
-                              ? "bg-primary/20 text-primary"
-                              : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"
-                          }`}
+                          onClick={() => { setSelectedRegion(selectedRegion === region.name ? null : region.name); setSelectedPrefecture(null) }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${selectedRegion === region.name ? "bg-primary/20 text-primary" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}
                         >
                           {region.name}
                         </button>
                       ))}
                     </div>
                   </div>
-
                   {selectedRegion && (
                     <div>
                       <Label className="text-sm font-medium text-foreground mb-2 block">都道府県</Label>
@@ -179,11 +236,7 @@ export default function MapPage() {
                           <button
                             key={pref}
                             onClick={() => setSelectedPrefecture(selectedPrefecture === pref ? null : pref)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                              selectedPrefecture === pref
-                                ? "bg-primary/20 text-primary"
-                                : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"
-                            }`}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${selectedPrefecture === pref ? "bg-primary/20 text-primary" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}
                           >
                             {pref}
                           </button>
@@ -191,7 +244,6 @@ export default function MapPage() {
                       </div>
                     </div>
                   )}
-
                   <div>
                     <Label className="text-sm font-medium text-foreground mb-2 block">展示カテゴリ</Label>
                     <div className="space-y-2">
@@ -203,7 +255,6 @@ export default function MapPage() {
                       ))}
                     </div>
                   </div>
-
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <Checkbox id="planetarium" checked={hasPlanetarium} onCheckedChange={(checked) => setHasPlanetarium(checked === true)} />
@@ -219,6 +270,32 @@ export default function MapPage() {
                   <p className="text-sm text-muted-foreground"><span className="text-primary font-semibold">{filteredFacilities.length}</span> 件の施設が見つかりました</p>
                 </div>
               </GlassCard>
+
+              {userLocation && (
+                 <GlassCard className="h-[400px] flex flex-col">
+                   <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                     <MapPin className="w-4 h-4 text-accent" />
+                     近い順 ({filteredFacilities.length}件)
+                   </h3>
+                   <div className="space-y-3 overflow-y-auto pr-2 flex-1">
+                     {filteredFacilities.map(facility => (
+                       <Link href={`/CBMD/facility/${facility.id}`} key={facility.id} className="block group">
+                         <div className="p-3 rounded-lg border border-border/50 hover:bg-primary/10 transition-colors cursor-pointer relative">
+                           <h4 className="font-medium text-sm text-foreground mb-1 group-hover:text-primary transition-colors pr-5">
+                             {facility.name}
+                           </h4>
+                           <div className="flex items-center justify-between text-[11px] text-muted-foreground mt-1">
+                             <span className="line-clamp-1 mr-2">{facility.city}</span>
+                             <span className="text-accent font-medium shrink-0">
+                               {((facility as any)._distance || 0) < 1 ? Math.round((facility as any)._distance * 1000) + 'm' : ((facility as any)._distance || 0).toFixed(1) + 'km'}
+                             </span>
+                           </div>
+                         </div>
+                       </Link>
+                     ))}
+                   </div>
+                 </GlassCard>
+              )}
             </aside>
 
             <div className="relative">
@@ -228,10 +305,17 @@ export default function MapPage() {
                   <p>地図を読み込み中...</p>
                 </GlassCard>
               ) : (
-                <GlassCard className="p-2 sm:p-4">
-                  <div className="aspect-[4/3] sm:aspect-video rounded-xl overflow-hidden bg-background/50">
-                    <ComposableMap projection="geoMercator" projectionConfig={{ center: [137, 38], scale: 1800 }} style={{ width: "100%", height: "100%" }}>
-                      <ZoomableGroup onMoveEnd={({ zoom }) => setMapZoom(zoom)}>
+                <GlassCard className="p-2 sm:p-4 h-[600px] relative">
+                  <div className="w-full h-full rounded-xl overflow-hidden bg-background/50 relative">
+                    <ComposableMap projection="geoMercator" projectionConfig={{ center, scale: mapZoom * 1800 }} style={{ width: "100%", height: "100%" }}>
+                      <ZoomableGroup 
+                        center={center}
+                        zoom={mapZoom}
+                        onMoveEnd={(position) => {
+                          setMapZoom(position.zoom)
+                          setCenter(position.coordinates)
+                        }}
+                      >
                         <Geographies geography={JAPAN_TOPO_JSON}>
                           {({ geographies }) =>
                             geographies.map((geo) => (
@@ -240,22 +324,51 @@ export default function MapPage() {
                                 geography={geo}
                                 fill="oklch(0.2 0.03 260)"
                                 stroke="oklch(0.35 0.04 260 / 0.5)"
-                                strokeWidth={0.5}
+                                strokeWidth={0.5 / mapZoom}
                                 style={{ default: { outline: "none" }, hover: { fill: "oklch(0.25 0.04 260)", outline: "none" }, pressed: { outline: "none" } }}
                               />
                             ))
                           }
                         </Geographies>
-                        {markers.map(({ facility, coordinates }) => (
-                          <Marker key={facility.id} coordinates={coordinates as [number, number]} onClick={() => setSelectedFacility(facility)}>
-                            <g style={{ transform: `scale(${1 / mapZoom})` }}>
-                              <g className="cursor-pointer transition-transform hover:scale-125" style={{ transform: "translate(-12px, -24px)" }}>
-                                <circle r={8} cx={12} cy={20} fill="oklch(0.7 0.15 220)" stroke="oklch(0.9 0.05 220)" strokeWidth={2} className="drop-shadow-lg" />
-                                <circle r={3} cx={12} cy={20} fill="oklch(0.95 0.01 260)" />
+
+                        {clusters.map((cluster) => {
+                          const [longitude, latitude] = cluster.geometry.coordinates;
+                          const { cluster: isCluster, point_count: pointCount } = cluster.properties as any; // ★修正2: anyを使って回避
+
+                          if (isCluster) {
+                            const size = 16 + (pointCount / points.length) * 10;
+                            return (
+                              <Marker key={`cluster-${cluster.id}`} coordinates={[longitude, latitude]}>
+                                <g style={{ transform: `scale(${1 / mapZoom})` }}>
+                                  <circle r={size} fill="oklch(0.7 0.15 220)" stroke="oklch(0.9 0.05 220)" strokeWidth={2} />
+                                  <text textAnchor="middle" y={4} fill="#000" fontSize={12} fontWeight="bold">
+                                    {pointCount}
+                                  </text>
+                                </g>
+                              </Marker>
+                            );
+                          }
+
+                          const facility = (cluster.properties as any).facility; // ★修正2: anyを使って回避
+                          return (
+                            <Marker key={`facility-${facility.id}`} coordinates={[longitude, latitude]} onClick={() => setSelectedFacility(facility)}>
+                              <g style={{ transform: `scale(${1 / mapZoom})` }}>
+                                <g className="cursor-pointer transition-transform hover:scale-125" style={{ transform: "translate(-12px, -24px)" }}>
+                                  <circle r={8} cx={12} cy={20} fill="oklch(0.7 0.15 220)" stroke="oklch(0.9 0.05 220)" strokeWidth={2} className="drop-shadow-lg" />
+                                  <circle r={3} cx={12} cy={20} fill="oklch(0.95 0.01 260)" />
+                                </g>
                               </g>
+                            </Marker>
+                          )
+                        })}
+
+                        {userLocation && (
+                          <Marker coordinates={userLocation}>
+                            <g style={{ transform: `scale(${1 / mapZoom})` }}>
+                              <circle r={6} fill="#3b82f6" stroke="#fff" strokeWidth={2} className="animate-pulse" />
                             </g>
                           </Marker>
-                        ))}
+                        )}
                       </ZoomableGroup>
                     </ComposableMap>
                   </div>
@@ -263,7 +376,7 @@ export default function MapPage() {
               )}
 
               {selectedFacility && (
-                <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80">
+                <div className="absolute bottom-8 left-8 right-8 sm:left-auto sm:right-8 sm:w-80">
                   <GlassCard className="glass-strong">
                     <div className="flex items-start justify-between mb-3">
                       <TagBadge variant="primary">{selectedFacility.category}</TagBadge>

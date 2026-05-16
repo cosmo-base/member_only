@@ -4,7 +4,8 @@
 import { useState, useMemo, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { Search, MapPin, Star, Calendar, X, Loader2, Home, Map as MapIcon, Database } from "lucide-react"
+import Image from "next/image"
+import { Search, MapPin, Star, Calendar, X, Loader2, Home, Map as MapIcon, Database, Filter } from "lucide-react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
@@ -64,41 +65,23 @@ function SearchContent() {
   return (
       <ContentPageLayout
         title="Cosmo Base Museum Database"
-        level={4}
-        levelTitle="体系化"
+        level={3}
+        levelTitle="リアル体験"
         logo="CBMD"
         >
         <div className="min-h-screen relative">
           <main className="relative z-10 pt-8 pb-12 px-4">
             
-            {/* ★追加: CBMD共通ナビゲーション */}
             <div className="max-w-7xl mx-auto mb-8 border-b border-border/30 pb-4">
               <div className="flex flex-wrap items-center gap-2">
-                <Link href="/CBMD">
-                  <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
-                    <Home className="w-4 h-4 mr-2" /> トップ
-                  </Button>
-                </Link>
-                <Link href="/CBMD/map">
-                  <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
-                    <MapIcon className="w-4 h-4 mr-2" /> マップ
-                  </Button>
-                </Link>
-                <Link href="/CBMD/search">
-                  <Button variant="ghost" size="sm" className="bg-primary/20 text-primary hover:bg-primary/30 font-bold">
-                    <Search className="w-4 h-4 mr-2" /> 検索
-                  </Button>
-                </Link>
-                <Link href="/CBMD/database">
-                  <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
-                    <Database className="w-4 h-4 mr-2" /> データベース一覧
-                  </Button>
-                </Link>
+                <Link href="/CBMD"><Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground"><Home className="w-4 h-4 mr-2" /> トップ</Button></Link>
+                <Link href="/CBMD/map"><Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground"><MapIcon className="w-4 h-4 mr-2" /> マップ</Button></Link>
+                <Link href="/CBMD/search"><Button variant="ghost" size="sm" className="bg-primary/20 text-primary hover:bg-primary/30 font-bold"><Search className="w-4 h-4 mr-2" /> 検索</Button></Link>
+                <Link href="/CBMD/database"><Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground"><Database className="w-4 h-4 mr-2" /> データベース一覧</Button></Link>
               </div>
             </div>
 
             <div className="max-w-7xl mx-auto">
-          {/* Search Header */}
           <div className="text-center mb-12">
             <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">検索で探す</h1>
             <p className="text-muted-foreground mb-8">地域、カテゴリ、タグで施設を検索</p>
@@ -234,39 +217,30 @@ function SearchContent() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredFacilities.map((facility) => (
                 <Link key={facility.id} href={`/CBMD/facility/${facility.id}`}>
-                  <GlassCard hover className="h-full">
-                    <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden flex items-center justify-center">
-                      <MapPin className="w-8 h-8 text-muted-foreground" />
+                  <GlassCard hover className="h-full flex flex-col">
+                    <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden relative">
+                      {facility.image && facility.image !== "/images/placeholder.jpg" ? (
+                        <Image src={facility.image} alt={facility.name} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center"><MapPin className="w-8 h-8 text-muted-foreground" /></div>
+                      )}
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-3 flex-1 flex flex-col">
                       <div>
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <TagBadge variant="primary">{facility.category}</TagBadge>
-                          {facility.hasPlanetarium && (
-                            <TagBadge variant="accent">
-                              <Star className="w-3 h-3 mr-1" />
-                              プラネタリウム
-                            </TagBadge>
-                          )}
+                          {facility.hasPlanetarium && <TagBadge variant="accent"><Star className="w-3 h-3 mr-1" />プラネタリウム</TagBadge>}
                         </div>
                         <h3 className="font-semibold text-foreground line-clamp-2">{facility.name}</h3>
                         <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                          <MapPin className="w-3 h-3" />
-                          {facility.prefecture} {facility.city}
+                          <MapPin className="w-3 h-3" />{facility.prefecture} {facility.city}
                         </p>
                       </div>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{facility.description}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2 flex-1">{facility.description}</p>
                       <div className="flex flex-wrap gap-1">
-                        {facility.tags.slice(0, 4).map((tag) => (
-                          <TagBadge key={tag}>{tag}</TagBadge>
-                        ))}
+                        {facility.tags.slice(0, 4).map((tag) => <TagBadge key={tag}>{tag}</TagBadge>)}
                       </div>
-                      {facility.hasEvent && (
-                        <div className="flex items-center gap-1 text-xs text-accent">
-                          <Calendar className="w-3 h-3" />
-                          イベント開催中
-                        </div>
-                      )}
+                      {facility.hasEvent && <div className="flex items-center gap-1 text-xs text-accent mt-auto pt-2"><Calendar className="w-3 h-3" />イベント開催中</div>}
                     </div>
                   </GlassCard>
                 </Link>
@@ -274,12 +248,10 @@ function SearchContent() {
             </div>
           ) : (
             <GlassCard className="text-center py-16">
-              <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <Filter className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-30" />
               <h3 className="text-lg font-semibold text-foreground mb-2">該当する施設が見つかりませんでした</h3>
               <p className="text-muted-foreground mb-4">検索条件を変更してお試しください</p>
-              <Button onClick={clearAllFilters} className="bg-primary/20 text-primary hover:bg-primary/30">
-                フィルターをクリア
-              </Button>
+              <Button onClick={clearAllFilters} className="bg-primary/20 text-primary hover:bg-primary/30">フィルターをクリア</Button>
             </GlassCard>
           )}
             </div>
@@ -290,13 +262,5 @@ function SearchContent() {
 }
 
 export default function SearchPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-muted-foreground">読み込み中...</div>
-      </div>
-    }>
-      <SearchContent />
-    </Suspense>
-  )
+  return <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background"><div className="text-muted-foreground">読み込み中...</div></div>}><SearchContent /></Suspense>
 }

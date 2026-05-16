@@ -39,9 +39,9 @@ export default function EventRegisterPage() {
   return (
     <ContentPageLayout
       title="イベント登録"
-      level={4}
-      levelTitle="体系化"
-      logo="CBED" // 親ページに合わせています
+      level={3}
+      levelTitle="リアル体験"
+      logo="CBED"
     >
       <div className="glass-card rounded-xl p-6 mb-8">
         <div className="flex items-start gap-4">
@@ -71,8 +71,8 @@ export default function EventRegisterPage() {
           <p className="text-muted-foreground mb-6">
             情報提供ありがとうございます。内容を確認の上、データベースに反映させていただきます。
           </p>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => setSubmitted(false)}
           >
             続けて別のイベントを登録する
@@ -149,8 +149,8 @@ export default function EventRegisterPage() {
             />
           </div>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={isSubmitting}
             className="w-full bg-primary/70 hover:bg-primary/60 text-primary-foreground transition-all"
           >

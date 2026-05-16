@@ -30,18 +30,65 @@ export interface Facility {
 const CBMD_SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDvzMbN9CNa_PXwmre1IFid8fw7rD2yG0IlBnifsjtrtDN0cy3n-nQlEFvKQbE4w06TXTHoZ4edpzj/pub?gid=0&single=true&output=csv&v=1";
 
 export const facilityTypes = ["科学館", "博物館", "美術館", "JAXA関連施設", "大学展示", "プラネタリウム", "天文台", "イベント施設"]
-export const spacecraftTags = ["はやぶさ", "はやぶさ2", "MMX", "H3ロケット", "ISS", "イプシロン", "SLIM", "かぐや", "あかつき", "HTV"]
-export const categoryTags = ["月", "火星", "小惑星", "木星", "土星", "太陽系外", "ブラックホール", "銀河"]
-export const regions = [
-  { name: "北海道", prefectures: ["北海道"] },
-  { name: "東北", prefectures: ["青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"] },
-  { name: "関東", prefectures: ["茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県"] },
-  { name: "中部", prefectures: ["新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県"] },
-  { name: "近畿", prefectures: ["三重県", "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県"] },
-  { name: "中国", prefectures: ["鳥取県", "島根県", "岡山県", "広島県", "山口県"] },
-  { name: "四国", prefectures: ["徳島県", "香川県", "愛媛県", "高知県"] },
-  { name: "九州・沖縄", prefectures: ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"] },
-]
+
+// ★修正: ご指定の新しいタグリストを反映
+export const categoryTags = ["地球", "リモートセンシング", "プラネタリウム", "望遠鏡", "天文・天体", "ロケット", "人工衛星", "地球観測", "宇宙ステーション"]
+export const spacecraftTags = ["はやぶさ", "はやぶさ2", "MMX", "ISS", "H3ロケット", "イプシロン", "SLIM", "かぐや", "あかつき", "HTV"]
+
+export const regionsData = {
+  "北海道": ["北海道"],
+  "東北": ["青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"],
+  "関東": ["茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県"],
+  "中部": ["新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県"],
+  "近畿": ["三重県", "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県"],
+  "中国": ["鳥取県", "島根県", "岡山県", "広島県", "山口県"],
+  "四国": ["徳島県", "香川県", "愛媛県", "高知県"],
+  "九州・沖縄": ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"],
+}
+export const regions = Object.keys(regionsData).map(key => ({
+  name: key,
+  prefectures: regionsData[key as keyof typeof regionsData]
+}))
+
+function getRegionByPrefecture(pref: string): string {
+  for (const [region, prefectures] of Object.entries(regionsData)) {
+    if (prefectures.includes(pref)) return region;
+  }
+  return "その他";
+}
+
+export function isEventActive(event: SpaceEvent): boolean {
+  const parseDateTime = (dStr?: string, tStr?: string, isEnd = false) => {
+    if (!dStr) return null;
+    const match = dStr.match(/(\d{4})[-/年\.]\s*(\d{1,2})[-/月\.]\s*(\d{1,2})/);
+    if (!match) return null;
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1;
+    const day = parseInt(match[3], 10);
+    const date = new Date(year, month, day);
+
+    if (tStr) {
+      const timeMatch = isEnd 
+        ? tStr.match(/(?:〜|-|~)\s*(\d{1,2}):(\d{2})/) || tStr.match(/(\d{1,2}):(\d{2})/)
+        : tStr.match(/(\d{1,2}):(\d{2})/);
+      if (timeMatch) {
+        date.setHours(parseInt(timeMatch[1], 10), parseInt(timeMatch[2], 10), 0, 0);
+      } else {
+        isEnd ? date.setHours(23, 59, 59, 999) : date.setHours(0, 0, 0, 0);
+      }
+    } else {
+      isEnd ? date.setHours(23, 59, 59, 999) : date.setHours(0, 0, 0, 0);
+    }
+    return date;
+  };
+
+  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+  const start = parseDateTime(event.date, event.time, false);
+  const end = parseDateTime(event.endDate || event.date, event.time, true);
+
+  if (!end) return false;
+  return now <= end;
+}
 
 function parseFacilityCSV(csvText: string): any[] {
   const arr: string[][] = [];
@@ -87,34 +134,43 @@ export async function fetchFacilitiesData(): Promise<Facility[]> {
     const rawFacilities = parseFacilityCSV(text);
 
     return rawFacilities.map(raw => {
+      const prefecture = String(raw.prefecture || "").trim();
+      const region = getRegionByPrefecture(prefecture);
+
       const relatedEvents = allEvents.filter(event => 
         event.location && event.location.includes(raw.name)
       );
 
+      const hasActiveEvent = relatedEvents.some(event => isEventActive(event));
+
+      const tags = raw.tags 
+        ? String(raw.tags).split(',').map(t => t.trim()).filter(Boolean) 
+        : [];
+
       return {
-        id: String(raw.id),
-        name: String(raw.name),
-        nameKana: String(raw.nameKana || ""),
-        category: String(raw.category || ""),
-        prefecture: String(raw.prefecture || ""),
-        region: String(raw.region || ""),
-        city: String(raw.city || ""),
-        address: String(raw.address || ""),
-        description: String(raw.description || ""),
-        image: String(raw.image || "/images/placeholder.jpg"),
-        tags: raw.tags ? String(raw.tags).split(',').map(t => t.trim()).filter(Boolean) : [],
+        id: String(raw.id).trim(),
+        name: String(raw.name).trim(),
+        nameKana: String(raw.nameKana || "").trim(),
+        category: String(raw.category || "").trim(),
+        prefecture,
+        region,
+        city: String(raw.city || "").trim(),
+        address: String(raw.address || "").trim(),
+        description: String(raw.description || "").trim(),
+        image: String(raw.image || "/images/placeholder.jpg").trim(),
+        tags,
         hasPlanetarium: String(raw.hasPlanetarium).toUpperCase() === "TRUE",
-        hasEvent: relatedEvents.length > 0, 
-        openingHours: String(raw.openingHours || ""),
-        closedDays: String(raw.closedDays || ""),
-        admissionFee: String(raw.admissionFee || ""),
-        access: String(raw.access || ""),
-        website: raw.website || undefined,
-        twitter: raw.twitter || undefined,
-        instagram: raw.instagram || undefined,
-        youtube: raw.youtube || undefined,
+        hasEvent: hasActiveEvent, 
+        openingHours: String(raw.openingHours || "").trim(),
+        closedDays: String(raw.closedDays || "").trim(),
+        admissionFee: String(raw.admissionFee || "").trim(),
+        access: String(raw.access || "").trim(),
+        website: raw.website ? String(raw.website).trim() : undefined,
+        twitter: raw.twitter ? String(raw.twitter).trim() : undefined,
+        instagram: raw.instagram ? String(raw.instagram).trim() : undefined,
+        youtube: raw.youtube ? String(raw.youtube).trim() : undefined,
         events: relatedEvents,
-        updatedAt: String(raw.updatedAt || ""),
+        updatedAt: String(raw.updatedAt || "").trim(),
       } as Facility;
     });
   } catch (error) {

@@ -14,11 +14,11 @@ export const dynamicParams = false;
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export async function generateStaticParams() {
   const events = await fetchEventsData();
-  
+
   // 重複IDや空のIDを排除して確実に全件渡す最強のロジック
   const uniqueIds = new Set<string>();
   const params: { id: string }[] = [];
-  
+
   events.forEach(event => {
     const idStr = String(event.id).trim();
     if (idStr && !uniqueIds.has(idStr)) {
@@ -50,8 +50,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     return { title: "イベントが見つかりません" }
   }
 
-  const descriptionText = event.description 
-    ? event.description.slice(0, 100) + "..." 
+  const descriptionText = event.description
+    ? event.description.slice(0, 100) + "..."
     : `${event.title}の詳細情報ページです。`;
 
   return {
@@ -73,8 +73,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   // ページ生成時に見つからなかった場合は404ページを出す（ここで弾かれていた可能性大）
   if (!event) {
     notFound()
-  }  
-  
+  }
+
   const isCosmoBaseEvent = event.organizer
     ? String(event.organizer).replace(/\s+/g, "").toLowerCase().includes("cosmobase")
     : false
@@ -92,7 +92,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   }
 
   return (
-    <ContentPageLayout title="イベント詳細" level={4} levelTitle="体系化" logo="CBED">
+    <ContentPageLayout title="イベント詳細" level={3} levelTitle="リアル体験" logo="CBED">
       <div className="mb-6">
         <Link href="/CBED/search">
           <Button variant="ghost" className="text-muted-foreground hover:text-foreground -ml-4">
@@ -108,7 +108,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${orgStyle}`}>
               {orgLabel}
             </span>
-            
+
             {event.type && String(event.type).split(',').map((t, idx) => (
               <span key={idx} className="px-3 py-1 text-xs font-medium rounded-full bg-accent/20 text-accent border border-accent/30">
                 {t.trim()}
@@ -184,7 +184,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
               </Button>
             </a>
           )}
-          
+
           {event.lat && event.lng && (
             <a
               href={`https://www.google.com/maps/search/?api=1&query=$${event.lat},${event.lng}`}

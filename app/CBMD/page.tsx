@@ -41,14 +41,13 @@ export default async function MuseumPage() {
   return (
     <ContentPageLayout
       title="Cosmo Base Museum Database"
-      level={4}
-      levelTitle="体系化"
+      level={3}
+      levelTitle="リアル体験"
       logo="CBMD"
     >
     <div className="min-h-screen relative">
       <main className="relative z-10">
         
-        {/* ★追加: CBMD共通ナビゲーション */}
         <div className="max-w-7xl mx-auto px-4 pt-6">
           <div className="flex flex-wrap items-center gap-2 border-b border-border/30 pb-4">
             <Link href="/CBMD">
@@ -85,7 +84,7 @@ export default async function MuseumPage() {
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight text-balance glow-text">
               日本中の宇宙展示を
               <br />
-              <span className="text-primary">探しに行こう</span>
+              <span className="text-primary">探しに行おう</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed text-pretty">
@@ -93,7 +92,6 @@ export default async function MuseumPage() {
               日本全国の宇宙関連施設を検索・探索できます。
             </p>
 
-            {/* Main Navigation Buttons */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
               <Link href="/CBMD/map">
                 <GlassCard hover className="h-full">
@@ -213,7 +211,6 @@ export default async function MuseumPage() {
                       </div>
                       <div className="space-y-3">
                         <div>
-                          {/* ★修正: 開催中イベントでは範囲を記載 */}
                           <p className="text-xs text-primary font-medium mb-1">
                             {event.endDate ? `${event.date} 〜 ${event.endDate}` : event.date}
                           </p>

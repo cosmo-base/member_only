@@ -36,13 +36,13 @@ function isPastEvent(dateStr?: string, endDateStr?: string): boolean {
   const year = parseInt(match[1], 10);
   const month = parseInt(match[2], 10) - 1; // JSのDateの月は0始まり
   const day = parseInt(match[3], 10);
-  
+
   const eventDate = new Date(year, month, day);
-  
+
   // 今日の日付を取得し、時間を0時0分0秒にリセット
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   // イベントの日付が今日より前なら過去と判定
   return eventDate < today;
 }
@@ -119,9 +119,9 @@ export default function MapSearchPage() {
   }, [events, mapBounds, userLocation, center])
 
   return (
-    <ContentPageLayout title="地図で探す" level={4} levelTitle="体系化" logo="CBED">
+    <ContentPageLayout title="地図で探す" level={3} levelTitle="リアル体験" logo="CBED">
       <div className="flex flex-col lg:flex-row gap-6 relative z-20">
-        
+
         <div className="flex-1 glass-card rounded-xl overflow-hidden flex flex-col h-[450px] md:h-[600px] relative border border-border/50 z-30">
           <div className="absolute top-4 left-4 right-4 z-40 flex flex-col sm:flex-row justify-between items-stretch sm:items-start gap-3 pointer-events-none">
             <div className="bg-background/90 backdrop-blur-md px-4 py-2 rounded-lg border border-border/50 pointer-events-auto shadow-lg w-fit">
