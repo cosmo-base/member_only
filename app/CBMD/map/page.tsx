@@ -4,9 +4,8 @@
 import { useState, useMemo, useEffect } from "react"
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "react-simple-maps"
 import useSupercluster from "use-supercluster"
-import { MapPin, X, ExternalLink, Filter, Loader2, Home, Map as MapIcon, Search, Database, Navigation } from "lucide-react"
+import { MapPin, X, ExternalLink, Filter, Loader2, Home, Map as MapIcon, Search, Database, Navigation, Plus, Minus, List as ListIcon } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
@@ -61,7 +60,11 @@ export default function MapPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [hasPlanetarium, setHasPlanetarium] = useState(false)
   const [hasEvent, setHasEvent] = useState(false)
+  
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null)
+  // ★追加: クラスタークリック時に含まれる施設リストを管理するステート
+  const [clusterFacilities, setClusterFacilities] = useState<Facility[]>([])
+  
   const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
@@ -118,7 +121,6 @@ export default function MapPage() {
   const points = useMemo(() => {
     return filteredFacilities.map(facility => {
       const baseCoords = prefectureCoordinates[facility.prefecture] || IMPERIAL_PALACE
-      // 重なりを防ぐための微細なオフセット
       const hash = facility.id.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)
       const offsetLng = (hash % 100) * 0.0005
       const offsetLat = ((hash / 100) % 100) * 0.0005
@@ -131,15 +133,12 @@ export default function MapPage() {
     })
   }, [filteredFacilities])
 
-  // ★修正1: react-simple-mapsのズーム倍率を、クラスター用のタイルズームレベル(0-20)に変換
-  // 日本全図(scale=1800)をベースズーム5として計算します
   const superclusterZoom = Math.max(0, Math.floor(Math.log2(mapZoom)) + 5)
 
   const { clusters, supercluster } = useSupercluster({
     points,
     bounds: [120, 20, 150, 50],
     zoom: superclusterZoom,
-    // ★修正2: 半径を40から25に小さくして、強すぎる「まとめ」を緩和しました
     options: { radius: 25, maxZoom: 20 }
   })
 
@@ -150,6 +149,10 @@ export default function MapPage() {
   const clearFilters = () => {
     setSelectedRegion(null); setSelectedPrefecture(null); setSelectedCategories([]); setHasPlanetarium(false); setHasEvent(false);
   }
+
+  // ★追加: 外部ボタンからのズームイン・アウト処理
+  const handleZoomIn = () => setMapZoom(prev => Math.min(prev * 1.5, 32))
+  const handleZoomOut = () => setMapZoom(prev => Math.max(prev / 1.5, 1))
 
   return (
     <ContentPageLayout
@@ -281,7 +284,7 @@ export default function MapPage() {
                    </h3>
                    <div className="space-y-3 overflow-y-auto pr-2 flex-1">
                      {filteredFacilities.map(facility => (
-                       <Link href={`/CBMD/facility/${facility.id}`} key={facility.id} className="block group">
+                       <div key={facility.id} onClick={() => { setSelectedFacility(facility); setClusterFacilities([]); }} className="block group">
                          <div className="p-3 rounded-lg border border-border/50 hover:bg-primary/10 transition-colors cursor-pointer relative">
                            <h4 className="font-medium text-sm text-foreground mb-1 group-hover:text-primary transition-colors pr-5">
                              {facility.name}
@@ -293,7 +296,7 @@ export default function MapPage() {
                              </span>
                            </div>
                          </div>
-                       </Link>
+                       </div>
                      ))}
                    </div>
                  </GlassCard>
@@ -308,13 +311,24 @@ export default function MapPage() {
                 </GlassCard>
               ) : (
                 <GlassCard className="p-2 sm:p-4 h-[600px] relative">
+                  
+                  {/* ★追加: ズームイン・アウトボタン（右上絶対配置） */}
+                  <div className="absolute top-6 right-6 z-20 flex flex-col gap-2">
+                    <Button onClick={handleZoomIn} size="icon" className="glass bg-background/60 hover:bg-primary/20 text-foreground border-border/40 w-10 h-10 rounded-xl shadow-lg">
+                      <Plus className="w-5 h-5" />
+                    </Button>
+                    <Button onClick={handleZoomOut} size="icon" className="glass bg-background/60 hover:bg-primary/20 text-foreground border-border/40 w-10 h-10 rounded-xl shadow-lg">
+                      <Minus className="w-5 h-5" />
+                    </Button>
+                  </div>
+
                   <div className="w-full h-full rounded-xl overflow-hidden bg-background/50 relative">
-                    <ComposableMap projection="geoMercator" projectionConfig={{ center, scale: mapZoom * 1800 }} style={{ width: "100%", height: "100%" }}>
+                    <ComposableMap projection="geoMercator" projectionConfig={{ center, scale: 1800 }} style={{ width: "100%", height: "100%" }}>
                       <ZoomableGroup 
                         center={center}
                         zoom={mapZoom}
                         onMoveEnd={(position) => {
-                          setMapZoom(position.zoom)
+                          // 飛ぶバグを防ぐため、ドラッグ移動による座標ズレのみを安全に同期
                           setCenter(position.coordinates)
                         }}
                       >
@@ -341,15 +355,20 @@ export default function MapPage() {
                             const size = 16 + (pointCount / points.length) * 10;
                             return (
                               <Marker key={`cluster-${cluster.id}`} coordinates={[longitude, latitude]}>
-                                {/* ★修正3: クラスターをクリックした時のズームイン処理を追加 */}
                                 <g 
                                   style={{ transform: `scale(${1 / mapZoom})`, cursor: 'pointer' }}
                                   onClick={() => {
                                     if (!supercluster) return;
-                                    // クラスターが展開されるタイルズームレベルを取得
+                                    
+                                    // 1. クラスターに含まれる全施設（リーフ）を取得してリストにセット
+                                    const leaves = supercluster.getLeaves(cluster.id as number, Infinity);
+                                    const facilityList = leaves.map((f: any) => f.properties.facility);
+                                    setClusterFacilities(facilityList);
+                                    setSelectedFacility(null); // 単体カードは閉じる
+
+                                    // 2. 綺麗に拡大されるように中心点とズームを連動（ズレないように直接座標を代入）
                                     const expansionZoom = Math.min(supercluster.getClusterExpansionZoom(cluster.id as number), 20);
-                                    // タイルズームレベルからreact-simple-mapsの倍率に戻す
-                                    const rsmZoom = Math.max(1, Math.pow(2, expansionZoom - 5));
+                                    const rsmZoom = Math.max(mapZoom * 1.5, Math.pow(2, expansionZoom - 5));
                                     
                                     setCenter([longitude, latitude]);
                                     setMapZoom(rsmZoom);
@@ -366,7 +385,7 @@ export default function MapPage() {
 
                           const facility = (cluster.properties as any).facility;
                           return (
-                            <Marker key={`facility-${facility.id}`} coordinates={[longitude, latitude]} onClick={() => setSelectedFacility(facility)}>
+                            <Marker key={`facility-${facility.id}`} coordinates={[longitude, latitude]} onClick={() => { setSelectedFacility(facility); setClusterFacilities([]); }}>
                               <g style={{ transform: `scale(${1 / mapZoom})` }}>
                                 <g className="cursor-pointer transition-transform hover:scale-125" style={{ transform: "translate(-12px, -24px)" }}>
                                   <circle r={8} cx={12} cy={20} fill="oklch(0.7 0.15 220)" stroke="oklch(0.9 0.05 220)" strokeWidth={2} className="drop-shadow-lg" />
@@ -390,9 +409,10 @@ export default function MapPage() {
                 </GlassCard>
               )}
 
+              {/* 単体施設の詳細カード */}
               {selectedFacility && (
-                <div className="absolute bottom-8 left-8 right-8 sm:left-auto sm:right-8 sm:w-80">
-                  <GlassCard className="glass-strong">
+                <div className="absolute bottom-8 left-8 right-8 sm:left-auto sm:right-8 sm:w-80 z-20">
+                  <GlassCard className="glass-strong shadow-2xl">
                     <div className="flex items-start justify-between mb-3">
                       <TagBadge variant="primary">{selectedFacility.category}</TagBadge>
                       <button onClick={() => setSelectedFacility(null)} className="text-muted-foreground hover:text-foreground transition-colors">
@@ -414,6 +434,39 @@ export default function MapPage() {
                   </GlassCard>
                 </div>
               )}
+
+              {/* ★追加: クラスタークリック時に表示される「施設リスト」カード */}
+              {clusterFacilities.length > 0 && (
+                <div className="absolute bottom-8 left-8 right-8 sm:left-auto sm:right-8 sm:w-80 z-20">
+                  <GlassCard className="glass-strong shadow-2xl max-h-[320px] flex flex-col p-4">
+                    <div className="flex items-center justify-between mb-3 border-b border-border/30 pb-2">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                        <ListIcon className="w-4 h-4 text-primary" />
+                        <span>エリア内の施設 ({clusterFacilities.length}件)</span>
+                      </div>
+                      <button onClick={() => setClusterFacilities([])} className="text-muted-foreground hover:text-foreground transition-colors">
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <div className="space-y-2 overflow-y-auto pr-1 flex-1">
+                      {clusterFacilities.map((facility) => (
+                        <div key={facility.id} className="p-2 rounded-lg border border-border/40 hover:bg-primary/10 transition-all flex items-center justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-xs font-semibold text-foreground truncate">{facility.name}</h4>
+                            <p className="text-[10px] text-muted-foreground truncate">{facility.city || facility.prefecture}</p>
+                          </div>
+                          <Link href={`/CBMD/facility/${facility.id}`} className="shrink-0">
+                            <Button size="icon" variant="ghost" className="w-7 h-7 text-primary hover:text-primary/80">
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </Button>
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  </GlassCard>
+                </div>
+              )}
+
             </div>
           </div>
         </div>
