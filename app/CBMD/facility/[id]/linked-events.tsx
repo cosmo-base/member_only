@@ -33,6 +33,19 @@ export function LinkedEvents({ events }: { events: any[] }) {
     return end < today;
   });
 
+  // ★修正: 長期間イベントで今日が期間中の場合、当日の日付を表示
+  const getEventDateDisplay = (event: any, isPast: boolean) => {
+    if (event.endDate) {
+      const start = parseDate(event.date);
+      const end = parseDate(event.endDate);
+      if (!isPast && start && end && start <= today && end >= today) {
+        return `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日 (本日)`;
+      }
+      return `${event.date} 〜 ${event.endDate}`;
+    }
+    return event.date;
+  }
+
   if (events.length === 0) return null;
 
   return (
@@ -49,7 +62,7 @@ export function LinkedEvents({ events }: { events: any[] }) {
                 <div>
                   <h3 className="font-medium text-foreground mb-1 group-hover:text-primary">{event.title}</h3>
                 </div>
-                <TagBadge variant="accent">{event.date}</TagBadge>
+                <TagBadge variant="accent">{getEventDateDisplay(event, false)}</TagBadge>
               </div>
             </div>
           </Link>
@@ -82,7 +95,7 @@ export function LinkedEvents({ events }: { events: any[] }) {
                         <div>
                           <h3 className="font-medium text-foreground mb-1 group-hover:text-primary">{event.title}</h3>
                         </div>
-                        <TagBadge variant="default">{event.date}</TagBadge>
+                        <TagBadge variant="default">{getEventDateDisplay(event, true)}</TagBadge>
                       </div>
                     </div>
                   </Link>
