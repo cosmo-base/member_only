@@ -14,6 +14,10 @@ import { fetchFacilitiesData } from "@/lib/CBMD"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { LinkedEvents } from "./linked-events"
 
+// ★追加: CBEDと同じように強制的に静的ページとして書き出す設定
+export const dynamic = 'force-static';
+export const dynamicParams = false;
+
 interface FacilityPageProps {
   params: Promise<{
     id: string
@@ -24,8 +28,15 @@ export async function generateStaticParams() {
   try {
     const facilities = await fetchFacilitiesData();
     if (!facilities || facilities.length === 0) return [];
-    return facilities.map((facility) => ({ id: String(facility.id) }));
+
+    // ★追加: ビルド時に何ページ作られたか確認できるログ
+    console.log(`\n=========================================`);
+    console.log(`🚀 CBMD generateStaticParams が ${facilities.length} ページ分の作成を指示しました！`);
+    console.log(`=========================================\n`);
+
+    return facilities.map((facility) => ({ id: String(facility.id).trim() }));
   } catch (error) {
+    console.error("CBMD generateStaticParams Error:", error);
     return [];
   }
 }
@@ -138,7 +149,7 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
                       {facility.website && <a href={facility.website} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"><Globe className="w-5 h-5" /></a>}
                       {facility.twitter && <a href={facility.twitter.startsWith('http') ? facility.twitter : `https://twitter.com/${facility.twitter}`} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"><Twitter className="w-5 h-5" /></a>}
                       {facility.instagram && <a href={facility.instagram.startsWith('http') ? facility.instagram : `https://instagram.com/${facility.instagram}`} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"><Instagram className="w-5 h-5" /></a>}
-                      {facility.youtube && <a href={facility.youtube.startsWith('http') ? facility.youtube : `https://youtube.com/channel/${facility.youtube}`} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"><Youtube className="w-5 h-5" /></a>}
+                      {facility.youtube && <a href={facility.youtube.startsWith('http') ? facility.youtube : `https://youtube.com/${facility.youtube}`} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"><Youtube className="w-5 h-5" /></a>}
                     </div>
                   </div>
                 )}
