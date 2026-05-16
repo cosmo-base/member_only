@@ -2,11 +2,15 @@
 import type { Metadata } from "next"
 import { fetchFacilitiesData } from "@/lib/CBMD"
 
+// ★追加: レイアウト側にも静的指定を行う
+export const dynamic = 'force-static';
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   try {
     const facilities = await fetchFacilitiesData();
     if (!facilities || facilities.length === 0) return [];
-    return facilities.map((facility) => ({ id: String(facility.id) }));
+    return facilities.map((facility) => ({ id: String(facility.id).trim() }));
   } catch (error) {
     return [];
   }
