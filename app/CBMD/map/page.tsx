@@ -52,7 +52,6 @@ export default function MapPage() {
 
   const [center, setCenter] = useState<[number, number]>(IMPERIAL_PALACE)
   const [mapZoom, setMapZoom] = useState(1)
-  const [mapBounds, setMapBounds] = useState<[number, number, number, number] | null>(null)
   
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
   const [isLocating, setIsLocating] = useState(false)
@@ -119,11 +118,11 @@ export default function MapPage() {
   const points = useMemo(() => {
     return filteredFacilities.map(facility => {
       const baseCoords = prefectureCoordinates[facility.prefecture] || IMPERIAL_PALACE
+      // 重なりを防ぐための微細なオフセット
       const hash = facility.id.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)
       const offsetLng = (hash % 100) * 0.0005
       const offsetLat = ((hash / 100) % 100) * 0.0005
       
-      // ★修正1: as const と型アサーションを使ってTypeScriptを納得させる
       return {
         type: "Feature" as const,
         properties: { cluster: false, facilityId: facility.id, facility },
@@ -132,13 +131,16 @@ export default function MapPage() {
     })
   }, [filteredFacilities])
 
-  const bounds = mapBounds || [120, 20, 150, 50]
+  // ★修正1: react-simple-mapsのズーム倍率を、クラスター用のタイルズームレベル(0-20)に変換
+  // 日本全図(scale=1800)をベースズーム5として計算します
+  const superclusterZoom = Math.max(0, Math.floor(Math.log2(mapZoom)) + 5)
 
-  const { clusters } = useSupercluster({
+  const { clusters, supercluster } = useSupercluster({
     points,
-    bounds,
-    zoom: mapZoom,
-    options: { radius: 40, maxZoom: 20 }
+    bounds: [120, 20, 150, 50],
+    zoom: superclusterZoom,
+    // ★修正2: 半径を40から25に小さくして、強すぎる「まとめ」を緩和しました
+    options: { radius: 25, maxZoom: 20 }
   })
 
   const handleCategoryToggle = (category: string) => {
@@ -333,15 +335,28 @@ export default function MapPage() {
 
                         {clusters.map((cluster) => {
                           const [longitude, latitude] = cluster.geometry.coordinates;
-                          const { cluster: isCluster, point_count: pointCount } = cluster.properties as any; // ★修正2: anyを使って回避
+                          const { cluster: isCluster, point_count: pointCount } = cluster.properties as any;
 
                           if (isCluster) {
                             const size = 16 + (pointCount / points.length) * 10;
                             return (
                               <Marker key={`cluster-${cluster.id}`} coordinates={[longitude, latitude]}>
-                                <g style={{ transform: `scale(${1 / mapZoom})` }}>
-                                  <circle r={size} fill="oklch(0.7 0.15 220)" stroke="oklch(0.9 0.05 220)" strokeWidth={2} />
-                                  <text textAnchor="middle" y={4} fill="#000" fontSize={12} fontWeight="bold">
+                                {/* ★修正3: クラスターをクリックした時のズームイン処理を追加 */}
+                                <g 
+                                  style={{ transform: `scale(${1 / mapZoom})`, cursor: 'pointer' }}
+                                  onClick={() => {
+                                    if (!supercluster) return;
+                                    // クラスターが展開されるタイルズームレベルを取得
+                                    const expansionZoom = Math.min(supercluster.getClusterExpansionZoom(cluster.id as number), 20);
+                                    // タイルズームレベルからreact-simple-mapsの倍率に戻す
+                                    const rsmZoom = Math.max(1, Math.pow(2, expansionZoom - 5));
+                                    
+                                    setCenter([longitude, latitude]);
+                                    setMapZoom(rsmZoom);
+                                  }}
+                                >
+                                  <circle r={size} fill="oklch(0.7 0.15 220)" stroke="oklch(0.9 0.05 220)" strokeWidth={2} className="drop-shadow-md hover:fill-primary/80 transition-colors" />
+                                  <text textAnchor="middle" y={4} fill="#000" fontSize={12} fontWeight="bold" className="pointer-events-none">
                                     {pointCount}
                                   </text>
                                 </g>
@@ -349,7 +364,7 @@ export default function MapPage() {
                             );
                           }
 
-                          const facility = (cluster.properties as any).facility; // ★修正2: anyを使って回避
+                          const facility = (cluster.properties as any).facility;
                           return (
                             <Marker key={`facility-${facility.id}`} coordinates={[longitude, latitude]} onClick={() => setSelectedFacility(facility)}>
                               <g style={{ transform: `scale(${1 / mapZoom})` }}>
