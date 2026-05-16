@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "react-simple-maps"
+import { Map, Overlay } from "pigeon-maps"
 import useSupercluster from "use-supercluster"
 import { MapPin, X, ExternalLink, Filter, Loader2, Home, Map as MapIcon, Search, Database, Navigation, Plus, Minus, List as ListIcon } from "lucide-react"
 import Link from "next/link"
@@ -14,8 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { fetchFacilitiesData, regions, facilityTypes, Facility } from "@/lib/CBMD"
 
-const JAPAN_TOPO_JSON = "https://raw.githubusercontent.com/dataofjapan/land/master/japan.topojson"
-const IMPERIAL_PALACE: [number, number] = [139.7528, 35.6852]
+const IMPERIAL_PALACE_LATLNG: [number, number] = [35.6852, 139.7528]
 
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
   const R = 6371
@@ -26,31 +25,13 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c
 }
 
-const prefectureCoordinates: Record<string, [number, number]> = {
-  "北海道": [141.3469, 43.0642], "青森県": [140.7402, 40.8246], "岩手県": [141.1527, 39.7036],
-  "宮城県": [140.8720, 38.2688], "秋田県": [140.1026, 39.7186], "山形県": [140.3634, 38.2404],
-  "福島県": [140.4676, 37.7503], "茨城県": [140.4466, 36.3419], "栃木県": [139.8836, 36.5657],
-  "群馬県": [139.0607, 36.3911], "埼玉県": [139.6489, 35.8570], "千葉県": [140.1233, 35.6073],
-  "東京都": [139.6917, 35.6895], "神奈川県": [139.6423, 35.4478], "新潟県": [139.0237, 37.9025],
-  "富山県": [137.2114, 36.6959], "石川県": [136.6256, 36.5947], "福井県": [136.2219, 36.0652],
-  "山梨県": [138.5684, 35.6642], "長野県": [138.1813, 36.6513], "岐阜県": [136.7223, 35.3912],
-  "静岡県": [138.3831, 34.9769], "愛知県": [136.9066, 35.1802], "三重県": [136.5086, 34.7303],
-  "滋賀県": [136.0563, 35.0045], "京都府": [135.7681, 35.0116], "大阪府": [135.5198, 34.6864],
-  "兵庫県": [135.1830, 34.6912], "奈良県": [135.8328, 34.6853], "和歌山県": [135.1675, 34.2260],
-  "鳥取県": [134.2378, 35.5039], "島根県": [133.0505, 35.4723], "岡山県": [133.9345, 34.6618],
-  "広島県": [132.4596, 34.3963], "山口県": [131.4714, 34.1858], "徳島県": [134.5595, 34.0658],
-  "香川県": [134.0434, 34.3401], "愛媛県": [132.7657, 33.8417], "高知県": [133.5311, 33.5597],
-  "福岡県": [130.4181, 33.6064], "佐賀県": [130.2987, 33.2494], "長崎県": [129.8737, 32.7503],
-  "熊本県": [130.7417, 32.7898], "大分県": [131.6126, 33.2382], "宮崎県": [131.4239, 31.9111],
-  "鹿児島県": [130.5581, 31.5602], "沖縄県": [127.6809, 26.2124],
-}
-
 export default function MapPage() {
   const [facilities, setFacilities] = useState<Facility[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  const [center, setCenter] = useState<[number, number]>(IMPERIAL_PALACE)
-  const [mapZoom, setMapZoom] = useState(1)
+  const [center, setCenter] = useState<[number, number]>(IMPERIAL_PALACE_LATLNG)
+  const [mapZoom, setMapZoom] = useState(5)
+  const [mapBounds, setMapBounds] = useState<[number, number, number, number] | null>(null)
   
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
   const [isLocating, setIsLocating] = useState(false)
@@ -62,7 +43,6 @@ export default function MapPage() {
   const [hasEvent, setHasEvent] = useState(false)
   
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null)
-  // ★追加: クラスタークリック時に含まれる施設リストを管理するステート
   const [clusterFacilities, setClusterFacilities] = useState<Facility[]>([])
   
   const [showFilters, setShowFilters] = useState(false)
@@ -81,10 +61,10 @@ export default function MapPage() {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const loc: [number, number] = [position.coords.longitude, position.coords.latitude]
+          const loc: [number, number] = [position.coords.latitude, position.coords.longitude]
           setUserLocation(loc)
           setCenter(loc)
-          setMapZoom(4)
+          setMapZoom(12)
           setIsLocating(false)
         },
         () => {
@@ -100,6 +80,8 @@ export default function MapPage() {
 
   const filteredFacilities = useMemo(() => {
     const filtered = facilities.filter((facility) => {
+      if (!facility.lat || !facility.lng) return false
+      
       if (selectedRegion && facility.region !== selectedRegion) return false
       if (selectedPrefecture && facility.prefecture !== selectedPrefecture) return false
       if (selectedCategories.length > 0 && !selectedCategories.includes(facility.category)) return false
@@ -110,8 +92,7 @@ export default function MapPage() {
 
     if (userLocation) {
       return filtered.map(facility => {
-        const coords = prefectureCoordinates[facility.prefecture] || IMPERIAL_PALACE
-        const dist = calculateDistance(userLocation[1], userLocation[0], coords[1], coords[0])
+        const dist = calculateDistance(userLocation[0], userLocation[1], facility.lat!, facility.lng!)
         return { ...facility, _distance: dist }
       }).sort((a, b) => (a._distance || 0) - (b._distance || 0))
     }
@@ -119,27 +100,20 @@ export default function MapPage() {
   }, [facilities, selectedRegion, selectedPrefecture, selectedCategories, hasPlanetarium, hasEvent, userLocation])
 
   const points = useMemo(() => {
-    return filteredFacilities.map(facility => {
-      const baseCoords = prefectureCoordinates[facility.prefecture] || IMPERIAL_PALACE
-      const hash = facility.id.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)
-      const offsetLng = (hash % 100) * 0.0005
-      const offsetLat = ((hash / 100) % 100) * 0.0005
-      
-      return {
-        type: "Feature" as const,
-        properties: { cluster: false, facilityId: facility.id, facility },
-        geometry: { type: "Point" as const, coordinates: [baseCoords[0] + offsetLng, baseCoords[1] + offsetLat] }
-      }
-    })
+    return filteredFacilities.map(facility => ({
+      type: "Feature" as const,
+      properties: { cluster: false, facilityId: facility.id, facility },
+      geometry: { type: "Point" as const, coordinates: [facility.lng!, facility.lat!] }
+    }))
   }, [filteredFacilities])
 
-  const superclusterZoom = Math.max(0, Math.floor(Math.log2(mapZoom)) + 5)
+  const bounds = mapBounds || [120, 20, 150, 50]
 
   const { clusters, supercluster } = useSupercluster({
     points,
-    bounds: [120, 20, 150, 50],
-    zoom: superclusterZoom,
-    options: { radius: 25, maxZoom: 20 }
+    bounds,
+    zoom: mapZoom,
+    options: { radius: 50, maxZoom: 16 }
   })
 
   const handleCategoryToggle = (category: string) => {
@@ -150,9 +124,8 @@ export default function MapPage() {
     setSelectedRegion(null); setSelectedPrefecture(null); setSelectedCategories([]); setHasPlanetarium(false); setHasEvent(false);
   }
 
-  // ★追加: 外部ボタンからのズームイン・アウト処理
-  const handleZoomIn = () => setMapZoom(prev => Math.min(prev * 1.5, 32))
-  const handleZoomOut = () => setMapZoom(prev => Math.max(prev / 1.5, 1))
+  const handleZoomIn = () => setMapZoom(prev => Math.min(prev + 1, 18))
+  const handleZoomOut = () => setMapZoom(prev => Math.max(prev - 1, 1))
 
   return (
     <ContentPageLayout
@@ -166,26 +139,10 @@ export default function MapPage() {
         
         <div className="max-w-7xl mx-auto mb-8 border-b border-border/30 pb-4">
           <div className="flex flex-wrap items-center gap-2">
-            <Link href="/CBMD">
-              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
-                <Home className="w-4 h-4 mr-2" /> トップ
-              </Button>
-            </Link>
-            <Link href="/CBMD/map">
-              <Button variant="ghost" size="sm" className="bg-primary/20 text-primary hover:bg-primary/30 font-bold">
-                <MapIcon className="w-4 h-4 mr-2" /> マップ
-              </Button>
-            </Link>
-            <Link href="/CBMD/search">
-              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
-                <Search className="w-4 h-4 mr-2" /> 検索
-              </Button>
-            </Link>
-            <Link href="/CBMD/database">
-              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
-                <Database className="w-4 h-4 mr-2" /> データベース一覧
-              </Button>
-            </Link>
+            <Link href="/CBMD"><Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground"><Home className="w-4 h-4 mr-2" /> トップ</Button></Link>
+            <Link href="/CBMD/map"><Button variant="ghost" size="sm" className="bg-primary/20 text-primary hover:bg-primary/30 font-bold"><MapIcon className="w-4 h-4 mr-2" /> マップ</Button></Link>
+            <Link href="/CBMD/search"><Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground"><Search className="w-4 h-4 mr-2" /> 検索</Button></Link>
+            <Link href="/CBMD/database"><Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground"><Database className="w-4 h-4 mr-2" /> データベース一覧</Button></Link>
           </div>
         </div>
 
@@ -208,7 +165,7 @@ export default function MapPage() {
           <div className="lg:grid lg:grid-cols-[320px_1fr] gap-6">
             <div className="lg:hidden mb-4">
               <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="w-full glass border-border/30">
-                <Filter className="w-4 h-4 mr-2" /> フィルター {filteredFacilities.length}件
+                <Filter className="w-4 h-4 mr-2" /> フィルター・リスト表示
               </Button>
             </div>
 
@@ -223,13 +180,7 @@ export default function MapPage() {
                     <Label className="text-sm font-medium text-foreground mb-2 block">地方</Label>
                     <div className="flex flex-wrap gap-2">
                       {regions.map((region) => (
-                        <button
-                          key={region.name}
-                          onClick={() => { setSelectedRegion(selectedRegion === region.name ? null : region.name); setSelectedPrefecture(null) }}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${selectedRegion === region.name ? "bg-primary/20 text-primary" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}
-                        >
-                          {region.name}
-                        </button>
+                        <button key={region.name} onClick={() => { setSelectedRegion(selectedRegion === region.name ? null : region.name); setSelectedPrefecture(null) }} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${selectedRegion === region.name ? "bg-primary/20 text-primary" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}>{region.name}</button>
                       ))}
                     </div>
                   </div>
@@ -238,19 +189,13 @@ export default function MapPage() {
                       <Label className="text-sm font-medium text-foreground mb-2 block">都道府県</Label>
                       <div className="flex flex-wrap gap-2">
                         {regions.find((r) => r.name === selectedRegion)?.prefectures.map((pref) => (
-                          <button
-                            key={pref}
-                            onClick={() => setSelectedPrefecture(selectedPrefecture === pref ? null : pref)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${selectedPrefecture === pref ? "bg-primary/20 text-primary" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}
-                          >
-                            {pref}
-                          </button>
+                          <button key={pref} onClick={() => setSelectedPrefecture(selectedPrefecture === pref ? null : pref)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${selectedPrefecture === pref ? "bg-primary/20 text-primary" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}>{pref}</button>
                         ))}
                       </div>
                     </div>
                   )}
                   <div>
-                    <Label className="text-sm font-medium text-foreground mb-2 block">展示カテゴリ</Label>
+                    <Label className="text-sm font-medium text-foreground mb-2 block">カテゴリ</Label>
                     <div className="space-y-2">
                       {facilityTypes.map((type) => (
                         <div key={type} className="flex items-center space-x-2">
@@ -260,47 +205,48 @@ export default function MapPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="planetarium" checked={hasPlanetarium} onCheckedChange={(checked) => setHasPlanetarium(checked === true)} />
-                      <Label htmlFor="planetarium" className="text-sm text-muted-foreground cursor-pointer">プラネタリウムあり</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="event" checked={hasEvent} onCheckedChange={(checked) => setHasEvent(checked === true)} />
-                      <Label htmlFor="event" className="text-sm text-muted-foreground cursor-pointer">イベント開催中</Label>
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-6 pt-4 border-t border-border/30">
-                  <p className="text-sm text-muted-foreground"><span className="text-primary font-semibold">{filteredFacilities.length}</span> 件の施設が見つかりました</p>
                 </div>
               </GlassCard>
 
-              {userLocation && (
-                 <GlassCard className="h-[400px] flex flex-col">
-                   <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                     <MapPin className="w-4 h-4 text-accent" />
-                     近い順 ({filteredFacilities.length}件)
-                   </h3>
-                   <div className="space-y-3 overflow-y-auto pr-2 flex-1">
-                     {filteredFacilities.map(facility => (
-                       <div key={facility.id} onClick={() => { setSelectedFacility(facility); setClusterFacilities([]); }} className="block group">
-                         <div className="p-3 rounded-lg border border-border/50 hover:bg-primary/10 transition-colors cursor-pointer relative">
-                           <h4 className="font-medium text-sm text-foreground mb-1 group-hover:text-primary transition-colors pr-5">
-                             {facility.name}
-                           </h4>
-                           <div className="flex items-center justify-between text-[11px] text-muted-foreground mt-1">
-                             <span className="line-clamp-1 mr-2">{facility.city}</span>
-                             <span className="text-accent font-medium shrink-0">
-                               {((facility as any)._distance || 0) < 1 ? Math.round((facility as any)._distance * 1000) + 'm' : ((facility as any)._distance || 0).toFixed(1) + 'km'}
-                             </span>
-                           </div>
-                         </div>
-                       </div>
-                     ))}
-                   </div>
-                 </GlassCard>
-              )}
+              {/* ★ここが追加・改修ポイント: 常に表示される地図上の施設リスト */}
+              <GlassCard className="h-[400px] flex flex-col">
+                <h3 className="font-semibold text-foreground mb-4 flex items-center justify-between">
+                  <span className="flex items-center gap-2"><ListIcon className="w-4 h-4 text-primary" /> 施設リスト</span>
+                  <span className="text-xs font-normal text-muted-foreground">{filteredFacilities.length}件</span>
+                </h3>
+                <div className="space-y-2 overflow-y-auto pr-2 flex-1">
+                  {filteredFacilities.map(facility => (
+                    <div 
+                      key={facility.id} 
+                      onClick={() => { 
+                        // リストをクリックしたらその施設にズームインして詳細を開く
+                        setSelectedFacility(facility); 
+                        setCenter([facility.lat!, facility.lng!]); 
+                        setMapZoom(14); 
+                        setClusterFacilities([]); 
+                      }} 
+                      className="block group"
+                    >
+                      <div className={`p-3 rounded-lg border transition-colors cursor-pointer relative ${selectedFacility?.id === facility.id ? 'bg-primary/10 border-primary/30' : 'border-border/50 hover:bg-secondary/50'}`}>
+                        <h4 className="font-medium text-sm text-foreground mb-1 group-hover:text-primary transition-colors pr-5 line-clamp-1">
+                          {facility.name}
+                        </h4>
+                        <div className="flex items-center justify-between text-[11px] text-muted-foreground mt-1">
+                          <span className="line-clamp-1 mr-2">{facility.prefecture} {facility.city}</span>
+                          {userLocation && (
+                            <span className="text-accent font-medium shrink-0">
+                              {((facility as any)._distance || 0) < 1 ? Math.round((facility as any)._distance * 1000) + 'm' : ((facility as any)._distance || 0).toFixed(1) + 'km'}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {filteredFacilities.length === 0 && (
+                     <div className="text-center py-8 text-muted-foreground text-sm">該当する施設がありません</div>
+                  )}
+                </div>
+              </GlassCard>
             </aside>
 
             <div className="relative">
@@ -312,7 +258,6 @@ export default function MapPage() {
               ) : (
                 <GlassCard className="p-2 sm:p-4 h-[600px] relative">
                   
-                  {/* ★追加: ズームイン・アウトボタン（右上絶対配置） */}
                   <div className="absolute top-6 right-6 z-20 flex flex-col gap-2">
                     <Button onClick={handleZoomIn} size="icon" className="glass bg-background/60 hover:bg-primary/20 text-foreground border-border/40 w-10 h-10 rounded-xl shadow-lg">
                       <Plus className="w-5 h-5" />
@@ -323,88 +268,67 @@ export default function MapPage() {
                   </div>
 
                   <div className="w-full h-full rounded-xl overflow-hidden bg-background/50 relative">
-                    <ComposableMap projection="geoMercator" projectionConfig={{ center, scale: 1800 }} style={{ width: "100%", height: "100%" }}>
-                      <ZoomableGroup 
-                        center={center}
-                        zoom={mapZoom}
-                        onMoveEnd={(position) => {
-                          // 飛ぶバグを防ぐため、ドラッグ移動による座標ズレのみを安全に同期
-                          setCenter(position.coordinates)
-                        }}
-                      >
-                        <Geographies geography={JAPAN_TOPO_JSON}>
-                          {({ geographies }) =>
-                            geographies.map((geo) => (
-                              <Geography
-                                key={geo.rsmKey}
-                                geography={geo}
-                                fill="oklch(0.2 0.03 260)"
-                                stroke="oklch(0.35 0.04 260 / 0.5)"
-                                strokeWidth={0.5 / mapZoom}
-                                style={{ default: { outline: "none" }, hover: { fill: "oklch(0.25 0.04 260)", outline: "none" }, pressed: { outline: "none" } }}
-                              />
-                            ))
-                          }
-                        </Geographies>
+                    <Map 
+                      center={center} 
+                      zoom={mapZoom} 
+                      onBoundsChanged={({ center, zoom, bounds }) => {
+                        setCenter(center)
+                        setMapZoom(zoom)
+                        setMapBounds([bounds.sw[1], bounds.sw[0], bounds.ne[1], bounds.ne[0]])
+                      }}
+                      mouseEvents={true}
+                      touchEvents={true}
+                    >
+                      {clusters.map((cluster) => {
+                        const [lng, lat] = cluster.geometry.coordinates;
+                        const { cluster: isCluster, point_count: pointCount } = cluster.properties as any;
 
-                        {clusters.map((cluster) => {
-                          const [longitude, latitude] = cluster.geometry.coordinates;
-                          const { cluster: isCluster, point_count: pointCount } = cluster.properties as any;
-
-                          if (isCluster) {
-                            const size = 16 + (pointCount / points.length) * 10;
-                            return (
-                              <Marker key={`cluster-${cluster.id}`} coordinates={[longitude, latitude]}>
-                                <g 
-                                  style={{ transform: `scale(${1 / mapZoom})`, cursor: 'pointer' }}
-                                  onClick={() => {
-                                    if (!supercluster) return;
-                                    
-                                    // 1. クラスターに含まれる全施設（リーフ）を取得してリストにセット
-                                    const leaves = supercluster.getLeaves(cluster.id as number, Infinity);
-                                    const facilityList = leaves.map((f: any) => f.properties.facility);
-                                    setClusterFacilities(facilityList);
-                                    setSelectedFacility(null); // 単体カードは閉じる
-
-                                    // 2. 綺麗に拡大されるように中心点とズームを連動（ズレないように直接座標を代入）
-                                    const expansionZoom = Math.min(supercluster.getClusterExpansionZoom(cluster.id as number), 20);
-                                    const rsmZoom = Math.max(mapZoom * 1.5, Math.pow(2, expansionZoom - 5));
-                                    
-                                    setCenter([longitude, latitude]);
-                                    setMapZoom(rsmZoom);
-                                  }}
-                                >
-                                  <circle r={size} fill="oklch(0.7 0.15 220)" stroke="oklch(0.9 0.05 220)" strokeWidth={2} className="drop-shadow-md hover:fill-primary/80 transition-colors" />
-                                  <text textAnchor="middle" y={4} fill="#000" fontSize={12} fontWeight="bold" className="pointer-events-none">
-                                    {pointCount}
-                                  </text>
-                                </g>
-                              </Marker>
-                            );
-                          }
-
-                          const facility = (cluster.properties as any).facility;
+                        if (isCluster) {
+                          const size = 30 + (pointCount / points.length) * 20;
                           return (
-                            <Marker key={`facility-${facility.id}`} coordinates={[longitude, latitude]} onClick={() => { setSelectedFacility(facility); setClusterFacilities([]); }}>
-                              <g style={{ transform: `scale(${1 / mapZoom})` }}>
-                                <g className="cursor-pointer transition-transform hover:scale-125" style={{ transform: "translate(-12px, -24px)" }}>
-                                  <circle r={8} cx={12} cy={20} fill="oklch(0.7 0.15 220)" stroke="oklch(0.9 0.05 220)" strokeWidth={2} className="drop-shadow-lg" />
-                                  <circle r={3} cx={12} cy={20} fill="oklch(0.95 0.01 260)" />
-                                </g>
-                              </g>
-                            </Marker>
-                          )
-                        })}
+                            <Overlay key={`cluster-${cluster.id}`} anchor={[lat, lng]} offset={[size / 2, size / 2]}>
+                              <div 
+                                className="bg-primary/90 text-primary-foreground rounded-full flex items-center justify-center font-bold shadow-lg border-2 border-background cursor-pointer hover:bg-primary hover:scale-110 transition-all"
+                                style={{ width: `${size}px`, height: `${size}px`, fontSize: `${Math.max(12, size/3)}px` }}
+                                onClick={() => {
+                                  if (!supercluster) return;
+                                  const leaves = supercluster.getLeaves(cluster.id as number, Infinity);
+                                  const facilityList = leaves.map((f: any) => f.properties.facility);
+                                  setClusterFacilities(facilityList);
+                                  setSelectedFacility(null);
 
-                        {userLocation && (
-                          <Marker coordinates={userLocation}>
-                            <g style={{ transform: `scale(${1 / mapZoom})` }}>
-                              <circle r={6} fill="#3b82f6" stroke="#fff" strokeWidth={2} className="animate-pulse" />
-                            </g>
-                          </Marker>
-                        )}
-                      </ZoomableGroup>
-                    </ComposableMap>
+                                  const expansionZoom = Math.min(supercluster.getClusterExpansionZoom(cluster.id as number), 18);
+                                  setCenter([lat, lng]);
+                                  setMapZoom(expansionZoom);
+                                }}
+                              >
+                                {pointCount}
+                              </div>
+                            </Overlay>
+                          );
+                        }
+
+                        const facility = (cluster.properties as any).facility;
+                        const isSelected = selectedFacility?.id === facility.id;
+
+                        return (
+                          <Overlay key={`facility-${facility.id}`} anchor={[lat, lng]} offset={[16, 32]}>
+                            <div 
+                              className={`cursor-pointer transition-all ${isSelected ? 'scale-125 z-10' : 'hover:scale-110'}`}
+                              onClick={() => { setSelectedFacility(facility); setClusterFacilities([]); }}
+                            >
+                              <MapPin className={`w-8 h-8 ${isSelected ? 'text-accent drop-shadow-xl' : 'text-primary drop-shadow-md'}`} fill="var(--background)" strokeWidth={1.5} />
+                            </div>
+                          </Overlay>
+                        )
+                      })}
+
+                      {userLocation && (
+                        <Overlay anchor={userLocation} offset={[10, 10]}>
+                          <div className="w-5 h-5 bg-blue-500 border-2 border-white rounded-full animate-pulse shadow-lg" />
+                        </Overlay>
+                      )}
+                    </Map>
                   </div>
                 </GlassCard>
               )}
@@ -435,7 +359,7 @@ export default function MapPage() {
                 </div>
               )}
 
-              {/* ★追加: クラスタークリック時に表示される「施設リスト」カード */}
+              {/* クラスタークリック時に表示される「エリア内施設リスト」カード */}
               {clusterFacilities.length > 0 && (
                 <div className="absolute bottom-8 left-8 right-8 sm:left-auto sm:right-8 sm:w-80 z-20">
                   <GlassCard className="glass-strong shadow-2xl max-h-[320px] flex flex-col p-4">
