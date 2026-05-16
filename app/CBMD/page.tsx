@@ -84,7 +84,7 @@ export default async function MuseumPage() {
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight text-balance glow-text">
               日本中の宇宙展示を
               <br />
-              <span className="text-primary">探しに行おう</span>
+              <span className="text-primary">探しに行こう</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed text-pretty">
