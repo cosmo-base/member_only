@@ -45,6 +45,7 @@ export default function MapPage() {
   const [hasEvent, setHasEvent] = useState(false)
   const [selectedFacility, setSelectedFacility] = useState<Facility | null>(null)
   const [showFilters, setShowFilters] = useState(false)
+  const [mapZoom, setMapZoom] = useState(1) // ★追加: ズーム状態を管理
 
   useEffect(() => {
     async function loadData() {
@@ -241,7 +242,8 @@ export default function MapPage() {
                       projectionConfig={{ center: [137, 38], scale: 1800 }}
                       style={{ width: "100%", height: "100%" }}
                     >
-                      <ZoomableGroup>
+                      {/* ★追加: onMoveEndでズーム率を更新 */}
+                      <ZoomableGroup onMoveEnd={({ zoom }) => setMapZoom(zoom)}>
                         <Geographies geography={JAPAN_TOPO_JSON}>
                           {({ geographies }) =>
                             geographies.map((geo) => (
@@ -266,9 +268,12 @@ export default function MapPage() {
                             coordinates={coordinates as [number, number]}
                             onClick={() => setSelectedFacility(facility)}
                           >
-                            <g className="cursor-pointer transition-transform hover:scale-125" style={{ transform: "translate(-12px, -24px)" }}>
-                              <circle r={8} cx={12} cy={20} fill="oklch(0.7 0.15 220)" stroke="oklch(0.9 0.05 220)" strokeWidth={2} className="drop-shadow-lg" />
-                              <circle r={3} cx={12} cy={20} fill="oklch(0.95 0.01 260)" />
+                            {/* ★追加: ズーム率の逆数をかけて大きさを相殺する */}
+                            <g style={{ transform: `scale(${1 / mapZoom})` }}>
+                              <g className="cursor-pointer transition-transform hover:scale-125" style={{ transform: "translate(-12px, -24px)" }}>
+                                <circle r={8} cx={12} cy={20} fill="oklch(0.7 0.15 220)" stroke="oklch(0.9 0.05 220)" strokeWidth={2} className="drop-shadow-lg" />
+                                <circle r={3} cx={12} cy={20} fill="oklch(0.95 0.01 260)" />
+                              </g>
                             </g>
                           </Marker>
                         ))}
