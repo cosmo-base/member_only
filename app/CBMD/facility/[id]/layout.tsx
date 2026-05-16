@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const facility = facilities.find((f) => f.id === id)
 
   return {
-    title: facility ? `${facility.name} | CBMD` : "施設詳細 | CBMD",
+    title: facility ? `${facility.name} | CBMD | Cosmo Base - 参加者ページ` : "施設詳細 | CBMD | Cosmo Base - 参加者ページ",
   }
 }
 

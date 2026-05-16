@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "マップ|CBMD",
+  title: "マップ | CBMD | Cosmo Base - 参加者ページ",
 }
 
 export default function SubPageLayout({
