@@ -14,7 +14,32 @@ export default async function MuseumPage() {
   
   const featuredFacilities = facilities.slice(0, 4)
   const recentFacilities = [...facilities].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 4)
-  const recentEvents = events.slice(0, 3) // 最新のイベントを3つ取得
+  
+  // ★追加: 日本時間での「今日」を取得し、対象施設で開催中のイベントだけを抽出
+  const parseDate = (dStr: string) => {
+    if (!dStr) return null;
+    const match = dStr.match(/(\d{4})[-/年\.]\s*(\d{1,2})[-/月\.]\s*(\d{1,2})/);
+    if (!match) return null;
+    return new Date(parseInt(match[1], 10), parseInt(match[2], 10) - 1, parseInt(match[3], 10));
+  };
+
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+  today.setHours(0, 0, 0, 0);
+
+  const activeEvents = events.filter(e => {
+    // 施設リストに存在する場所かチェック
+    const isAtFacility = facilities.some(f => e.location && e.location.includes(f.name));
+    if (!isAtFacility) return false;
+
+    // 日付のチェック（開始日〜終了日の間、または当日に開催されているか）
+    const start = parseDate(e.date || "");
+    const end = parseDate(e.endDate || "") || start;
+    if (!start || !end) return false;
+
+    return today >= start && today <= end;
+  });
+
+  const recentEvents = activeEvents.slice(0, 3)
 
   return (
     <ContentPageLayout
@@ -154,24 +179,31 @@ export default async function MuseumPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {recentEvents.map((event) => (
-                <Link href={`/CBED/${event.id}`} key={event.id}>
-                  <GlassCard hover className="h-full">
-                    <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden flex items-center justify-center">
-                      <Calendar className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-xs text-primary font-medium mb-1">{event.date}</p>
-                        <h3 className="font-semibold text-foreground line-clamp-2">{event.title}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">{event.location}</p>
+            {recentEvents.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {recentEvents.map((event) => (
+                  <Link href={`/CBED/${event.id}`} key={event.id}>
+                    <GlassCard hover className="h-full">
+                      <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden flex items-center justify-center">
+                        <Calendar className="w-8 h-8 text-muted-foreground" />
                       </div>
-                    </div>
-                  </GlassCard>
-                </Link>
-              ))}
-            </div>
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-xs text-primary font-medium mb-1">{event.date}</p>
+                          <h3 className="font-semibold text-foreground line-clamp-2">{event.title}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">{event.location}</p>
+                        </div>
+                      </div>
+                    </GlassCard>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <GlassCard className="text-center py-12 text-muted-foreground">
+                <Calendar className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                <p>現在、対象施設で開催中のイベントはありません。</p>
+              </GlassCard>
+            )}
           </div>
         </section>
 
