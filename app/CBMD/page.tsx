@@ -1,6 +1,6 @@
 // app/CBMD/page.tsx
 import Link from "next/link"
-import { Map, Search, Database, ArrowRight, Calendar, Sparkles, MapPin } from "lucide-react"
+import { Map, Search, Database, ArrowRight, Calendar, Sparkles, MapPin, Home } from "lucide-react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
@@ -15,7 +15,6 @@ export default async function MuseumPage() {
   const featuredFacilities = facilities.slice(0, 4)
   const recentFacilities = [...facilities].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 4)
   
-  // ★追加: 日本時間での「今日」を取得し、対象施設で開催中のイベントだけを抽出
   const parseDate = (dStr: string) => {
     if (!dStr) return null;
     const match = dStr.match(/(\d{4})[-/年\.]\s*(\d{1,2})[-/月\.]\s*(\d{1,2})/);
@@ -27,11 +26,9 @@ export default async function MuseumPage() {
   today.setHours(0, 0, 0, 0);
 
   const activeEvents = events.filter(e => {
-    // 施設リストに存在する場所かチェック
     const isAtFacility = facilities.some(f => e.location && e.location.includes(f.name));
     if (!isAtFacility) return false;
 
-    // 日付のチェック（開始日〜終了日の間、または当日に開催されているか）
     const start = parseDate(e.date || "");
     const end = parseDate(e.endDate || "") || start;
     if (!start || !end) return false;
@@ -50,8 +47,35 @@ export default async function MuseumPage() {
     >
     <div className="min-h-screen relative">
       <main className="relative z-10">
+        
+        {/* ★追加: CBMD共通ナビゲーション */}
+        <div className="max-w-7xl mx-auto px-4 pt-6">
+          <div className="flex flex-wrap items-center gap-2 border-b border-border/30 pb-4">
+            <Link href="/CBMD">
+              <Button variant="ghost" size="sm" className="bg-primary/20 text-primary hover:bg-primary/30 font-bold">
+                <Home className="w-4 h-4 mr-2" /> トップ
+              </Button>
+            </Link>
+            <Link href="/CBMD/map">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <Map className="w-4 h-4 mr-2" /> マップ
+              </Button>
+            </Link>
+            <Link href="/CBMD/search">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <Search className="w-4 h-4 mr-2" /> 検索
+              </Button>
+            </Link>
+            <Link href="/CBMD/database">
+              <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                <Database className="w-4 h-4 mr-2" /> データベース一覧
+              </Button>
+            </Link>
+          </div>
+        </div>
+
         {/* Hero Section */}
-        <section className="min-h-screen flex items-center justify-center pt-16 px-4">
+        <section className="min-h-[80vh] flex items-center justify-center py-16 px-4">
           <div className="max-w-5xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 glass px-4 py-2 rounded-full mb-8">
               <Sparkles className="w-4 h-4 text-primary" />
@@ -189,7 +213,10 @@ export default async function MuseumPage() {
                       </div>
                       <div className="space-y-3">
                         <div>
-                          <p className="text-xs text-primary font-medium mb-1">{event.date}</p>
+                          {/* ★修正: 開催中イベントでは範囲を記載 */}
+                          <p className="text-xs text-primary font-medium mb-1">
+                            {event.endDate ? `${event.date} 〜 ${event.endDate}` : event.date}
+                          </p>
                           <h3 className="font-semibold text-foreground line-clamp-2">{event.title}</h3>
                           <p className="text-sm text-muted-foreground mt-1">{event.location}</p>
                         </div>
