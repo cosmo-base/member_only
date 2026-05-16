@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { Search, MapPin, Star, Calendar, X, Loader2 } from "lucide-react"
+import { Search, MapPin, Star, Calendar, X, Loader2, Home, Map as MapIcon, Database } from "lucide-react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
@@ -46,34 +46,19 @@ function SearchContent() {
         const matchesLocation = facility.prefecture.includes(query) || facility.city.includes(query)
         if (!matchesName && !matchesDescription && !matchesTags && !matchesLocation) return false
       }
-
       if (selectedTags.length > 0) {
         const hasMatchingTag = selectedTags.some((tag) => facility.tags.includes(tag))
         if (!hasMatchingTag) return false
       }
-
       if (selectedRegion && facility.region !== selectedRegion) return false
       if (selectedPrefecture && facility.prefecture !== selectedPrefecture) return false
       if (selectedCategory && facility.category !== selectedCategory) return false
-
       return true
     })
   }, [facilities, searchQuery, selectedTags, selectedRegion, selectedPrefecture, selectedCategory])
 
-  const handleTagToggle = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    )
-  }
-
-  const clearAllFilters = () => {
-    setSearchQuery("")
-    setSelectedTags([])
-    setSelectedRegion(null)
-    setSelectedPrefecture(null)
-    setSelectedCategory(null)
-  }
-
+  const handleTagToggle = (tag: string) => setSelectedTags((prev) => prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag])
+  const clearAllFilters = () => { setSearchQuery(""); setSelectedTags([]); setSelectedRegion(null); setSelectedPrefecture(null); setSelectedCategory(null); }
   const hasActiveFilters = searchQuery || selectedTags.length > 0 || selectedRegion || selectedPrefecture || selectedCategory
 
   return (
@@ -84,7 +69,34 @@ function SearchContent() {
         logo="CBMD"
         >
         <div className="min-h-screen relative">
-          <main className="relative z-10 pt-24 pb-12 px-4">
+          <main className="relative z-10 pt-8 pb-12 px-4">
+            
+            {/* ★追加: CBMD共通ナビゲーション */}
+            <div className="max-w-7xl mx-auto mb-8 border-b border-border/30 pb-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <Link href="/CBMD">
+                  <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                    <Home className="w-4 h-4 mr-2" /> トップ
+                  </Button>
+                </Link>
+                <Link href="/CBMD/map">
+                  <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                    <MapIcon className="w-4 h-4 mr-2" /> マップ
+                  </Button>
+                </Link>
+                <Link href="/CBMD/search">
+                  <Button variant="ghost" size="sm" className="bg-primary/20 text-primary hover:bg-primary/30 font-bold">
+                    <Search className="w-4 h-4 mr-2" /> 検索
+                  </Button>
+                </Link>
+                <Link href="/CBMD/database">
+                  <Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground">
+                    <Database className="w-4 h-4 mr-2" /> データベース一覧
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
             <div className="max-w-7xl mx-auto">
           {/* Search Header */}
           <div className="text-center mb-12">
@@ -113,15 +125,8 @@ function SearchContent() {
                   {regions.map((region) => (
                     <button
                       key={region.name}
-                      onClick={() => {
-                        setSelectedRegion(selectedRegion === region.name ? null : region.name)
-                        setSelectedPrefecture(null)
-                      }}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                        selectedRegion === region.name
-                          ? "bg-primary/20 text-primary glow"
-                          : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"
-                      }`}
+                      onClick={() => { setSelectedRegion(selectedRegion === region.name ? null : region.name); setSelectedPrefecture(null); }}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${selectedRegion === region.name ? "bg-primary/20 text-primary glow" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}
                     >
                       {region.name}
                     </button>
@@ -133,21 +138,15 @@ function SearchContent() {
                 <div>
                   <h3 className="text-sm font-medium text-foreground mb-3">都道府県で絞り込み</h3>
                   <div className="flex flex-wrap gap-2">
-                    {regions
-                      .find((r) => r.name === selectedRegion)
-                      ?.prefectures.map((pref) => (
-                        <button
-                          key={pref}
-                          onClick={() => setSelectedPrefecture(selectedPrefecture === pref ? null : pref)}
-                          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                            selectedPrefecture === pref
-                              ? "bg-primary/20 text-primary"
-                              : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"
-                          }`}
-                        >
-                          {pref}
-                        </button>
-                      ))}
+                    {regions.find((r) => r.name === selectedRegion)?.prefectures.map((pref) => (
+                      <button
+                        key={pref}
+                        onClick={() => setSelectedPrefecture(selectedPrefecture === pref ? null : pref)}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${selectedPrefecture === pref ? "bg-primary/20 text-primary" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}
+                      >
+                        {pref}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -159,11 +158,7 @@ function SearchContent() {
                     <button
                       key={type}
                       onClick={() => setSelectedCategory(selectedCategory === type ? null : type)}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                        selectedCategory === type
-                          ? "bg-accent/20 text-accent"
-                          : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"
-                      }`}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${selectedCategory === type ? "bg-accent/20 text-accent" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}
                     >
                       {type}
                     </button>
@@ -178,11 +173,7 @@ function SearchContent() {
                     <button
                       key={tag}
                       onClick={() => handleTagToggle(tag)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                        selectedTags.includes(tag)
-                          ? "bg-primary text-primary-foreground glow"
-                          : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"
-                      }`}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedTags.includes(tag) ? "bg-primary text-primary-foreground glow" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}
                     >
                       {tag}
                     </button>
@@ -196,42 +187,27 @@ function SearchContent() {
                   <div className="flex flex-wrap gap-2">
                     {searchQuery && (
                       <TagBadge variant="primary">
-                        「{searchQuery}」
-                        <button onClick={() => setSearchQuery("")} className="ml-1">
-                          <X className="w-3 h-3" />
-                        </button>
+                        「{searchQuery}」<button onClick={() => setSearchQuery("")} className="ml-1"><X className="w-3 h-3" /></button>
                       </TagBadge>
                     )}
                     {selectedTags.map((tag) => (
                       <TagBadge key={tag} variant="primary">
-                        {tag}
-                        <button onClick={() => handleTagToggle(tag)} className="ml-1">
-                          <X className="w-3 h-3" />
-                        </button>
+                        {tag}<button onClick={() => handleTagToggle(tag)} className="ml-1"><X className="w-3 h-3" /></button>
                       </TagBadge>
                     ))}
                     {selectedRegion && (
                       <TagBadge variant="accent">
-                        {selectedRegion}
-                        <button onClick={() => { setSelectedRegion(null); setSelectedPrefecture(null); }} className="ml-1">
-                          <X className="w-3 h-3" />
-                        </button>
+                        {selectedRegion}<button onClick={() => { setSelectedRegion(null); setSelectedPrefecture(null); }} className="ml-1"><X className="w-3 h-3" /></button>
                       </TagBadge>
                     )}
                     {selectedPrefecture && (
                       <TagBadge variant="accent">
-                        {selectedPrefecture}
-                        <button onClick={() => setSelectedPrefecture(null)} className="ml-1">
-                          <X className="w-3 h-3" />
-                        </button>
+                        {selectedPrefecture}<button onClick={() => setSelectedPrefecture(null)} className="ml-1"><X className="w-3 h-3" /></button>
                       </TagBadge>
                     )}
                     {selectedCategory && (
                       <TagBadge>
-                        {selectedCategory}
-                        <button onClick={() => setSelectedCategory(null)} className="ml-1">
-                          <X className="w-3 h-3" />
-                        </button>
+                        {selectedCategory}<button onClick={() => setSelectedCategory(null)} className="ml-1"><X className="w-3 h-3" /></button>
                       </TagBadge>
                     )}
                   </div>
