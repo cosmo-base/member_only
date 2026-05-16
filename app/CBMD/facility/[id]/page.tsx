@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { 
   MapPin, Clock, Calendar, DollarSign, Train, 
-  ExternalLink, Globe, Image as ImageIcon,
+  ExternalLink, Globe,
   Star, ChevronLeft, Twitter, Instagram, Youtube
 } from "lucide-react"
 import { GlassCard } from "@/components/glass-card"
@@ -11,6 +11,7 @@ import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
 import { fetchFacilitiesData } from "@/lib/CBMD"
 import { ContentPageLayout } from "@/components/content-page-layout"
+import { LinkedEvents } from "./linked-events"
 
 interface FacilityPageProps {
   params: Promise<{
@@ -18,20 +19,12 @@ interface FacilityPageProps {
   }>
 }
 
-// ★修正: export function generateStaticParams を Next.js が確実に認識・実行できる形に調整しました。
 export async function generateStaticParams() {
   try {
     const facilities = await fetchFacilitiesData();
-    
-    if (!facilities || facilities.length === 0) {
-      return [];
-    }
-
-    return facilities.map((facility) => ({
-      id: String(facility.id),
-    }));
+    if (!facilities || facilities.length === 0) return [];
+    return facilities.map((facility) => ({ id: String(facility.id) }));
   } catch (error) {
-    console.error("Error in generateStaticParams:", error);
     return [];
   }
 }
@@ -41,9 +34,7 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
   const facilities = await fetchFacilitiesData()
   const facility = facilities.find((f) => f.id === id)
 
-  if (!facility) {
-    notFound()
-  }
+  if (!facility) notFound()
 
   return (
    <ContentPageLayout
@@ -64,23 +55,18 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
           </Link>
         </div>
 
-        {/* Hero Image */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-          <div className="aspect-[21/9] rounded-3xl bg-secondary/30 overflow-hidden flex items-center justify-center glass relative">
-            {facility.image && facility.image !== "/images/placeholder.jpg" ? (
+        {/* Hero Image (★追加: 画像がない場合は枠ごと非表示) */}
+        {facility.image && facility.image !== "/images/placeholder.jpg" && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div className="aspect-[21/9] rounded-3xl bg-secondary/30 overflow-hidden flex items-center justify-center glass relative">
               <img 
                 src={facility.image} 
                 alt={facility.name} 
                 className="w-full h-full object-cover"
               />
-            ) : (
-              <div className="text-center">
-                <ImageIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">画像準備中</p>
-              </div>
-            )}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:grid lg:grid-cols-3 gap-8">
@@ -127,35 +113,18 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
               )}
 
               {/* Description */}
-              <GlassCard>
-                <h2 className="text-lg font-semibold text-foreground mb-4">施設紹介</h2>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                  {facility.description || "施設の説明は現在準備中です。"}
-                </p>
-              </GlassCard>
-
-              {/* Events Section (CBEDから自動連携されたものがここに表示されます) */}
-              {facility.events && facility.events.length > 0 && (
+              {facility.description && (
                 <GlassCard>
-                  <div className="flex items-center gap-2 mb-4">
-                    <Calendar className="w-5 h-5 text-accent" />
-                    <h2 className="text-lg font-semibold text-foreground">連携イベント情報</h2>
-                  </div>
-                  <div className="space-y-4">
-                    {facility.events.map((event, index) => (
-                      <Link href={`/CBED/${event.id}`} key={index}>
-                        <div className="glass-strong rounded-xl p-4 hover:bg-primary/10 transition-colors cursor-pointer mb-3">
-                          <div className="flex items-start justify-between gap-4">
-                            <div>
-                              <h3 className="font-medium text-foreground mb-1 group-hover:text-primary">{event.title}</h3>
-                            </div>
-                            <TagBadge variant="accent">{event.date}</TagBadge>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
+                  <h2 className="text-lg font-semibold text-foreground mb-4">施設紹介</h2>
+                  <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                    {facility.description}
+                  </p>
                 </GlassCard>
+              )}
+
+              {/* Events Section (★追加: クライアントコンポーネントで過去イベントの折りたたみを実現) */}
+              {facility.events && facility.events.length > 0 && (
+                <LinkedEvents events={facility.events} />
               )}
 
             </div>
@@ -202,42 +171,22 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
                     <h3 className="text-sm font-medium text-foreground mb-3">リンク</h3>
                     <div className="flex flex-wrap gap-2">
                       {facility.website && (
-                        <a
-                          href={facility.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"
-                        >
+                        <a href={facility.website} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all">
                           <Globe className="w-5 h-5" />
                         </a>
                       )}
                       {facility.twitter && (
-                        <a
-                          href={facility.twitter.startsWith('http') ? facility.twitter : `https://twitter.com/${facility.twitter}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"
-                        >
+                        <a href={facility.twitter.startsWith('http') ? facility.twitter : `https://twitter.com/${facility.twitter}`} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all">
                           <Twitter className="w-5 h-5" />
                         </a>
                       )}
                       {facility.instagram && (
-                        <a
-                          href={facility.instagram.startsWith('http') ? facility.instagram : `https://instagram.com/${facility.instagram}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"
-                        >
+                        <a href={facility.instagram.startsWith('http') ? facility.instagram : `https://instagram.com/${facility.instagram}`} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all">
                           <Instagram className="w-5 h-5" />
                         </a>
                       )}
                       {facility.youtube && (
-                        <a
-                          href={facility.youtube.startsWith('http') ? facility.youtube : `https://youtube.com/${facility.youtube}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"
-                        >
+                        <a href={facility.youtube.startsWith('http') ? facility.youtube : `https://youtube.com/${facility.youtube}`} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all">
                           <Youtube className="w-5 h-5" />
                         </a>
                       )}
@@ -248,11 +197,7 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
                 {/* CTA Button */}
                 {facility.website && (
                   <div className="mt-6">
-                    <a
-                      href={facility.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <a href={facility.website} target="_blank" rel="noopener noreferrer">
                       <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow">
                         公式サイトを見る
                         <ExternalLink className="w-4 h-4 ml-2" />
