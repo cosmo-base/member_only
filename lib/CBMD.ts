@@ -30,8 +30,6 @@ export interface Facility {
 const CBMD_SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDvzMbN9CNa_PXwmre1IFid8fw7rD2yG0IlBnifsjtrtDN0cy3n-nQlEFvKQbE4w06TXTHoZ4edpzj/pub?gid=0&single=true&output=csv&v=1";
 
 export const facilityTypes = ["科学館", "博物館", "美術館", "JAXA関連施設", "大学展示", "プラネタリウム", "天文台", "イベント施設"]
-
-// ★修正: ご指定の新しいタグリストを反映
 export const categoryTags = ["地球", "リモートセンシング", "プラネタリウム", "望遠鏡", "天文・天体", "ロケット", "人工衛星", "地球観測", "宇宙ステーション"]
 export const spacecraftTags = ["はやぶさ", "はやぶさ2", "MMX", "ISS", "H3ロケット", "イプシロン", "SLIM", "かぐや", "あかつき", "HTV"]
 
@@ -45,6 +43,7 @@ export const regionsData = {
   "四国": ["徳島県", "香川県", "愛媛県", "高知県"],
   "九州・沖縄": ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"],
 }
+
 export const regions = Object.keys(regionsData).map(key => ({
   name: key,
   prefectures: regionsData[key as keyof typeof regionsData]
@@ -124,7 +123,7 @@ function parseFacilityCSV(csvText: string): any[] {
 export async function fetchFacilitiesData(): Promise<Facility[]> {
   try {
     const [facilitiesRes, allEvents] = await Promise.all([
-      fetch(CBMD_SPREADSHEET_URL, { next: { revalidate: 60 } }),
+      fetch(CBMD_SPREADSHEET_URL), // ★修正: { next: { revalidate: 60 } } を削除して完全静的化
       fetchEventsData()
     ]);
 
@@ -132,6 +131,9 @@ export async function fetchFacilitiesData(): Promise<Facility[]> {
     
     const text = await facilitiesRes.text();
     const rawFacilities = parseFacilityCSV(text);
+
+    // ★追加: CBEDと同じように成功ログを出す
+    console.log(`✅ CBMD.ts: スプレッドシートから ${rawFacilities.length} 件の施設データを読み込みました！`);
 
     return rawFacilities.map(raw => {
       const prefecture = String(raw.prefecture || "").trim();
