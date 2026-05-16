@@ -25,11 +25,15 @@ export interface Facility {
   youtube?: string
   events?: SpaceEvent[]
   updatedAt: string
-  lat?: number   // ★追加
-  lng?: number   // ★追加
+  lat?: number
+  lng?: number
 }
 
+// ★Git連携シート（公開用CSV）のURL
 const CBMD_SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDvzMbN9CNa_PXwmre1IFid8fw7rD2yG0IlBnifsjtrtDN0cy3n-nQlEFvKQbE4w06TXTHoZ4edpzj/pub?gid=1534065609&single=true&output=csv";
+
+// ★ビルド時のGoogleブロック（HTTP 429）を防ぐため、1回のビルド中はずっと同じタイムスタンプを使い回します
+const BUILD_TIMESTAMP = Date.now();
 
 export const facilityTypes = ["科学館", "博物館", "美術館", "JAXA関連施設", "大学展示", "プラネタリウム", "天文台", "イベント施設"]
 export const categoryTags = ["地球", "リモートセンシング", "プラネタリウム", "望遠鏡", "天文・天体", "ロケット", "人工衛星", "地球観測", "宇宙ステーション"]
@@ -124,14 +128,16 @@ function parseFacilityCSV(csvText: string): any[] {
 
 export async function fetchFacilitiesData(): Promise<Facility[]> {
   try {
-    const cacheBusterUrl = `${CBMD_SPREADSHEET_BASE_URL}&_t=${Date.now()}`;
+    const cacheBusterUrl = `${CBMD_SPREADSHEET_BASE_URL}&_t=${BUILD_TIMESTAMP}`;
     
     const [facilitiesRes, allEvents] = await Promise.all([
       fetch(cacheBusterUrl),
       fetchEventsData()
     ]);
 
-    if (!facilitiesRes.ok) throw new Error("CBMDデータの取得に失敗");
+    if (!facilitiesRes.ok) {
+      throw new Error(`CBMDデータの取得に失敗: HTTP ${facilitiesRes.status} ${facilitiesRes.statusText}`);
+    }
     
     const text = await facilitiesRes.text();
     const rawFacilities = parseFacilityCSV(text);
@@ -176,8 +182,8 @@ export async function fetchFacilitiesData(): Promise<Facility[]> {
         youtube: raw.youtube ? String(raw.youtube).trim() : undefined,
         events: relatedEvents,
         updatedAt: String(raw.updatedAt || "").trim(),
-        lat: raw.lat ? parseFloat(String(raw.lat)) : undefined, // ★追加
-        lng: raw.lng ? parseFloat(String(raw.lng)) : undefined, // ★追加
+        lat: raw.lat ? parseFloat(String(raw.lat)) : undefined,
+        lng: raw.lng ? parseFloat(String(raw.lng)) : undefined,
       } as Facility;
     });
   } catch (error) {
