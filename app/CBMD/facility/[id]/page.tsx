@@ -138,7 +138,7 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
                       {facility.website && <a href={facility.website} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"><Globe className="w-5 h-5" /></a>}
                       {facility.twitter && <a href={facility.twitter.startsWith('http') ? facility.twitter : `https://twitter.com/${facility.twitter}`} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"><Twitter className="w-5 h-5" /></a>}
                       {facility.instagram && <a href={facility.instagram.startsWith('http') ? facility.instagram : `https://instagram.com/${facility.instagram}`} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"><Instagram className="w-5 h-5" /></a>}
-                      {facility.youtube && <a href={facility.youtube.startsWith('http') ? facility.youtube : `https://youtube.com/${facility.youtube}`} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"><Youtube className="w-5 h-5" /></a>}
+                      {facility.youtube && <a href={facility.youtube.startsWith('http') ? facility.youtube : `https://youtube.com/channel/${facility.youtube}`} target="_blank" rel="noopener noreferrer" className="glass p-2.5 rounded-xl hover:bg-primary/20 hover:text-primary transition-all"><Youtube className="w-5 h-5" /></a>}
                     </div>
                   </div>
                 )}
