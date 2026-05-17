@@ -1,7 +1,7 @@
 // app/CBMD/map/page.tsx
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, useRef } from "react"
 import { Map, Overlay } from "pigeon-maps"
 import useSupercluster from "use-supercluster"
 import { MapPin, X, ExternalLink, Filter, Loader2, Home, Map as MapIcon, Search, Database, Navigation, Plus, Minus, List as ListIcon } from "lucide-react"
@@ -31,7 +31,6 @@ export default function MapPage() {
 
   const [center, setCenter] = useState<[number, number]>(IMPERIAL_PALACE_LATLNG)
   const [mapZoom, setMapZoom] = useState(5)
-  // ★マップの現在の表示範囲（Bounds）を管理
   const [mapBounds, setMapBounds] = useState<[number, number, number, number] | null>(null)
   
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
@@ -47,6 +46,21 @@ export default function MapPage() {
   const [clusterFacilities, setClusterFacilities] = useState<Facility[]>([])
   
   const [showFilters, setShowFilters] = useState(false)
+
+  // ★追加: 地図の移動が「システムによる自動移動」か「手動」かを判定する仕組み
+  const isAutoPan = useRef(false)
+  const autoPanTimeout = useRef<NodeJS.Timeout | null>(null)
+
+  const handleMapMove = (newCenter: [number, number], newZoom: number) => {
+    isAutoPan.current = true
+    setCenter(newCenter)
+    setMapZoom(newZoom)
+    
+    if (autoPanTimeout.current) clearTimeout(autoPanTimeout.current)
+    autoPanTimeout.current = setTimeout(() => {
+      isAutoPan.current = false
+    }, 500) // 自動移動が終わったらフラグを戻す
+  }
 
   useEffect(() => {
     async function loadData() {
@@ -64,8 +78,7 @@ export default function MapPage() {
         (position) => {
           const loc: [number, number] = [position.coords.latitude, position.coords.longitude]
           setUserLocation(loc)
-          setCenter(loc)
-          setMapZoom(12)
+          handleMapMove(loc, 12)
           setIsLocating(false)
         },
         () => {
@@ -79,7 +92,6 @@ export default function MapPage() {
     }
   }
 
-  // 1. フィルターや検索条件で絞り込まれたベースの施設リスト
   const filteredFacilities = useMemo(() => {
     const filtered = facilities.filter((facility) => {
       if (!facility.lat || !facility.lng) return false
@@ -101,13 +113,9 @@ export default function MapPage() {
     return filtered
   }, [facilities, selectedRegion, selectedPrefecture, selectedCategories, hasPlanetarium, hasEvent, userLocation])
 
-  // ★追加：地図の表示範囲（画面内）にある施設だけを抽出するリスト
   const visibleFacilities = useMemo(() => {
     if (!mapBounds) return filteredFacilities;
-    
-    // mapBounds = [westLng, southLat, eastLng, northLat]
     const [westLng, southLat, eastLng, northLat] = mapBounds;
-    
     return filteredFacilities.filter(f => {
       if (!f.lat || !f.lng) return false;
       return f.lat >= southLat && f.lat <= northLat && f.lng >= westLng && f.lng <= eastLng;
@@ -139,8 +147,8 @@ export default function MapPage() {
     setSelectedRegion(null); setSelectedPrefecture(null); setSelectedCategories([]); setHasPlanetarium(false); setHasEvent(false);
   }
 
-  const handleZoomIn = () => setMapZoom(prev => Math.min(prev + 1, 18))
-  const handleZoomOut = () => setMapZoom(prev => Math.max(prev - 1, 1))
+  const handleZoomIn = () => handleMapMove(center, Math.min(mapZoom + 1, 18))
+  const handleZoomOut = () => handleMapMove(center, Math.max(mapZoom - 1, 1))
 
   return (
     <ContentPageLayout
@@ -223,7 +231,6 @@ export default function MapPage() {
                 </div>
               </GlassCard>
 
-              {/* ★ここが変更点: filteredFacilities ではなく visibleFacilities をマッピング */}
               <GlassCard className="h-[400px] flex flex-col">
                 <h3 className="font-semibold text-foreground mb-4 flex items-center justify-between">
                   <span className="flex items-center gap-2"><ListIcon className="w-4 h-4 text-primary" /> 表示エリア内の施設</span>
@@ -235,9 +242,8 @@ export default function MapPage() {
                       key={facility.id} 
                       onClick={() => { 
                         setSelectedFacility(facility); 
-                        setCenter([facility.lat!, facility.lng!]); 
-                        setMapZoom(14); 
                         setClusterFacilities([]); 
+                        handleMapMove([facility.lat!, facility.lng!], 14); 
                       }} 
                       className="block group"
                     >
@@ -281,16 +287,25 @@ export default function MapPage() {
                     </Button>
                   </div>
 
-                  {/* マップのラッパー */}
                   <div className="w-full h-full rounded-xl overflow-hidden bg-background/50 relative">
                     <Map 
                       center={center} 
                       zoom={mapZoom} 
                       onBoundsChanged={({ center, zoom, bounds }) => {
+                        // ★追加: 自動移動中ではない（＝ユーザーが自分でドラッグした）場合はカードを消す
+                        if (!isAutoPan.current) {
+                          setClusterFacilities([]);
+                          setSelectedFacility(null);
+                        }
+                        
                         setCenter(center)
                         setMapZoom(zoom)
-                        // bounds: { ne: [lat, lng], sw: [lat, lng] } -> [westLng, southLat, eastLng, northLat]
                         setMapBounds([bounds.sw[1], bounds.sw[0], bounds.ne[1], bounds.ne[0]])
+                      }}
+                      // ★追加: 地図の何もない場所をクリックした時にもカードを消す
+                      onClick={() => {
+                        setClusterFacilities([]);
+                        setSelectedFacility(null);
                       }}
                       mouseEvents={true}
                       touchEvents={true}
@@ -314,8 +329,7 @@ export default function MapPage() {
                                   setSelectedFacility(null);
 
                                   const expansionZoom = Math.min(supercluster.getClusterExpansionZoom(cluster.id as number), 18);
-                                  setCenter([lat, lng]);
-                                  setMapZoom(expansionZoom);
+                                  handleMapMove([lat, lng], expansionZoom);
                                 }}
                               >
                                 {pointCount}
@@ -331,7 +345,10 @@ export default function MapPage() {
                           <Overlay key={`facility-${facility.id}`} anchor={[lat, lng]} offset={[16, 32]}>
                             <div 
                               className={`cursor-pointer transition-all ${isSelected ? 'scale-125 z-10' : 'hover:scale-110'}`}
-                              onClick={() => { setSelectedFacility(facility); setClusterFacilities([]); }}
+                              onClick={() => { 
+                                setSelectedFacility(facility); 
+                                setClusterFacilities([]); 
+                              }}
                             >
                               <MapPin className={`w-8 h-8 ${isSelected ? 'text-accent drop-shadow-xl' : 'text-primary drop-shadow-md'}`} fill="var(--background)" strokeWidth={1.5} />
                             </div>
@@ -346,7 +363,6 @@ export default function MapPage() {
                       )}
                     </Map>
 
-{/* ★UI崩れ修正ポイント1：単体施設カードを「ほぼ不透明」なデザインに変更 */}
                     {selectedFacility && (
                       <div className="absolute bottom-6 left-6 right-6 sm:right-auto sm:w-80 z-30">
                         <div className="bg-background/95 backdrop-blur-sm shadow-2xl border border-border/50 rounded-2xl p-4">
@@ -372,7 +388,6 @@ export default function MapPage() {
                       </div>
                     )}
 
-                    {/* ★UI崩れ修正ポイント2：エリア内リストカードを「ほぼ不透明」なデザインに変更 */}
                     {clusterFacilities.length > 0 && (
                       <div className="absolute bottom-6 left-6 right-6 sm:right-auto sm:w-80 z-30">
                         <div className="bg-background/95 backdrop-blur-sm shadow-2xl border border-border/50 rounded-2xl max-h-[320px] flex flex-col p-4">
