@@ -29,7 +29,7 @@ export interface Facility {
   lng?: number   // ★追加
 }
 
-const CBMD_SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDvzMbN9CNa_PXwmre1IFid8fw7rD2yG0IlBnifsjtrtDN0cy3n-nQlEFvKQbE4w06TXTHoZ4edpzj/pub?gid=1534065609&single=true&output=csv";
+const CBMD_SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDvzMbN9CNa_PXwmre1IFid8fw7rD2yG0IlBnifsjtrtDN0cy3n-nQlEFvKQbE4w06TXTHoZ4edpzj/pub?gid=0&single=true&output=csv";
 // 関数の「外側」でタイムスタンプを1回だけ取得し、固定する！
 // こうすることで、ビルドごとにキャッシュは破壊されつつ、1回のビルド中は通信が1回におまとめされます。
 const BUILD_TIMESTAMP = Date.now();
