@@ -25,14 +25,13 @@ export interface Facility {
   youtube?: string
   events?: SpaceEvent[]
   updatedAt: string
-  lat?: number
-  lng?: number
+  lat?: number   // ★追加
+  lng?: number   // ★追加
 }
 
-// ★Git連携シート（公開用CSV）のURL
 const CBMD_SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDvzMbN9CNa_PXwmre1IFid8fw7rD2yG0IlBnifsjtrtDN0cy3n-nQlEFvKQbE4w06TXTHoZ4edpzj/pub?gid=1534065609&single=true&output=csv";
-
-// ★ビルド時のGoogleブロック（HTTP 429）を防ぐため、1回のビルド中はずっと同じタイムスタンプを使い回します
+// 関数の「外側」でタイムスタンプを1回だけ取得し、固定する！
+// こうすることで、ビルドごとにキャッシュは破壊されつつ、1回のビルド中は通信が1回におまとめされます。
 const BUILD_TIMESTAMP = Date.now();
 
 export const facilityTypes = ["科学館", "博物館", "美術館", "JAXA関連施設", "大学展示", "プラネタリウム", "天文台", "イベント施設"]
@@ -135,9 +134,7 @@ export async function fetchFacilitiesData(): Promise<Facility[]> {
       fetchEventsData()
     ]);
 
-    if (!facilitiesRes.ok) {
-      throw new Error(`CBMDデータの取得に失敗: HTTP ${facilitiesRes.status} ${facilitiesRes.statusText}`);
-    }
+    if (!facilitiesRes.ok) throw new Error(`CBMDデータの取得に失敗: HTTP ${facilitiesRes.status} ${facilitiesRes.statusText}`);
     
     const text = await facilitiesRes.text();
     const rawFacilities = parseFacilityCSV(text);
@@ -182,8 +179,8 @@ export async function fetchFacilitiesData(): Promise<Facility[]> {
         youtube: raw.youtube ? String(raw.youtube).trim() : undefined,
         events: relatedEvents,
         updatedAt: String(raw.updatedAt || "").trim(),
-        lat: raw.lat ? parseFloat(String(raw.lat)) : undefined,
-        lng: raw.lng ? parseFloat(String(raw.lng)) : undefined,
+        lat: raw.lat ? parseFloat(String(raw.lat)) : undefined, // ★追加
+        lng: raw.lng ? parseFloat(String(raw.lng)) : undefined, // ★追加
       } as Facility;
     });
   } catch (error) {
