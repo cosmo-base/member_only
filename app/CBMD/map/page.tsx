@@ -31,6 +31,7 @@ export default function MapPage() {
 
   const [center, setCenter] = useState<[number, number]>(IMPERIAL_PALACE_LATLNG)
   const [mapZoom, setMapZoom] = useState(5)
+  // ★マップの現在の表示範囲（Bounds）を管理
   const [mapBounds, setMapBounds] = useState<[number, number, number, number] | null>(null)
   
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
@@ -78,6 +79,7 @@ export default function MapPage() {
     }
   }
 
+  // 1. フィルターや検索条件で絞り込まれたベースの施設リスト
   const filteredFacilities = useMemo(() => {
     const filtered = facilities.filter((facility) => {
       if (!facility.lat || !facility.lng) return false
@@ -98,6 +100,19 @@ export default function MapPage() {
     }
     return filtered
   }, [facilities, selectedRegion, selectedPrefecture, selectedCategories, hasPlanetarium, hasEvent, userLocation])
+
+  // ★追加：地図の表示範囲（画面内）にある施設だけを抽出するリスト
+  const visibleFacilities = useMemo(() => {
+    if (!mapBounds) return filteredFacilities;
+    
+    // mapBounds = [westLng, southLat, eastLng, northLat]
+    const [westLng, southLat, eastLng, northLat] = mapBounds;
+    
+    return filteredFacilities.filter(f => {
+      if (!f.lat || !f.lng) return false;
+      return f.lat >= southLat && f.lat <= northLat && f.lng >= westLng && f.lng <= eastLng;
+    });
+  }, [filteredFacilities, mapBounds]);
 
   const points = useMemo(() => {
     return filteredFacilities.map(facility => ({
@@ -208,18 +223,17 @@ export default function MapPage() {
                 </div>
               </GlassCard>
 
-              {/* ★ここが追加・改修ポイント: 常に表示される地図上の施設リスト */}
+              {/* ★ここが変更点: filteredFacilities ではなく visibleFacilities をマッピング */}
               <GlassCard className="h-[400px] flex flex-col">
                 <h3 className="font-semibold text-foreground mb-4 flex items-center justify-between">
-                  <span className="flex items-center gap-2"><ListIcon className="w-4 h-4 text-primary" /> 施設リスト</span>
-                  <span className="text-xs font-normal text-muted-foreground">{filteredFacilities.length}件</span>
+                  <span className="flex items-center gap-2"><ListIcon className="w-4 h-4 text-primary" /> 表示エリア内の施設</span>
+                  <span className="text-xs font-normal text-muted-foreground">{visibleFacilities.length}件</span>
                 </h3>
                 <div className="space-y-2 overflow-y-auto pr-2 flex-1">
-                  {filteredFacilities.map(facility => (
+                  {visibleFacilities.map(facility => (
                     <div 
                       key={facility.id} 
                       onClick={() => { 
-                        // リストをクリックしたらその施設にズームインして詳細を開く
                         setSelectedFacility(facility); 
                         setCenter([facility.lat!, facility.lng!]); 
                         setMapZoom(14); 
@@ -242,8 +256,8 @@ export default function MapPage() {
                       </div>
                     </div>
                   ))}
-                  {filteredFacilities.length === 0 && (
-                     <div className="text-center py-8 text-muted-foreground text-sm">該当する施設がありません</div>
+                  {visibleFacilities.length === 0 && (
+                     <div className="text-center py-8 text-muted-foreground text-sm">画面内に該当する施設がありません</div>
                   )}
                 </div>
               </GlassCard>
@@ -256,7 +270,7 @@ export default function MapPage() {
                   <p>地図を読み込み中...</p>
                 </GlassCard>
               ) : (
-                <GlassCard className="p-2 sm:p-4 h-[600px] relative">
+                <GlassCard className="p-2 sm:p-4 h-[600px] relative overflow-hidden">
                   
                   <div className="absolute top-6 right-6 z-20 flex flex-col gap-2">
                     <Button onClick={handleZoomIn} size="icon" className="glass bg-background/60 hover:bg-primary/20 text-foreground border-border/40 w-10 h-10 rounded-xl shadow-lg">
@@ -267,6 +281,7 @@ export default function MapPage() {
                     </Button>
                   </div>
 
+                  {/* マップのラッパー */}
                   <div className="w-full h-full rounded-xl overflow-hidden bg-background/50 relative">
                     <Map 
                       center={center} 
@@ -274,6 +289,7 @@ export default function MapPage() {
                       onBoundsChanged={({ center, zoom, bounds }) => {
                         setCenter(center)
                         setMapZoom(zoom)
+                        // bounds: { ne: [lat, lng], sw: [lat, lng] } -> [westLng, southLat, eastLng, northLat]
                         setMapBounds([bounds.sw[1], bounds.sw[0], bounds.ne[1], bounds.ne[0]])
                       }}
                       mouseEvents={true}
@@ -329,68 +345,67 @@ export default function MapPage() {
                         </Overlay>
                       )}
                     </Map>
+
+                    {/* ★UI崩れ修正ポイント1：詳細カードを「左下(left-6)」に移動し、クレジット表記と被らないように。さらにz-indexを30に */}
+                    {selectedFacility && (
+                      <div className="absolute bottom-6 left-6 right-6 sm:right-auto sm:w-80 z-30">
+                        <GlassCard className="glass-strong shadow-2xl backdrop-blur-md border border-border/50">
+                          <div className="flex items-start justify-between mb-3">
+                            <TagBadge variant="primary">{selectedFacility.category}</TagBadge>
+                            <button onClick={() => setSelectedFacility(null)} className="text-muted-foreground hover:text-foreground transition-colors">
+                              <X className="w-5 h-5" />
+                            </button>
+                          </div>
+                          <h3 className="font-semibold text-foreground mb-1">{selectedFacility.name}</h3>
+                          <p className="text-sm text-muted-foreground mb-3">
+                            <MapPin className="w-3 h-3 inline mr-1" />{selectedFacility.address}
+                          </p>
+                          <div className="flex flex-wrap gap-1 mb-4">
+                            {selectedFacility.tags.slice(0, 4).map((tag) => <TagBadge key={tag}>{tag}</TagBadge>)}
+                          </div>
+                          <Link href={`/CBMD/facility/${selectedFacility.id}`}>
+                            <Button className="w-full bg-primary/20 text-primary hover:bg-primary/30">
+                              詳細を見る <ExternalLink className="w-4 h-4 ml-2" />
+                            </Button>
+                          </Link>
+                        </GlassCard>
+                      </div>
+                    )}
+
+                    {/* ★UI崩れ修正ポイント2：Flexboxのスクロール領域に min-h-0 を付与してカードからはみ出すバグを解消 */}
+                    {clusterFacilities.length > 0 && (
+                      <div className="absolute bottom-6 left-6 right-6 sm:right-auto sm:w-80 z-30">
+                        <GlassCard className="glass-strong shadow-2xl backdrop-blur-md border border-border/50 max-h-[320px] flex flex-col p-4">
+                          <div className="flex items-center justify-between mb-3 border-b border-border/30 pb-2 shrink-0">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                              <ListIcon className="w-4 h-4 text-primary" />
+                              <span>エリア内の施設 ({clusterFacilities.length}件)</span>
+                            </div>
+                            <button onClick={() => setClusterFacilities([])} className="text-muted-foreground hover:text-foreground transition-colors">
+                              <X className="w-5 h-5" />
+                            </button>
+                          </div>
+                          <div className="space-y-2 overflow-y-auto pr-1 flex-1 min-h-0">
+                            {clusterFacilities.map((facility) => (
+                              <div key={facility.id} className="p-2 rounded-lg border border-border/40 hover:bg-primary/10 transition-all flex items-center justify-between gap-2">
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="text-xs font-semibold text-foreground truncate">{facility.name}</h4>
+                                  <p className="text-[10px] text-muted-foreground truncate">{facility.city || facility.prefecture}</p>
+                                </div>
+                                <Link href={`/CBMD/facility/${facility.id}`} className="shrink-0">
+                                  <Button size="icon" variant="ghost" className="w-7 h-7 text-primary hover:text-primary/80">
+                                    <ExternalLink className="w-3.5 h-3.5" />
+                                  </Button>
+                                </Link>
+                              </div>
+                            ))}
+                          </div>
+                        </GlassCard>
+                      </div>
+                    )}
                   </div>
                 </GlassCard>
               )}
-
-              {/* 単体施設の詳細カード */}
-              {selectedFacility && (
-                <div className="absolute bottom-8 left-8 right-8 sm:left-auto sm:right-8 sm:w-80 z-20">
-                  <GlassCard className="glass-strong shadow-2xl">
-                    <div className="flex items-start justify-between mb-3">
-                      <TagBadge variant="primary">{selectedFacility.category}</TagBadge>
-                      <button onClick={() => setSelectedFacility(null)} className="text-muted-foreground hover:text-foreground transition-colors">
-                        <X className="w-5 h-5" />
-                      </button>
-                    </div>
-                    <h3 className="font-semibold text-foreground mb-1">{selectedFacility.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      <MapPin className="w-3 h-3 inline mr-1" />{selectedFacility.address}
-                    </p>
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {selectedFacility.tags.slice(0, 4).map((tag) => <TagBadge key={tag}>{tag}</TagBadge>)}
-                    </div>
-                    <Link href={`/CBMD/facility/${selectedFacility.id}`}>
-                      <Button className="w-full bg-primary/20 text-primary hover:bg-primary/30">
-                        詳細を見る <ExternalLink className="w-4 h-4 ml-2" />
-                      </Button>
-                    </Link>
-                  </GlassCard>
-                </div>
-              )}
-
-              {/* クラスタークリック時に表示される「エリア内施設リスト」カード */}
-              {clusterFacilities.length > 0 && (
-                <div className="absolute bottom-8 left-8 right-8 sm:left-auto sm:right-8 sm:w-80 z-20">
-                  <GlassCard className="glass-strong shadow-2xl max-h-[320px] flex flex-col p-4">
-                    <div className="flex items-center justify-between mb-3 border-b border-border/30 pb-2">
-                      <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                        <ListIcon className="w-4 h-4 text-primary" />
-                        <span>エリア内の施設 ({clusterFacilities.length}件)</span>
-                      </div>
-                      <button onClick={() => setClusterFacilities([])} className="text-muted-foreground hover:text-foreground transition-colors">
-                        <X className="w-5 h-5" />
-                      </button>
-                    </div>
-                    <div className="space-y-2 overflow-y-auto pr-1 flex-1">
-                      {clusterFacilities.map((facility) => (
-                        <div key={facility.id} className="p-2 rounded-lg border border-border/40 hover:bg-primary/10 transition-all flex items-center justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-xs font-semibold text-foreground truncate">{facility.name}</h4>
-                            <p className="text-[10px] text-muted-foreground truncate">{facility.city || facility.prefecture}</p>
-                          </div>
-                          <Link href={`/CBMD/facility/${facility.id}`} className="shrink-0">
-                            <Button size="icon" variant="ghost" className="w-7 h-7 text-primary hover:text-primary/80">
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </Button>
-                          </Link>
-                        </div>
-                      ))}
-                    </div>
-                  </GlassCard>
-                </div>
-              )}
-
             </div>
           </div>
         </div>
