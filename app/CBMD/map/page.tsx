@@ -346,10 +346,10 @@ export default function MapPage() {
                       )}
                     </Map>
 
-                    {/* ★UI崩れ修正ポイント1：詳細カードを「左下(left-6)」に移動し、クレジット表記と被らないように。さらにz-indexを30に */}
+{/* ★UI崩れ修正ポイント1：単体施設カードを「ほぼ不透明」なデザインに変更 */}
                     {selectedFacility && (
                       <div className="absolute bottom-6 left-6 right-6 sm:right-auto sm:w-80 z-30">
-                        <GlassCard className="glass-strong shadow-2xl backdrop-blur-md border border-border/50">
+                        <div className="bg-background/95 backdrop-blur-sm shadow-2xl border border-border/50 rounded-2xl p-4">
                           <div className="flex items-start justify-between mb-3">
                             <TagBadge variant="primary">{selectedFacility.category}</TagBadge>
                             <button onClick={() => setSelectedFacility(null)} className="text-muted-foreground hover:text-foreground transition-colors">
@@ -368,14 +368,14 @@ export default function MapPage() {
                               詳細を見る <ExternalLink className="w-4 h-4 ml-2" />
                             </Button>
                           </Link>
-                        </GlassCard>
+                        </div>
                       </div>
                     )}
 
-                    {/* ★UI崩れ修正ポイント2：Flexboxのスクロール領域に min-h-0 を付与してカードからはみ出すバグを解消 */}
+                    {/* ★UI崩れ修正ポイント2：エリア内リストカードを「ほぼ不透明」なデザインに変更 */}
                     {clusterFacilities.length > 0 && (
                       <div className="absolute bottom-6 left-6 right-6 sm:right-auto sm:w-80 z-30">
-                        <GlassCard className="glass-strong shadow-2xl backdrop-blur-md border border-border/50 max-h-[320px] flex flex-col p-4">
+                        <div className="bg-background/95 backdrop-blur-sm shadow-2xl border border-border/50 rounded-2xl max-h-[320px] flex flex-col p-4">
                           <div className="flex items-center justify-between mb-3 border-b border-border/30 pb-2 shrink-0">
                             <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                               <ListIcon className="w-4 h-4 text-primary" />
@@ -387,7 +387,7 @@ export default function MapPage() {
                           </div>
                           <div className="space-y-2 overflow-y-auto pr-1 flex-1 min-h-0">
                             {clusterFacilities.map((facility) => (
-                              <div key={facility.id} className="p-2 rounded-lg border border-border/40 hover:bg-primary/10 transition-all flex items-center justify-between gap-2">
+                              <div key={facility.id} className="p-2 rounded-lg border border-border/40 hover:bg-primary/10 transition-all flex items-center justify-between gap-2 bg-background/50">
                                 <div className="flex-1 min-w-0">
                                   <h4 className="text-xs font-semibold text-foreground truncate">{facility.name}</h4>
                                   <p className="text-[10px] text-muted-foreground truncate">{facility.city || facility.prefecture}</p>
@@ -400,7 +400,7 @@ export default function MapPage() {
                               </div>
                             ))}
                           </div>
-                        </GlassCard>
+                        </div>
                       </div>
                     )}
                   </div>
