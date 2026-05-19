@@ -429,10 +429,46 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
   type __Unused = __Check
 }
 
+// Validate ../../app/CBMD/database/layout.tsx
+{
+  type __IsExpected<Specific extends LayoutConfig<"/CBMD/database">> = Specific
+  const handler = {} as typeof import("../../app/CBMD/database/layout.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/CBMD/facility/[id]/layout.tsx
+{
+  type __IsExpected<Specific extends LayoutConfig<"/CBMD/facility/[id]">> = Specific
+  const handler = {} as typeof import("../../app/CBMD/facility/[id]/layout.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../app/CBMD/layout.tsx
 {
   type __IsExpected<Specific extends LayoutConfig<"/CBMD">> = Specific
   const handler = {} as typeof import("../../app/CBMD/layout.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/CBMD/map/layout.tsx
+{
+  type __IsExpected<Specific extends LayoutConfig<"/CBMD/map">> = Specific
+  const handler = {} as typeof import("../../app/CBMD/map/layout.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/CBMD/search/layout.tsx
+{
+  type __IsExpected<Specific extends LayoutConfig<"/CBMD/search">> = Specific
+  const handler = {} as typeof import("../../app/CBMD/search/layout.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

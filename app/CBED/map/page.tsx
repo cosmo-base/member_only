@@ -119,7 +119,7 @@ export default function MapSearchPage() {
   }, [events, mapBounds, userLocation, center])
 
   return (
-    <ContentPageLayout title="地図で探す" level={3} levelTitle="リアル体験" logo="CBED">
+    <ContentPageLayout title="地図で探す" level={3} levelTitle="" logo="CBED">
       <div className="flex flex-col lg:flex-row gap-6 relative z-20">
 
         <div className="flex-1 glass-card rounded-xl overflow-hidden flex flex-col h-[450px] md:h-[600px] relative border border-border/50 z-30">

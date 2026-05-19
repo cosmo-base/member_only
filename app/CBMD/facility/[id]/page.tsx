@@ -51,8 +51,8 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
   return (
    <ContentPageLayout
       title="Cosmo Base Museum Database"
-      level={3}
-      levelTitle="リアル体験"
+      level={2}
+      levelTitle=""
       logo="CBMD"
    >
     <div className="min-h-screen relative">

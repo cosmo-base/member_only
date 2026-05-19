@@ -4,7 +4,7 @@ import { HeroSection } from "@/components/hero-section"
 import { LevelSection } from "@/components/level-section"
 import { ContentCard } from "@/components/content-card"
 import { FooterSection } from "@/components/footer-section"
-import { HelpCircle,Newspaper,User,Calendar,MessageCircle,MapPin,Camera,Database,Award,BookOpen} from "lucide-react"
+import { HelpCircle,Landmark,Newspaper,User,Calendar,MessageCircle,MapPin,Camera,Database,Award,BookOpen} from "lucide-react"
 
 // Define content data with proper encoding
 const level1Content = [
@@ -46,6 +46,13 @@ const level2Content = [
     features: [],
     href: "/oshiete"
   },
+  // {
+    // icon: "landmark",
+    // title: "Cosmo Base Museum Database",
+    // description: "日本全国の宇宙関連施設を検索・探索できます。",
+    // features: [],
+    // href: "/CBMD"
+  // },
   {
     icon: "mappin",
     title: "宇宙に行っといで",
@@ -115,7 +122,7 @@ export default function CosmoBasePage() {
         <HeroSection />
         
         <div className="max-w-5xl mx-auto px-4 mt-8">
-          <LevelSection level={1} title="習慣化・体験">
+          <LevelSection level={1} title="">
             {level1Content.map((item) => (
               <ContentCard
                 key={item.href}
@@ -128,7 +135,7 @@ export default function CosmoBasePage() {
             ))}
           </LevelSection>
 
-          <LevelSection level={2} title="対話・学習">
+          <LevelSection level={2} title="">
             {level2Content.map((item) => (
               <ContentCard
                 key={item.href}
@@ -141,7 +148,7 @@ export default function CosmoBasePage() {
             ))}
           </LevelSection>
 
-          <LevelSection level={3} title="現実世界との接続">
+          <LevelSection level={3} title="">
             {level3Content.map((item) => (
               <ContentCard
                 key={item.href}
@@ -154,7 +161,7 @@ export default function CosmoBasePage() {
             ))}
           </LevelSection>
 
-          <LevelSection level={4} title="知識の体系化">
+          <LevelSection level={4} title="">
             {level4Content.map((item) => (
               <ContentCard
                 key={item.href}

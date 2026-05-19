@@ -8,7 +8,7 @@ export default function QuizPage() {
     <ContentPageLayout
       title="毎日宇宙クイズ"
       level={1}
-      levelTitle="習慣化"
+      levelTitle=""
       logo="CBquiz"
     >
       {/* Hero Section */}

@@ -6,7 +6,7 @@ export default function OshietePage() {
     <ContentPageLayout
       title="Cosmo Baseで宇宙教えて"
       level={2}
-      levelTitle="自分を知る"
+      levelTitle=""
       logo="CBoshiete"
     >
       {/* Hero Section */}

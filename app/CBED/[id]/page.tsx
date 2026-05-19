@@ -92,7 +92,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   }
 
   return (
-    <ContentPageLayout title="イベント詳細" level={3} levelTitle="リアル体験" logo="CBED">
+    <ContentPageLayout title="イベント詳細" level={3} levelTitle="" logo="CBED">
       <div className="mb-6">
         <Link href="/CBED/search">
           <Button variant="ghost" className="text-muted-foreground hover:text-foreground -ml-4">
@@ -135,7 +135,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             {event.time && (
               <div className="flex items-start gap-3">
                 <Clock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                {/* ★ 修正：時間が複数行になっても綺麗に表示されるように whitespace-pre-wrap を追加 */}
+                {/* 修正：時間が複数行になっても綺麗に表示されるように whitespace-pre-wrap を追加 */}
                 <span className="whitespace-pre-wrap leading-relaxed">{event.time}</span>
               </div>
             )}

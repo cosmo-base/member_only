@@ -13,7 +13,7 @@ export default function ShittokuPage() {
     <ContentPageLayout
       title="Cosmo Baseで宇宙知っトク"
       level={2}
-      levelTitle="自分を知る"
+      levelTitle=""
       logo="CBshittoku"
     >
       {/* Hero Section */}

@@ -47,7 +47,7 @@ export default function MapPage() {
   
   const [showFilters, setShowFilters] = useState(false)
 
-  // ★追加: 地図の移動が「システムによる自動移動」か「手動」かを判定する仕組み
+  //  地図の移動が「システムによる自動移動」か「手動」かを判定する仕組み
   const isAutoPan = useRef(false)
   const autoPanTimeout = useRef<NodeJS.Timeout | null>(null)
 
@@ -153,8 +153,8 @@ export default function MapPage() {
   return (
     <ContentPageLayout
       title="Cosmo Base Museum Database"
-      level={3}
-      levelTitle="リアル体験"
+      level={2}
+      levelTitle=""
       logo="CBMD"
     >
     <div className="min-h-screen relative">
@@ -302,7 +302,6 @@ export default function MapPage() {
                         setMapZoom(zoom)
                         setMapBounds([bounds.sw[1], bounds.sw[0], bounds.ne[1], bounds.ne[0]])
                       }}
-                      // ★追加: 地図の何もない場所をクリックした時にもカードを消す
                       onClick={() => {
                         setClusterFacilities([]);
                         setSelectedFacility(null);

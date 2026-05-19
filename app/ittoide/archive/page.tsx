@@ -9,8 +9,8 @@ export default function IttoideArchivePage() {
   return (
     <ContentPageLayout
       title="過去おすすめイベント一覧"
-      level={3}
-      levelTitle="リアル体験"
+      level={2}
+      levelTitle=""
       logo="CBittoide"
     >
       <div className="glass-card rounded-xl p-6 mb-8">

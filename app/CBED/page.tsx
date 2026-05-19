@@ -8,7 +8,7 @@ export default function EventsPage() {
     <ContentPageLayout
       title="Cosmo Base Event Database"
       level={3}
-      levelTitle="リアル体験"
+      levelTitle=""
       logo="CBED"
     >
       {/* Hero Section */}

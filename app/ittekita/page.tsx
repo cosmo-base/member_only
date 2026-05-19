@@ -8,7 +8,7 @@ export default function IttekitaPage() {
     <ContentPageLayout
       title="宇宙のイベント行ってきた"
       level={3}
-      levelTitle="リアル体験"
+      levelTitle=""
       logo="CBittekita"
     >
       {/* Hero Section */}

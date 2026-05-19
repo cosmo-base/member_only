@@ -3,7 +3,7 @@
 
 type AppRoutes = "/" | "/CBED" | "/CBED/[id]" | "/CBED/map" | "/CBED/register" | "/CBED/search" | "/CBMD" | "/CBMD/database" | "/CBMD/facility/[id]" | "/CBMD/map" | "/CBMD/search" | "/TCP" | "/guide" | "/ittekita" | "/ittekita/calendar" | "/ittoide" | "/ittoide/archive" | "/ittoide/upcoming" | "/library" | "/news" | "/oshiete" | "/partner" | "/partner/event" | "/partner/join" | "/partner/library" | "/partner/member" | "/partner/survey" | "/partner/update" | "/quiz" | "/shittoku" | "/shittoku/archive" | "/shittoku/feedback" | "/shittoku/request" | "/shittoku/speakers" | "/shittoku/upcoming" | "/type" | "/type/content" | "/type/detail" | "/voyager"
 type PageRoutes = never
-type LayoutRoutes = "/" | "/CBED" | "/CBED/map" | "/CBED/register" | "/CBED/search" | "/CBMD" | "/TCP" | "/guide" | "/ittekita" | "/ittekita/calendar" | "/ittoide" | "/ittoide/archive" | "/ittoide/upcoming" | "/library" | "/news" | "/oshiete" | "/partner" | "/partner/event" | "/partner/join" | "/partner/library" | "/partner/member" | "/partner/survey" | "/partner/update" | "/quiz" | "/shittoku" | "/shittoku/archive" | "/shittoku/feedback" | "/shittoku/request" | "/shittoku/speakers" | "/shittoku/upcoming" | "/type" | "/type/detail" | "/voyager"
+type LayoutRoutes = "/" | "/CBED" | "/CBED/map" | "/CBED/register" | "/CBED/search" | "/CBMD" | "/CBMD/database" | "/CBMD/facility/[id]" | "/CBMD/map" | "/CBMD/search" | "/TCP" | "/guide" | "/ittekita" | "/ittekita/calendar" | "/ittoide" | "/ittoide/archive" | "/ittoide/upcoming" | "/library" | "/news" | "/oshiete" | "/partner" | "/partner/event" | "/partner/join" | "/partner/library" | "/partner/member" | "/partner/survey" | "/partner/update" | "/quiz" | "/shittoku" | "/shittoku/archive" | "/shittoku/feedback" | "/shittoku/request" | "/shittoku/speakers" | "/shittoku/upcoming" | "/type" | "/type/detail" | "/voyager"
 type RedirectRoutes = never
 type RewriteRoutes = never
 type Routes = AppRoutes | PageRoutes | LayoutRoutes | RedirectRoutes | RewriteRoutes
@@ -61,6 +61,10 @@ interface LayoutSlotMap {
   "/CBED/register": never
   "/CBED/search": never
   "/CBMD": never
+  "/CBMD/database": never
+  "/CBMD/facility/[id]": never
+  "/CBMD/map": never
+  "/CBMD/search": never
   "/guide": never
   "/ittekita": never
   "/ittekita/calendar": never

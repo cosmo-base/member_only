@@ -7,7 +7,7 @@ export default function NewsPage() {
     <ContentPageLayout
       title="週刊宇宙ニュース"
       level={1}
-      levelTitle="習慣化"
+      levelTitle=""
       logo="CBnews"
     >
       {/* Hero Section */}

@@ -10,7 +10,7 @@ export default function ShittokuArchivePage() {
     <ContentPageLayout
       title="過去イベント一覧"
       level={2}
-      levelTitle="自分を知る"
+      levelTitle=""
       logo="CBshittoku"
     >
       <div className="glass-card rounded-xl p-6 mb-8">

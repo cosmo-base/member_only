@@ -9,8 +9,8 @@ export default function IttoideUpcomingPage() {
   return (
     <ContentPageLayout
       title="今後のおすすめイベント"
-      level={3}
-      levelTitle="リアル体験"
+      level={2}
+      levelTitle=""
       logo="CBittoide"
     >
       <div className="glass-card rounded-xl p-6 mb-8">

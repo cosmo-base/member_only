@@ -113,7 +113,7 @@ export default function IttekitaCalendarPage() {
     <ContentPageLayout
       title="イベントカレンダー"
       level={3}
-      levelTitle="リアル体験"
+      levelTitle=""
       logo="CBittekita"
     >
       <div className="glass-card rounded-xl p-6 mb-8">

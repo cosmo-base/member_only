@@ -7,8 +7,8 @@ export default function DiagnosisPage() {
   return (
     <ContentPageLayout
       title="宇宙タイプ診断"
-      level={2}
-      levelTitle="自分を知る"
+      level={1}
+      levelTitle=""
       logo="CBtype"
     >
       {/* Hero Section */}

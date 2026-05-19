@@ -135,7 +135,7 @@ export default function ShittokuSpeakersPage() {
     <ContentPageLayout
       title="登壇者紹介"
       level={2}
-      levelTitle="自分を知る"
+      levelTitle=""
       logo="CBshittoku"
     >
       <div className="glass-card rounded-xl p-6 mb-8">

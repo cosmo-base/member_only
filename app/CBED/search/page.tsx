@@ -122,7 +122,7 @@ export default function EventSearchPage() {
   }, [events, searchQuery, selectedType, selectedDifficulty, selectedOrganizer, showPastEvents])
 
   return (
-    <ContentPageLayout title="詳細検索" level={3} levelTitle="リアル体験" logo="CBED">
+    <ContentPageLayout title="詳細検索" level={3} levelTitle="" logo="CBED">
       <div className="glass-card rounded-xl p-5 md:p-6 mb-8 border border-border/50 shadow-sm">
         
         <div className="flex gap-3 mb-6">

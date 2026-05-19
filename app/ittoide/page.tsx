@@ -13,8 +13,8 @@ export default function IttoidePage() {
   return (
     <ContentPageLayout
       title="宇宙のイベント行っといで"
-      level={3}
-      levelTitle="リアル体験"
+      level={2}
+      levelTitle=""
       logo="CBittoide"
     >
       {/* Hero Section */}

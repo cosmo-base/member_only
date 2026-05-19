@@ -14,7 +14,7 @@ export default function ShittokuUpcomingPage() {
     <ContentPageLayout
       title="今後のイベント"
       level={2}
-      levelTitle="自分を知る"
+      levelTitle=""
       logo="CBshittoku"
     >
       <div className="glass-card rounded-xl p-6 mb-8">

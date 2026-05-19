@@ -7,7 +7,7 @@ export default function LibraryPage() {
     <ContentPageLayout
       title="Cosmo Base Library"
       level={4}
-      levelTitle="体系化"
+      levelTitle=""
       logo="CBL"
     >
       {/* Hero Section */}
