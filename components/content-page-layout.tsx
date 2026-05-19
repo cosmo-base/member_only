@@ -38,7 +38,7 @@ const LOGO_MAP: Record<string, any> = {
   "CBshittoku": shittokuLogo,
   "CBtype": typeLogo,
   "CBvoyager": voyagerLogo,
-  "CBMD":cbmdlogo
+  "CBMD":cbmdLogo
 }
 
 interface ContentPageLayoutProps {
