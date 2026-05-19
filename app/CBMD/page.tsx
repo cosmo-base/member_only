@@ -169,7 +169,6 @@ export default async function MuseumPage() {
                   <GlassCard hover className="h-full">
                     <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden">
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                        <MapPin className="w-8 h-8" />
                         <img src={`${facility.image}`} alt={`${facility.name}`}/>
                       </div>
                     </div>
@@ -207,9 +206,6 @@ export default async function MuseumPage() {
                 {recentEvents.map((event) => (
                   <Link href={`/CBED/${event.id}`} key={event.id}>
                     <GlassCard hover className="h-full">
-                      <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden flex items-center justify-center">
-                        <Calendar className="w-8 h-8 text-muted-foreground" />
-                      </div>
                       <div className="space-y-3">
                         <div>
                           <p className="text-xs text-primary font-medium mb-1">
@@ -253,7 +249,7 @@ export default async function MuseumPage() {
                 <Link key={facility.id} href={`/CBMD/facility/${facility.id}`}>
                   <GlassCard hover className="h-full">
                     <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden flex items-center justify-center">
-                      <MapPin className="w-8 h-8 text-muted-foreground" />
+                      <img src={`${facility.image}`} alt={`${facility.name}`}/>
                     </div>
                     <div className="space-y-3">
                       <div>
