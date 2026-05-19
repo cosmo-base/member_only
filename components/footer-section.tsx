@@ -1,7 +1,6 @@
 import Image from "next/image"
 import { ExternalLink } from "lucide-react"
 
-// ★ Imageタグを正常に動かすための直接インポートを追加
 import logoImg from "../public/images/cosmo-base-logo.png"
 
 const links = [
@@ -10,6 +9,7 @@ const links = [
   { label: "X", href: "https://x.com/CosmoBase" },
   { label: "Instagram", href: "https://www.instagram.com/cosmobase.official/" },
   { label: "note", href: "https://note.com/cosmobase" },
+  { label: "YouTube", herf: "https://www.youtube.com/channel/UC3bcWCM6ccvsyQyiXLIwhkQ"}
 ]
 
 export function FooterSection() {
@@ -19,7 +19,6 @@ export function FooterSection() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Logo */}
           <div className="flex items-center">
-            {/* ★ Imageタグのみ修正（インポートした変数を指定、不要なwidth/heightを削除） */}
             <Image
               src={logoImg}
               alt="Cosmo Base"

@@ -190,7 +190,7 @@ export function SiteHeader() {
                     <img src={YouTubeIcon.src} alt="YouTube" className="w-5 h-5 object-contain" />
                   </div>
                   <div>
-                    <p className="font-semibold text-foreground group-hover:text-primary transition-colors">note</p>
+                    <p className="font-semibold text-foreground group-hover:text-primary transition-colors">YouTube</p>
                     <p className="text-xs text-muted-foreground mt-0.5">動画を見る</p>
                   </div>
                 </a>
