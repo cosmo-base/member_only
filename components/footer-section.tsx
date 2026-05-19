@@ -9,7 +9,7 @@ const links = [
   { label: "X", href: "https://x.com/CosmoBase" },
   { label: "Instagram", href: "https://www.instagram.com/cosmobase.official/" },
   { label: "note", href: "https://note.com/cosmobase" },
-  { label: "YouTube", herf: "https://www.youtube.com/channel/UC3bcWCM6ccvsyQyiXLIwhkQ"}
+  { label: "YouTube", herf: "https://www.youtube.com/channel/UC3bcWCM6ccvsyQyiXLIwhkQ"},
 ]
 
 export function FooterSection() {
