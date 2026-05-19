@@ -22,6 +22,7 @@ import quizLogo from "../public/CBquiz_logo.png"
 import shittokuLogo from "../public/CBshittoku_logo.png" 
 import typeLogo from "../public/CBtype_logo.png" 
 import voyagerLogo from "../public/CBvoyager_logo.png"
+import cbmdLogo from "../public/CBMD_logo.png"
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 3. 呼び出し名（prop）とインポートした画像を紐づける辞書
@@ -37,6 +38,7 @@ const LOGO_MAP: Record<string, any> = {
   "CBshittoku": shittokuLogo,
   "CBtype": typeLogo,
   "CBvoyager": voyagerLogo,
+  "CBMD":cbmdlogo
 }
 
 interface ContentPageLayoutProps {
