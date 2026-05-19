@@ -170,7 +170,7 @@ export default async function MuseumPage() {
                     <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden">
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                         <MapPin className="w-8 h-8" />
-                        <img herf={facility.image} alt={facility.name}/>
+                        <img src={`${facility.image}`} alt={`${facility.name}`}/>
                       </div>
                     </div>
                     <div className="space-y-3">
