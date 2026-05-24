@@ -199,6 +199,12 @@ export default async function MuseumPage() {
                 <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">開催中イベント</h2>
                 <p className="text-muted-foreground">今注目の宇宙イベント情報</p>
               </div>
+              <Link href="/CBED/search">
+                <Button variant="ghost" className="text-primary hover:text-primary/80">
+                  すべて見る
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
             </div>
 
             {recentEvents.length > 0 ? (
