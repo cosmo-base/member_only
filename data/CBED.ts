@@ -25,8 +25,11 @@ export interface SpaceEvent {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 2. データの取得先URLの設定
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const SPREADSHEET_API_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJU_Qq6TICMIAhDidiH2BYlBcZBvS_Uwy4wth9tT-02RYWkVP_AufdGo0PMAbAyrHKeZrE1x0laETY/pub?gid=0&single=true&output=csv&v=2";
+// ベースURLとビルドタイムスタンプに分ける
+const CBED_SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6...（お使いのURLの末尾output=csvまで）";
 
+// ★関数の「外側」でタイムスタンプを1回だけ取得して固定
+const BUILD_TIMESTAMP = Date.now();
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 3. 最強のCSVパーサー（空行スキップ・セル内改行対応）
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -114,15 +117,15 @@ function parseCSV(csvText: string): SpaceEvent[] {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export async function fetchEventsData(): Promise<SpaceEvent[]> {
   try {
-    const response = await fetch(SPREADSHEET_API_URL, {
-      next: { revalidate: 60 }, // 本番用の正しいキャッシュ設定
-    });
-
-    if (!response.ok) {
-      throw new Error("イベントデータの取得に失敗しました");
+    const cacheBusterUrl = `${CBED_SPREADSHEET_BASE_URL}&_t=${BUILD_TIMESTAMP}`;
+    
+    const res = await fetch(cacheBusterUrl);
+    
+    if (!res.ok) {
+      throw new Error(`CBEDデータの取得に失敗: HTTP ${res.status}`);
     }
 
-    const text = await response.text();
+    const text = await res.text();
     let parsedEvents: SpaceEvent[] = [];
     
     try {
