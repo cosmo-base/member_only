@@ -1,6 +1,6 @@
 // app/CBMD/page.tsx
 import Link from "next/link"
-import { Map, Search, Database, ArrowRight, Calendar, Sparkles, MapPin, Home } from "lucide-react"
+import { Map, Search, Database, ArrowRight, Calendar, Sparkles, MapPin, Home, AlertCircle } from "lucide-react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
@@ -285,6 +285,30 @@ export default async function MuseumPage() {
             </div>
           </div>
         </section>
+
+        {/* ★追加: Disclaimer (免責事項・注意事項) Section */}
+        <section className="py-16 px-4">
+          <div className="max-w-4xl mx-auto">
+            <GlassCard className="bg-secondary/20 border-l-4 border-l-primary/50 text-sm">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <div className="space-y-2 text-muted-foreground leading-relaxed">
+                  <h3 className="font-semibold text-foreground text-base">当サイトをご利用になる皆様へのお願い</h3>
+                  <p>
+                    CBMD（Cosmo Base Museum Database）に掲載されている施設情報やイベント情報は、各施設の公式ホームページ、または都道府県・市区町村の公開情報を元に独自に収集・引用したものです。
+                  </p>
+                  <p>
+                    情報の正確性には細心の注意を払っておりますが、営業時間、休館日、入館料などの詳細が予告なく変更されている場合があります。お出かけの際は、<strong className="text-foreground">必ず各施設の公式サイト（リンクより遷移可能）をご確認ください。</strong>
+                  </p>
+                  <p className="text-accent font-medium pt-2">
+                    ※ 本サイトの掲載内容に関して、各施設へ直接お問い合わせすることはご遠慮いただきますようお願い申し上げます。
+                  </p>
+                </div>
+              </div>
+            </GlassCard>
+          </div>
+        </section>
+
       </main>
     </div>
     </ContentPageLayout>
