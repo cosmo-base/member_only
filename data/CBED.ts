@@ -26,7 +26,7 @@ export interface SpaceEvent {
 // ★ 2. データの取得先URLの設定
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ベースURLとビルドタイムスタンプに分ける
-const CBED_SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6...（お使いのURLの末尾output=csvまで）";
+const CBED_SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJU_Qq6TICMIAhDidiH2BYlBcZBvS_Uwy4wth9tT-02RYWkVP_AufdGo0PMAbAyrHKeZrE1x0laETY/pub?gid=0&single=true&output=csv";
 
 // ★関数の「外側」でタイムスタンプを1回だけ取得して固定
 const BUILD_TIMESTAMP = Date.now();
