@@ -27,6 +27,7 @@ export interface Facility {
   updatedAt: string
   lat?: number
   lng?: number
+  isFree: boolean // ★追加
 }
 
 const CBMD_SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRDvzMbN9CNa_PXwmre1IFid8fw7rD2yG0IlBnifsjtrtDN0cy3n-nQlEFvKQbE4w06TXTHoZ4edpzj/pub?gid=0&single=true&output=csv";
@@ -154,6 +155,10 @@ export async function fetchFacilitiesData(): Promise<Facility[]> {
         ? String(raw.tags).split(',').map(t => t.trim()).filter(Boolean) 
         : [];
 
+      // ★入館料無料の判定ロジック
+      const fee = String(raw.admissionFee || "").trim();
+      const isFree = fee.includes("無料") || fee.includes("0円") || fee === "0";
+
       return {
         id: String(raw.id).trim(),
         name: String(raw.name).trim(),
@@ -170,7 +175,7 @@ export async function fetchFacilitiesData(): Promise<Facility[]> {
         hasEvent: hasActiveEvent, 
         openingHours: String(raw.openingHours || "").trim(),
         closedDays: String(raw.closedDays || "").trim(),
-        admissionFee: String(raw.admissionFee || "").trim(),
+        admissionFee: fee,
         access: String(raw.access || "").trim(),
         website: raw.website ? String(raw.website).trim() : undefined,
         twitter: raw.twitter ? String(raw.twitter).trim() : undefined,
@@ -178,8 +183,9 @@ export async function fetchFacilitiesData(): Promise<Facility[]> {
         youtube: raw.youtube ? String(raw.youtube).trim() : undefined,
         events: relatedEvents,
         updatedAt: String(raw.updatedAt || "").trim(),
-        lat: raw.lat ? parseFloat(String(raw.lat)) : undefined, // ★追加
-        lng: raw.lng ? parseFloat(String(raw.lng)) : undefined, // ★追加
+        lat: raw.lat ? parseFloat(String(raw.lat)) : undefined, 
+        lng: raw.lng ? parseFloat(String(raw.lng)) : undefined,
+        isFree, // ★追加
       } as Facility;
     });
   } catch (error) {
