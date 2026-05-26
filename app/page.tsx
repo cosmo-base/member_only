@@ -46,13 +46,13 @@ const level2Content = [
     features: [],
     href: "/oshiete"
   },
-  // {
-    // icon: "landmark",
-    // title: "Cosmo Base Museum Database",
-    // description: "日本全国の宇宙関連施設を検索・探索できます。",
-    // features: [],
-    // href: "/CBMD"
-  // },
+　{
+    icon: "landmark",
+    title: "Cosmo Base Museum Database",
+    description: "日本全国の宇宙関連施設を検索・探索できます。",
+    features: [],
+    href: "/CBMD"
+  },
   {
     icon: "mappin",
     title: "宇宙に行っといで",
