@@ -12,7 +12,9 @@ export default async function MuseumPage() {
   const facilities = await fetchFacilitiesData()
   const events = await fetchEventsData()
   
-  const featuredFacilities = facilities.slice(0, 4)
+  // ★修正: 注目施設をランダムで4件選出する（配列をシャッフル）
+  const featuredFacilities = [...facilities].sort(() => Math.random() - 0.5).slice(0, 4)
+  
   const recentFacilities = [...facilities].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 4)
   
   const parseDate = (dStr: string) => {
@@ -199,12 +201,6 @@ export default async function MuseumPage() {
                 <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">開催中イベント</h2>
                 <p className="text-muted-foreground">今注目の宇宙イベント情報</p>
               </div>
-              <Link href="/CBED/search">
-                <Button variant="ghost" className="text-primary hover:text-primary/80">
-                  すべて見る
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </Link>
             </div>
 
             {recentEvents.length > 0 ? (
@@ -292,7 +288,7 @@ export default async function MuseumPage() {
           </div>
         </section>
 
-        {/* ★追加: Disclaimer (免責事項・注意事項) Section */}
+        {/* Disclaimer Section */}
         <section className="py-16 px-4">
           <div className="max-w-4xl mx-auto">
             <GlassCard className="bg-secondary/20 border-l-4 border-l-primary/50 text-sm">
