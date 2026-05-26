@@ -102,7 +102,8 @@ function getIcon(iconName: string) {
     case "news": return <Newspaper className="w-6 h-6" />
     case "diagnosis": return <User className="w-6 h-6" />
     case "calendar": return <Calendar className="w-6 h-6" />
-    case "message": return <MessageCircle className="w-6 h-6" />
+    case "message": return <MessageCircle className="w-6 h-6" /> 
+    case "landmark": return <Landmark className="w-6 h-6" />
     case "mappin": return <MapPin className="w-6 h-6" />
     case "camera": return <Camera className="w-6 h-6" />
     case "database": return <Database className="w-6 h-6" />
