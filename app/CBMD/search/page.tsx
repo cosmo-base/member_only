@@ -5,7 +5,7 @@ import { useState, useMemo, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { Search, MapPin, Star, Calendar, X, Loader2, Home, Map as MapIcon, Database, Filter } from "lucide-react"
+import { Search, MapPin, Star, Calendar, X, Loader2, Home, Map as MapIcon, Database, Filter, Coins } from "lucide-react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
@@ -25,6 +25,7 @@ function SearchContent() {
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
   const [selectedPrefecture, setSelectedPrefecture] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [onlyFree, setOnlyFree] = useState(false) // ★追加
 
   useEffect(() => {
     async function loadData() {
@@ -54,13 +55,14 @@ function SearchContent() {
       if (selectedRegion && facility.region !== selectedRegion) return false
       if (selectedPrefecture && facility.prefecture !== selectedPrefecture) return false
       if (selectedCategory && facility.category !== selectedCategory) return false
+      if (onlyFree && !facility.isFree) return false // ★追加
       return true
     })
-  }, [facilities, searchQuery, selectedTags, selectedRegion, selectedPrefecture, selectedCategory])
+  }, [facilities, searchQuery, selectedTags, selectedRegion, selectedPrefecture, selectedCategory, onlyFree])
 
   const handleTagToggle = (tag: string) => setSelectedTags((prev) => prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag])
-  const clearAllFilters = () => { setSearchQuery(""); setSelectedTags([]); setSelectedRegion(null); setSelectedPrefecture(null); setSelectedCategory(null); }
-  const hasActiveFilters = searchQuery || selectedTags.length > 0 || selectedRegion || selectedPrefecture || selectedCategory
+  const clearAllFilters = () => { setSearchQuery(""); setSelectedTags([]); setSelectedRegion(null); setSelectedPrefecture(null); setSelectedCategory(null); setOnlyFree(false); }
+  const hasActiveFilters = searchQuery || selectedTags.length > 0 || selectedRegion || selectedPrefecture || selectedCategory || onlyFree
 
   return (
       <ContentPageLayout
@@ -134,18 +136,33 @@ function SearchContent() {
                 </div>
               )}
 
-              <div>
-                <h3 className="text-sm font-medium text-foreground mb-3">施設カテゴリ</h3>
-                <div className="flex flex-wrap gap-2">
-                  {facilityTypes.map((type) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-3">施設カテゴリ</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {facilityTypes.map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => setSelectedCategory(selectedCategory === type ? null : type)}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${selectedCategory === type ? "bg-accent/20 text-accent" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* ★追加: 入館料によるクイック絞り込みボタン */}
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-3">入館料・その他</h3>
+                  <div className="flex flex-wrap gap-2">
                     <button
-                      key={type}
-                      onClick={() => setSelectedCategory(selectedCategory === type ? null : type)}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${selectedCategory === type ? "bg-accent/20 text-accent" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}
+                      onClick={() => setOnlyFree(!onlyFree)}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${onlyFree ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-secondary/50 text-muted-foreground hover:bg-secondary/70"}`}
                     >
-                      {type}
+                      <Coins className="w-4 h-4" /> 入館料無料のみ
                     </button>
-                  ))}
+                  </div>
                 </div>
               </div>
 
@@ -193,6 +210,11 @@ function SearchContent() {
                         {selectedCategory}<button onClick={() => setSelectedCategory(null)} className="ml-1"><X className="w-3 h-3" /></button>
                       </TagBadge>
                     )}
+                    {onlyFree && (
+                      <TagBadge variant="accent" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
+                        入館料無料<button onClick={() => setOnlyFree(false)} className="ml-1"><X className="w-3 h-3" /></button>
+                      </TagBadge>
+                    )}
                   </div>
                   <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-muted-foreground ml-auto">
                     すべてクリア
@@ -230,6 +252,7 @@ function SearchContent() {
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <TagBadge variant="primary">{facility.category}</TagBadge>
                           {facility.hasPlanetarium && <TagBadge variant="accent"><Star className="w-3 h-3 mr-1" />プラネタリウム</TagBadge>}
+                          {facility.isFree && <TagBadge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">無料</TagBadge>}
                         </div>
                         <h3 className="font-semibold text-foreground line-clamp-2">{facility.name}</h3>
                         <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
