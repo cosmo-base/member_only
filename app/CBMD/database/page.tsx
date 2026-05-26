@@ -16,6 +16,17 @@ import { fetchFacilitiesData, regions, facilityTypes, Facility } from "@/lib/CBM
 type SortType = "name" | "region" | "updated"
 type ViewMode = "card" | "table"
 
+// ★都道府県を北から順に並べるためのマスター配列
+const prefectureOrder = [
+  "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
+  "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
+  "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県",
+  "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県",
+  "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県",
+  "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
+  "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
+]
+
 export default function DatabasePage() {
   const [facilities, setFacilities] = useState<Facility[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -25,6 +36,7 @@ export default function DatabasePage() {
   const [selectedRegions, setSelectedRegions] = useState<string[]>([])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [hasEvent, setHasEvent] = useState(false)
+  const [onlyFree, setOnlyFree] = useState(false) // ★追加
   const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
@@ -41,20 +53,28 @@ export default function DatabasePage() {
     if (selectedRegions.length > 0) filtered = filtered.filter((f) => selectedRegions.includes(f.region))
     if (selectedCategories.length > 0) filtered = filtered.filter((f) => selectedCategories.includes(f.category))
     if (hasEvent) filtered = filtered.filter((f) => f.hasEvent)
+    if (onlyFree) filtered = filtered.filter((f) => f.isFree) // ★追加
 
     return filtered.sort((a, b) => {
       switch (sortBy) {
         case "name": return a.nameKana.localeCompare(b.nameKana, "ja")
-        case "region": return a.region.localeCompare(b.region, "ja")
+        
+        // ★修正: 都道府県コードの北から順インデックスを比較してソート
+        case "region": {
+          const idxA = prefectureOrder.indexOf(a.prefecture)
+          const idxB = prefectureOrder.indexOf(b.prefecture)
+          return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB)
+        }
+        
         case "updated": return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
         default: return 0
       }
     })
-  }, [facilities, sortBy, selectedRegions, selectedCategories, hasEvent])
+  }, [facilities, sortBy, selectedRegions, selectedCategories, hasEvent, onlyFree])
 
   const handleRegionToggle = (region: string) => setSelectedRegions((prev) => prev.includes(region) ? prev.filter((r) => r !== region) : [...prev, region])
   const handleCategoryToggle = (category: string) => setSelectedCategories((prev) => prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category])
-  const clearFilters = () => { setSelectedRegions([]); setSelectedCategories([]); setHasEvent(false) }
+  const clearFilters = () => { setSelectedRegions([]); setSelectedCategories([]); setHasEvent(false); setOnlyFree(false); }
 
   return (
    <ContentPageLayout
@@ -101,7 +121,7 @@ export default function DatabasePage() {
                   <div>
                     <Label className="text-sm font-medium text-foreground mb-2 block">並び替え</Label>
                     <div className="space-y-2">
-                      {[{ value: "name", label: "五十音順" }, { value: "region", label: "地域順" }, { value: "updated", label: "更新日順" }].map((o) => (
+                      {[{ value: "name", label: "五十音順" }, { value: "region", label: "都道府県（北から）順" }, { value: "updated", label: "更新日順" }].map((o) => (
                         <button key={o.value} onClick={() => setSortBy(o.value as SortType)} className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${sortBy === o.value ? "bg-primary/20 text-primary" : "bg-secondary/30 text-muted-foreground hover:bg-secondary/50"}`}>{o.label}<ArrowUpDown className="w-3 h-3" /></button>
                       ))}
                     </div>
@@ -128,9 +148,17 @@ export default function DatabasePage() {
                       ))}
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="has-event" checked={hasEvent} onCheckedChange={(checked) => setHasEvent(checked === true)} />
-                    <Label htmlFor="has-event" className="text-sm text-muted-foreground cursor-pointer">イベント開催中のみ</Label>
+                  
+                  {/* ★無料フィルターチェックボックスの追加 */}
+                  <div className="space-y-2 pt-2 border-t border-border/30">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="has-event" checked={hasEvent} onCheckedChange={(checked) => setHasEvent(checked === true)} />
+                      <Label htmlFor="has-event" className="text-sm text-muted-foreground cursor-pointer">イベント開催中のみ</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="only-free" checked={onlyFree} onCheckedChange={(checked) => setOnlyFree(checked === true)} />
+                      <Label htmlFor="only-free" className="text-sm text-muted-foreground cursor-pointer text-emerald-400 font-medium">入館料無料のみ</Label>
+                    </div>
                   </div>
                 </div>
               </GlassCard>
@@ -156,6 +184,7 @@ export default function DatabasePage() {
                             <div className="flex items-center gap-2 mb-2 flex-wrap">
                               <TagBadge variant="primary">{facility.category}</TagBadge>
                               {facility.hasPlanetarium && <TagBadge variant="accent"><Star className="w-3 h-3 mr-1" />プラネタリウム</TagBadge>}
+                              {facility.isFree && <TagBadge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">無料</TagBadge>}
                             </div>
                             <h3 className="font-semibold text-foreground line-clamp-2">{facility.name}</h3>
                             <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1"><MapPin className="w-3 h-3" />{facility.prefecture} {facility.city}</p>
@@ -180,7 +209,7 @@ export default function DatabasePage() {
                         <th className="text-left py-3 px-4 text-sm font-medium text-foreground">施設名</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-foreground hidden md:table-cell">カテゴリ</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-foreground hidden sm:table-cell">所在地</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-foreground hidden lg:table-cell">タグ</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-foreground hidden lg:table-cell">入館料</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-foreground">更新日</th>
                         <th className="py-3 px-4"></th>
                       </tr>
@@ -200,9 +229,9 @@ export default function DatabasePage() {
                           <td className="py-4 px-4 hidden md:table-cell"><TagBadge variant="primary">{facility.category}</TagBadge></td>
                           <td className="py-4 px-4 text-sm text-muted-foreground hidden sm:table-cell">{facility.prefecture}</td>
                           <td className="py-4 px-4 hidden lg:table-cell">
-                            <div className="flex flex-wrap gap-1">
-                              {facility.tags.slice(0, 2).map((tag) => <TagBadge key={tag}>{tag}</TagBadge>)}
-                            </div>
+                            <span className={facility.isFree ? "text-emerald-400 font-medium" : "text-sm text-muted-foreground"}>
+                              {facility.admissionFee || "-"}
+                            </span>
                           </td>
                           <td className="py-4 px-4 text-sm text-muted-foreground">{facility.updatedAt}</td>
                           <td className="py-4 px-4">
