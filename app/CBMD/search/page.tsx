@@ -4,7 +4,6 @@
 import { useState, useMemo, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image"
 import { Search, MapPin, Star, Calendar, X, Loader2, Home, Map as MapIcon, Database, Filter, Coins } from "lucide-react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
@@ -12,6 +11,7 @@ import { TagBadge } from "@/components/tag-badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { fetchFacilitiesData, spacecraftTags, categoryTags, regions, facilityTypes, Facility } from "@/lib/CBMD"
+import { FacilityImage } from "@/components/facility-image"
 
 function SearchContent() {
   const searchParams = useSearchParams()
@@ -25,7 +25,7 @@ function SearchContent() {
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null)
   const [selectedPrefecture, setSelectedPrefecture] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [onlyFree, setOnlyFree] = useState(false) // ★追加
+  const [onlyFree, setOnlyFree] = useState(false)
 
   useEffect(() => {
     async function loadData() {
@@ -55,7 +55,7 @@ function SearchContent() {
       if (selectedRegion && facility.region !== selectedRegion) return false
       if (selectedPrefecture && facility.prefecture !== selectedPrefecture) return false
       if (selectedCategory && facility.category !== selectedCategory) return false
-      if (onlyFree && !facility.isFree) return false // ★追加
+      if (onlyFree && !facility.isFree) return false
       return true
     })
   }, [facilities, searchQuery, selectedTags, selectedRegion, selectedPrefecture, selectedCategory, onlyFree])
@@ -152,7 +152,6 @@ function SearchContent() {
                   </div>
                 </div>
 
-                {/* ★追加: 入館料によるクイック絞り込みボタン */}
                 <div>
                   <h3 className="text-sm font-medium text-foreground mb-3">入館料・その他</h3>
                   <div className="flex flex-wrap gap-2">
@@ -240,12 +239,9 @@ function SearchContent() {
               {filteredFacilities.map((facility) => (
                 <Link key={facility.id} href={`/CBMD/facility/${facility.id}`}>
                   <GlassCard hover className="h-full flex flex-col">
+                    {/* ★修正: 共通画像コンポーネントに変更 */}
                     <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden relative">
-                      {facility.image && facility.image !== "/images/placeholder.jpg" ? (
-                        <Image src={facility.image} alt={facility.name} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center"><MapPin className="w-8 h-8 text-muted-foreground" /></div>
-                      )}
+                      <FacilityImage src={facility.image} alt={facility.name} />
                     </div>
                     <div className="space-y-3 flex-1 flex flex-col">
                       <div>

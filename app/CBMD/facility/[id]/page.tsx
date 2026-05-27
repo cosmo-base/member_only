@@ -1,11 +1,10 @@
 // app/CBMD/facility/[id]/page.tsx
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image"
 import { 
   MapPin, Clock, Calendar, DollarSign, Train, 
   ExternalLink, Globe,
-  Star, ChevronLeft, Twitter, Instagram, Youtube, Home, Map as MapIcon, Search, Database
+  Star, ChevronLeft, Twitter, Instagram, Youtube, Home, Map as MapIcon, Search, Database, Edit3
 } from "lucide-react"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
@@ -13,8 +12,8 @@ import { Button } from "@/components/ui/button"
 import { fetchFacilitiesData } from "@/lib/CBMD"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { LinkedEvents } from "./linked-events"
+import { FacilityImage } from "@/components/facility-image"
 
-// ★追加: CBEDと同じように強制的に静的ページとして書き出す設定
 export const dynamic = 'force-static';
 export const dynamicParams = false;
 
@@ -28,12 +27,6 @@ export async function generateStaticParams() {
   try {
     const facilities = await fetchFacilitiesData();
     if (!facilities || facilities.length === 0) return [];
-
-    // ★追加: ビルド時に何ページ作られたか確認できるログ
-    console.log(`\n=========================================`);
-    console.log(`🚀 CBMD generateStaticParams が ${facilities.length} ページ分の作成を指示しました！`);
-    console.log(`=========================================\n`);
-
     return facilities.map((facility) => ({ id: String(facility.id).trim() }));
   } catch (error) {
     console.error("CBMD generateStaticParams Error:", error);
@@ -48,6 +41,8 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
 
   if (!facility) notFound()
 
+  const mapSearchUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(facility.address || facility.name)}`;
+
   return (
    <ContentPageLayout
       title="Cosmo Base Museum Database"
@@ -58,7 +53,7 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
     <div className="min-h-screen relative">
       <main className="relative z-10 pt-8 pb-12">
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 border-b border-border/30 pb-4">
+        <div className="max-w-7xl mx-auto mb-8 border-b border-border/30 pb-4">
           <div className="flex flex-wrap items-center gap-2">
             <Link href="/CBMD"><Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground"><Home className="w-4 h-4 mr-2" /> トップ</Button></Link>
             <Link href="/CBMD/map"><Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground"><MapIcon className="w-4 h-4 mr-2" /> マップ</Button></Link>
@@ -75,20 +70,8 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
           </Link>
         </div>
 
-        {facility.image && facility.image !== "/images/placeholder.jpg" && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-            <div className="aspect-[21/9] rounded-3xl bg-secondary/30 overflow-hidden flex items-center justify-center glass relative">
-              <Image 
-                src={facility.image} 
-                alt={facility.name} 
-                fill
-                sizes="100vw"
-                priority
-                className="object-cover"
-              />
-            </div>
-          </div>
-        )}
+        {/* ★修正: 共通画像コンポーネントを配置 (variant="detail" でリンク切れ時にも自動非表示) */}
+        <FacilityImage src={facility.image} alt={facility.name} variant="detail" priority />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:grid lg:grid-cols-3 gap-8">
@@ -97,12 +80,21 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
                 <div className="flex items-center gap-2 mb-4 flex-wrap">
                   <TagBadge variant="primary">{facility.category}</TagBadge>
                   {facility.hasPlanetarium && <TagBadge variant="accent"><Star className="w-3 h-3 mr-1" />プラネタリウム</TagBadge>}
+                  {facility.isFree && <TagBadge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">無料</TagBadge>}
                   {facility.hasEvent && <TagBadge variant="accent"><Calendar className="w-3 h-3 mr-1" />イベント開催中</TagBadge>}
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">{facility.name}</h1>
-                <p className="text-lg text-muted-foreground flex items-center gap-2">
-                  <MapPin className="w-5 h-5" />{facility.address}
-                </p>
+                <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">{facility.name}</h1>
+                
+                <a 
+                  href={mapSearchUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="inline-flex items-center gap-2 text-lg text-muted-foreground hover:text-primary transition-colors group"
+                >
+                  <MapPin className="w-5 h-5 shrink-0 group-hover:text-primary transition-colors" />
+                  <span className="underline decoration-transparent group-hover:decoration-primary underline-offset-4">{facility.address}</span>
+                  <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
               </div>
 
               {facility.tags && facility.tags.length > 0 && (
@@ -136,10 +128,10 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
               <GlassCard className="sticky top-24">
                 <h2 className="text-lg font-semibold text-foreground mb-4">基本情報</h2>
                 <div className="space-y-4">
-                  <div className="flex items-start gap-3"><Clock className="w-5 h-5 text-primary mt-0.5" /><div><h3 className="text-sm font-medium text-foreground">営業時間</h3><p className="text-sm text-muted-foreground">{facility.openingHours || "-"}</p></div></div>
-                  <div className="flex items-start gap-3"><Calendar className="w-5 h-5 text-primary mt-0.5" /><div><h3 className="text-sm font-medium text-foreground">休館日</h3><p className="text-sm text-muted-foreground">{facility.closedDays || "-"}</p></div></div>
-                  <div className="flex items-start gap-3"><DollarSign className="w-5 h-5 text-primary mt-0.5" /><div><h3 className="text-sm font-medium text-foreground">入館料</h3><p className="text-sm text-muted-foreground">{facility.admissionFee || "-"}</p></div></div>
-                  <div className="flex items-start gap-3"><Train className="w-5 h-5 text-primary mt-0.5" /><div><h3 className="text-sm font-medium text-foreground">アクセス</h3><p className="text-sm text-muted-foreground">{facility.access || "-"}</p></div></div>
+                  <div className="flex items-start gap-3"><Clock className="w-5 h-5 text-primary mt-0.5" /><div><h3 className="text-sm font-medium text-foreground">営業時間</h3><p className="text-sm text-muted-foreground whitespace-pre-wrap">{facility.openingHours || "-"}</p></div></div>
+                  <div className="flex items-start gap-3"><Calendar className="w-5 h-5 text-primary mt-0.5" /><div><h3 className="text-sm font-medium text-foreground">休館日</h3><p className="text-sm text-muted-foreground whitespace-pre-wrap">{facility.closedDays || "-"}</p></div></div>
+                  <div className="flex items-start gap-3"><DollarSign className="w-5 h-5 text-primary mt-0.5" /><div><h3 className="text-sm font-medium text-foreground">入館料</h3><p className="text-sm text-muted-foreground whitespace-pre-wrap">{facility.admissionFee || "-"}</p></div></div>
+                  <div className="flex items-start gap-3"><Train className="w-5 h-5 text-primary mt-0.5" /><div><h3 className="text-sm font-medium text-foreground">アクセス</h3><p className="text-sm text-muted-foreground whitespace-pre-wrap">{facility.access || "-"}</p></div></div>
                 </div>
 
                 {(facility.website || facility.twitter || facility.instagram || facility.youtube) && (
@@ -163,8 +155,15 @@ export default async function FacilityPage({ params }: FacilityPageProps) {
                 )}
 
                 {facility.updatedAt && (
-                  <div className="mt-6 pt-4 border-t border-border/30">
-                    <p className="text-xs text-muted-foreground text-center">最終更新: {facility.updatedAt}</p>
+                  <div className="mt-6 pt-4 border-t border-border/30 flex flex-col items-center gap-4">
+                    <p className="text-xs text-muted-foreground">最終更新: {facility.updatedAt}</p>
+                    
+                    <Link href={`/CBMD/inquiry?facility=${encodeURIComponent(facility.name)}`} className="w-full">
+                      <Button variant="outline" className="w-full text-xs text-muted-foreground hover:text-primary border-border/50 hover:bg-primary/10">
+                        <Edit3 className="w-3 h-3 mr-2" />
+                        この施設の情報を修正・更新する
+                      </Button>
+                    </Link>
                   </div>
                 )}
               </GlassCard>

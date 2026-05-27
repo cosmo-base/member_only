@@ -1,44 +1,59 @@
 // app/CBMD/page.tsx
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Map, Search, Database, ArrowRight, Calendar, Sparkles, MapPin, Home, AlertCircle } from "lucide-react"
+import { Map, Search, Database, ArrowRight, Calendar, Sparkles, MapPin, Home, AlertCircle, MessageSquarePlus } from "lucide-react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
-import { fetchFacilitiesData, spacecraftTags } from "@/lib/CBMD"
-import { fetchEventsData } from "@/data/CBED"
+import { fetchFacilitiesData, spacecraftTags, Facility } from "@/lib/CBMD"
+import { fetchEventsData, SpaceEvent } from "@/data/CBED"
+import { FacilityImage } from "@/components/facility-image"
 
-export default async function MuseumPage() {
-  const facilities = await fetchFacilitiesData()
-  const events = await fetchEventsData()
+export default function MuseumPage() {
+  const [facilities, setFacilities] = useState<Facility[]>([])
+  const [events, setEvents] = useState<SpaceEvent[]>([])
   
-  // ★修正: 注目施設をランダムで4件選出する（配列をシャッフル）
-  const featuredFacilities = [...facilities].sort(() => Math.random() - 0.5).slice(0, 4)
-  
-  const recentFacilities = [...facilities].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 4)
-  
-  const parseDate = (dStr: string) => {
-    if (!dStr) return null;
-    const match = dStr.match(/(\d{4})[-/年\.]\s*(\d{1,2})[-/月\.]\s*(\d{1,2})/);
-    if (!match) return null;
-    return new Date(parseInt(match[1], 10), parseInt(match[2], 10) - 1, parseInt(match[3], 10));
-  };
+  const [featuredFacilities, setFeaturedFacilities] = useState<Facility[]>([])
+  const [recentFacilities, setRecentFacilities] = useState<Facility[]>([])
+  const [recentEvents, setRecentEvents] = useState<SpaceEvent[]>([])
 
-  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
-  today.setHours(0, 0, 0, 0);
+  useEffect(() => {
+    async function loadData() {
+      const fetchedFacilities = await fetchFacilitiesData()
+      const fetchedEvents = await fetchEventsData()
+      
+      setFacilities(fetchedFacilities)
+      setEvents(fetchedEvents)
 
-  const activeEvents = events.filter(e => {
-    const isAtFacility = facilities.some(f => e.location && e.location.includes(f.name));
-    if (!isAtFacility) return false;
+      setFeaturedFacilities([...fetchedFacilities].sort(() => Math.random() - 0.5).slice(0, 4))
+      setRecentFacilities([...fetchedFacilities].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).slice(0, 4))
 
-    const start = parseDate(e.date || "");
-    const end = parseDate(e.endDate || "") || start;
-    if (!start || !end) return false;
+      const parseDate = (dStr: string) => {
+        if (!dStr) return null;
+        const match = dStr.match(/(\d{4})[-/年\.]\s*(\d{1,2})[-/月\.]\s*(\d{1,2})/);
+        if (!match) return null;
+        return new Date(parseInt(match[1], 10), parseInt(match[2], 10) - 1, parseInt(match[3], 10));
+      };
 
-    return today >= start && today <= end;
-  });
+      const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+      today.setHours(0, 0, 0, 0);
 
-  const recentEvents = activeEvents.slice(0, 3)
+      const activeEvents = fetchedEvents.filter(e => {
+        const isAtFacility = fetchedFacilities.some(f => e.location && e.location.includes(f.name));
+        if (!isAtFacility) return false;
+        const start = parseDate(e.date || "");
+        const end = parseDate(e.endDate || "") || start;
+        if (!start || !end) return false;
+        return today >= start && today <= end;
+      });
+
+      setRecentEvents(activeEvents.slice(0, 3))
+    }
+    loadData()
+  }, [])
 
   return (
     <ContentPageLayout
@@ -166,18 +181,18 @@ export default async function MuseumPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredFacilities.map((facility) => (
+              {featuredFacilities.length > 0 ? featuredFacilities.map((facility) => (
                 <Link key={facility.id} href={`/CBMD/facility/${facility.id}`}>
                   <GlassCard hover className="h-full">
-                    <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden">
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                        <img src={`${facility.image}`} alt={`${facility.name}`}/>
-                      </div>
+                    {/* ★修正: 共通画像コンポーネントに変更 */}
+                    <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden relative">
+                      <FacilityImage src={facility.image} alt={facility.name} />
                     </div>
                     <div className="space-y-3">
                       <div>
                         <TagBadge variant="primary" className="mb-2">{facility.category}</TagBadge>
-                        <h3 className="font-semibold text-foreground line-clamp-2">{facility.name}</h3>
+                        {facility.isFree && <TagBadge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 ml-1">無料</TagBadge>}
+                        <h3 className="font-semibold text-foreground line-clamp-2 mt-1">{facility.name}</h3>
                         <p className="text-sm text-muted-foreground">{facility.prefecture}</p>
                       </div>
                       <div className="flex flex-wrap gap-1">
@@ -188,7 +203,9 @@ export default async function MuseumPage() {
                     </div>
                   </GlassCard>
                 </Link>
-              ))}
+              )) : (
+                <div className="col-span-4 text-center text-muted-foreground py-10">読み込み中...</div>
+              )}
             </div>
           </div>
         </section>
@@ -247,23 +264,27 @@ export default async function MuseumPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {recentFacilities.map((facility) => (
+              {recentFacilities.length > 0 ? recentFacilities.map((facility) => (
                 <Link key={facility.id} href={`/CBMD/facility/${facility.id}`}>
                   <GlassCard hover className="h-full">
-                    <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden flex items-center justify-center">
-                      <img src={`${facility.image}`} alt={`${facility.name}`}/>
+                    {/* ★修正: 共通画像コンポーネントに変更 */}
+                    <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden relative">
+                      <FacilityImage src={facility.image} alt={facility.name} />
                     </div>
                     <div className="space-y-3">
                       <div>
                         <TagBadge variant="primary" className="mb-2">{facility.category}</TagBadge>
-                        <h3 className="font-semibold text-foreground line-clamp-2">{facility.name}</h3>
+                        {facility.isFree && <TagBadge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 ml-1">無料</TagBadge>}
+                        <h3 className="font-semibold text-foreground line-clamp-2 mt-1">{facility.name}</h3>
                         <p className="text-sm text-muted-foreground">{facility.prefecture}</p>
                       </div>
                       <p className="text-xs text-muted-foreground">更新: {facility.updatedAt}</p>
                     </div>
                   </GlassCard>
                 </Link>
-              ))}
+              )) : (
+                 <div className="col-span-4 text-center text-muted-foreground py-10">読み込み中...</div>
+              )}
             </div>
           </div>
         </section>
@@ -288,8 +309,24 @@ export default async function MuseumPage() {
           </div>
         </section>
 
-        {/* Disclaimer Section */}
+        {/* Inquiry Action Section */}
         <section className="py-16 px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-2xl font-bold text-foreground mb-4">CBMDをみんなで作る</h2>
+            <p className="text-muted-foreground mb-8 text-balance">
+              「近所の科学館がまだ載っていない」「営業時間が変わっていた」などの情報がありましたら、ぜひお知らせください。皆様からのタレコミでデータベースは成長します。
+            </p>
+            <Link href="/CBMD/inquiry">
+              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 glow px-8 rounded-full">
+                <MessageSquarePlus className="w-5 h-5 mr-2" />
+                施設追加・修正リクエストを送る
+              </Button>
+            </Link>
+          </div>
+        </section>
+
+        {/* Disclaimer Section */}
+        <section className="py-8 px-4 mb-8">
           <div className="max-w-4xl mx-auto">
             <GlassCard className="bg-secondary/20 border-l-4 border-l-primary/50 text-sm">
               <div className="flex items-start gap-3">

@@ -3,7 +3,6 @@
 
 import { useState, useMemo, useEffect } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { MapPin, Star, Calendar, ArrowUpDown, Grid3X3, List, Filter, ExternalLink, Loader2, Home, Map as MapIcon, Search, Database } from "lucide-react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
@@ -12,19 +11,13 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { fetchFacilitiesData, regions, facilityTypes, Facility } from "@/lib/CBMD"
+import { FacilityImage } from "@/components/facility-image"
 
 type SortType = "name" | "region" | "updated"
 type ViewMode = "card" | "table"
 
-// ★都道府県を北から順に並べるためのマスター配列
 const prefectureOrder = [
-  "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
-  "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
-  "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県",
-  "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "兵庫県",
-  "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県",
-  "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
-  "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
+  "北海道", "青森県", "岩手県", "秋田県", "宮城県", "山形県", "福島県", "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県", "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県", "滋賀県", "京都府", "大阪府", "奈良県", "和歌山県", "兵庫県", "鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県", "大分県", "熊本県", "宮崎県", "鹿児島県", "沖縄県"
 ]
 
 export default function DatabasePage() {
@@ -36,7 +29,7 @@ export default function DatabasePage() {
   const [selectedRegions, setSelectedRegions] = useState<string[]>([])
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [hasEvent, setHasEvent] = useState(false)
-  const [onlyFree, setOnlyFree] = useState(false) // ★追加
+  const [onlyFree, setOnlyFree] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
@@ -53,19 +46,16 @@ export default function DatabasePage() {
     if (selectedRegions.length > 0) filtered = filtered.filter((f) => selectedRegions.includes(f.region))
     if (selectedCategories.length > 0) filtered = filtered.filter((f) => selectedCategories.includes(f.category))
     if (hasEvent) filtered = filtered.filter((f) => f.hasEvent)
-    if (onlyFree) filtered = filtered.filter((f) => f.isFree) // ★追加
+    if (onlyFree) filtered = filtered.filter((f) => f.isFree)
 
     return filtered.sort((a, b) => {
       switch (sortBy) {
         case "name": return a.nameKana.localeCompare(b.nameKana, "ja")
-        
-        // ★修正: 都道府県コードの北から順インデックスを比較してソート
         case "region": {
           const idxA = prefectureOrder.indexOf(a.prefecture)
           const idxB = prefectureOrder.indexOf(b.prefecture)
           return (idxA === -1 ? 999 : idxA) - (idxB === -1 ? 999 : idxB)
         }
-        
         case "updated": return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
         default: return 0
       }
@@ -121,7 +111,7 @@ export default function DatabasePage() {
                   <div>
                     <Label className="text-sm font-medium text-foreground mb-2 block">並び替え</Label>
                     <div className="space-y-2">
-                      {[{ value: "name", label: "五十音順" }, { value: "region", label: "都道府県（北から）順" }, { value: "updated", label: "更新日順" }].map((o) => (
+                      {[{ value: "name", label: "五十音順" }, { value: "region", label: "都道府県順" }, { value: "updated", label: "更新日順" }].map((o) => (
                         <button key={o.value} onClick={() => setSortBy(o.value as SortType)} className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${sortBy === o.value ? "bg-primary/20 text-primary" : "bg-secondary/30 text-muted-foreground hover:bg-secondary/50"}`}>{o.label}<ArrowUpDown className="w-3 h-3" /></button>
                       ))}
                     </div>
@@ -149,7 +139,6 @@ export default function DatabasePage() {
                     </div>
                   </div>
                   
-                  {/* ★無料フィルターチェックボックスの追加 */}
                   <div className="space-y-2 pt-2 border-t border-border/30">
                     <div className="flex items-center space-x-2">
                       <Checkbox id="has-event" checked={hasEvent} onCheckedChange={(checked) => setHasEvent(checked === true)} />
@@ -172,12 +161,9 @@ export default function DatabasePage() {
                   {sortedFacilities.map((facility) => (
                     <Link key={facility.id} href={`/CBMD/facility/${facility.id}`}>
                       <GlassCard hover className="h-full flex flex-col">
+                        {/* ★修正: 共通画像コンポーネントに変更 */}
                         <div className="aspect-video rounded-xl bg-secondary/30 mb-4 overflow-hidden relative">
-                          {facility.image && facility.image !== "/images/placeholder.jpg" ? (
-                            <Image src={facility.image} alt={facility.name} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center"><MapPin className="w-8 h-8 text-muted-foreground" /></div>
-                          )}
+                          <FacilityImage src={facility.image} alt={facility.name} />
                         </div>
                         <div className="space-y-3 flex-1 flex flex-col">
                           <div>
