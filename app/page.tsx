@@ -84,7 +84,7 @@ const level4Content = [
     icon: "award",
     title: "Space Voyager 検定",
     description: "宇宙知識を体系的に学び、認定を取得",
-    features: ["検定とは", "レベル構造", "過去の問題", "次回試験日", "申し込み"],
+    features: ["※毎日宇宙クイズの回答数が20000件を超え次第運営を開始いたします。","検定とは", "レベル構造", "過去の問題", "次回試験日", "申し込み"],
     href: "/voyager"
   },
   {
