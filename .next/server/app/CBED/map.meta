@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/CBED/layout,_N_T_/CBED/map/layout,_N_T_/CBED/map/page,_N_T_/CBED/map"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/CBED/map/__PAGE__",
+    "/CBED/map",
+    "/CBED",
+    "/_index",
+    "/_head"
+  ]
+}

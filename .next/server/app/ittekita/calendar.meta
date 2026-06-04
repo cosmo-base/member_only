@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/ittekita/layout,_N_T_/ittekita/calendar/layout,_N_T_/ittekita/calendar/page,_N_T_/ittekita/calendar"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/ittekita/calendar/__PAGE__",
+    "/ittekita/calendar",
+    "/ittekita",
+    "/_index",
+    "/_head"
+  ]
+}

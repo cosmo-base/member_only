@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/shittoku/layout,_N_T_/shittoku/archive/layout,_N_T_/shittoku/archive/page,_N_T_/shittoku/archive"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/shittoku/archive/__PAGE__",
+    "/shittoku/archive",
+    "/shittoku",
+    "/_index",
+    "/_head"
+  ]
+}

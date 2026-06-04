@@ -10,7 +10,7 @@ import { Download, Image as ImageIcon, ShieldAlert, CheckCircle2, FileDown, Arro
 // ダウンロード対象のロゴアセット定義
 const logoAssets = [
   {
-    id: "main-color",
+    id: "CB_main",
     title: "メインロゴ（フルカラー）",
     description: "Webサイトや印刷物など、最も優先的に使用する標準のロゴマークです。",
     previewBg: "bg-secondary/20", // プレビュー時の背景色（透明PNGが見えやすいように）
@@ -19,7 +19,7 @@ const logoAssets = [
     ]
   },
   {
-    id: "symbol-color",
+    id: "CBicon",
     title: "シンボルマーク（アイコン）",
     description: "SNSのアイコンや、スペースが限られた正方形・円形の領域で使用します。",
     previewBg: "bg-secondary/20",
@@ -28,7 +28,7 @@ const logoAssets = [
     ]
   },
   {
-    id: "main-white",
+    id: "CB_light",
     title: "メインロゴ（白抜きモノトーン）",
     description: "背景色が暗い場所や、宇宙の背景画像の上に重ねて使用する場合に使用します。",
     previewBg: "bg-neutral-950", // 白抜きが見えるように背景を真っ黒に
