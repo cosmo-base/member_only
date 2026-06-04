@@ -16,7 +16,6 @@ const logoAssets = [
     previewBg: "bg-secondary/20", // プレビュー時の背景色（透明PNGが見えやすいように）
     formats: [
       { type: "PNG", size: "1200×380 px", path: "/images/cosmo-base-logo.png" },
-      { type: "SVG", size: "ベクターデータ", path: "/images/cosmo-base-logo.svg" },
     ]
   },
   {
@@ -26,7 +25,6 @@ const logoAssets = [
     previewBg: "bg-secondary/20",
     formats: [
       { type: "PNG", size: "512×512 px", path: "/CB_icon.png" },
-      { type: "SVG", size: "ベクターデータ", path: "/images/cosmo-base-icon.svg" },
     ]
   },
   {
@@ -35,8 +33,7 @@ const logoAssets = [
     description: "背景色が暗い場所や、宇宙の背景画像の上に重ねて使用する場合に使用します。",
     previewBg: "bg-neutral-950", // 白抜きが見えるように背景を真っ黒に
     formats: [
-      { type: "PNG", size: "1200×380 px", path: "/images/cosmo-base-logo-white.png" },
-      { type: "SVG", size: "ベクターデータ", path: "/images/cosmo-base-logo-white.svg" },
+      { type: "PNG", size: "1200×380 px", path: "/images/cosmo-base-logo-light.png" },
     ]
   }
 ]
@@ -44,10 +41,10 @@ const logoAssets = [
 export default function LogoDownloadPage() {
   return (
     <ContentPageLayout
-      title="パートナーアセット"
-      level={2}
-      levelTitle="パートナーポータル"
-      logo="Cosmo Base"
+      title=""
+      level={0}
+      levelTitle=""
+      logo=""
     >
       <div className="min-h-screen relative">
         <main className="relative z-10 pt-8 pb-16 px-4 max-w-5xl mx-auto">
