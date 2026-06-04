@@ -1,3 +1,4 @@
+// components/site-header.tsx
 "use client"
 
 import { useState } from "react"
@@ -19,8 +20,9 @@ export function SiteHeader() {
   const router = useRouter()
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
-      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+    // ★ここを修正: 背景色(bg-...)、ぼかし(backdrop-blur-...)、枠線(border-b...)をすべて削除し、完全に透明にしました。
+    <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
+      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between pointer-events-auto">
         {/* Back button + Logo - Left */}
         <div className="flex items-center gap-2">
           {/* Back button */}
@@ -28,7 +30,7 @@ export function SiteHeader() {
             variant="ghost"
             size="icon"
             onClick={() => router.back()}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground bg-background/50 hover:bg-background/80 backdrop-blur-md"
             aria-label="戻る"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -43,7 +45,8 @@ export function SiteHeader() {
               priority
               loading="eager"
             />
-            <span className="text-xs text-muted-foreground border-l border-border pl-3 hidden sm:block">
+            {/* ★修正: ロゴ横のテキストに背景敷いて読みやすくしました */}
+            <span className="text-xs font-bold text-foreground bg-background/50 backdrop-blur-md px-2 py-1 rounded-md hidden sm:block border border-border/50">
               参加者ページ
             </span>
           </Link>
@@ -53,7 +56,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           {/* Partners button */}
           <a href="https://fsifofficial.github.io/CosmoBase/partners">
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground bg-background/50 hover:bg-background/80 backdrop-blur-md">
               <Users className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">パートナー一覧</span>
             </Button>
@@ -61,7 +64,7 @@ export function SiteHeader() {
 
           {/* Usage guide button */}
           <Link href="/guide">
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground bg-background/50 hover:bg-background/80 backdrop-blur-md">
               <HelpCircle className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">使い方</span>
             </Button>
@@ -72,7 +75,7 @@ export function SiteHeader() {
             variant="ghost"
             size="icon"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground bg-background/50 hover:bg-background/80 backdrop-blur-md"
           >
             {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
@@ -81,7 +84,7 @@ export function SiteHeader() {
 
       {/* Dropdown menu - right half only */}
       {isMenuOpen && (
-        <div className="absolute top-full right-0 w-full sm:w-[320px] bg-background/95 backdrop-blur-xl border-b border-l border-border/50 rounded-bl-2xl shadow-2xl animate-in slide-in-from-top-2 fade-in duration-200">
+        <div className="absolute top-full right-0 w-full sm:w-[320px] bg-background/95 backdrop-blur-xl border-b border-l border-border/50 rounded-bl-2xl shadow-2xl animate-in slide-in-from-top-2 fade-in duration-200 pointer-events-auto">
           <nav className="p-3">
             <ul className="flex flex-col gap-1">
 
