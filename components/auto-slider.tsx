@@ -1,3 +1,4 @@
+// components/auto-slider.tsx
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
@@ -10,7 +11,6 @@ import Link from "next/link"
 // スライダー用の画像をすべて直接インポートする
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 import welcomeImg from "../public/images/slider-welcome.jpg"
-import TCPImg from "../public/CB_TCP.png"
 import partnerImg from "../public/CBP.png"
 import feedbackImg from "../public/images/slider-feedback.jpg"
 
@@ -26,18 +26,11 @@ const slides = [
     id: 1,
     title: "",
     description: "",
-    image: TCPImg,
-    href: "/TCP",
-  },
-  {
-    id: 2,
-    title: "",
-    description: "",
     image: partnerImg,
     href: "https://fsifofficial.github.io/CosmoBase/partners",
   },
   {
-    id: 3,
+    id: 2,
     title: "意見箱",
     description: "Cosmo Baseへのご意見・ご要望をお聞かせください。より良いコミュニティーづくりにご協力ください。",
     image: feedbackImg,
@@ -102,7 +95,7 @@ export function AutoSlider() {
     : currentIndex - 1
 
   return (
-    <div className="relative w-full overflow-hidden rounded-xl">
+    <div className="relative w-full overflow-hidden rounded-xl shadow-lg">
       <div
         className={`flex ${isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''}`}
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -118,22 +111,26 @@ export function AutoSlider() {
                 src={slide.image}
                 alt={slide.title}
                 fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
                 priority={index === 0 || index === 1}
                 loading="eager"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-transparent" />
               
-              <div className="absolute inset-0 flex items-center p-6 md:p-12">
-                <div className="max-w-xl">
-                  <h3 className="text-xl md:text-2xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                    {slide.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm md:text-base whitespace-pre-line">
-                    {slide.description}
-                  </p>
+              {/* ★修正: 画面全体を覆っていた黒いグラデーションカバーを削除しました */}
+              
+              {/* ★修正: テキストがある場合のみ、文字の背景に半透明のGlass効果を追加して可読性を確保 */}
+              {(slide.title || slide.description) && (
+                <div className="absolute inset-0 flex items-center p-6 md:p-12">
+                  <div className="max-w-xl bg-background/60 backdrop-blur-md p-6 rounded-2xl border border-border/50 shadow-xl transition-all group-hover:bg-background/80">
+                    <h3 className="text-xl md:text-2xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                      {slide.title}
+                    </h3>
+                    <p className="text-sm md:text-base whitespace-pre-line text-foreground/90 font-medium">
+                      {slide.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </Link>
         ))}
@@ -143,7 +140,7 @@ export function AutoSlider() {
         variant="ghost"
         size="icon"
         onClick={goToPrev}
-        className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/50 hover:bg-background/80 backdrop-blur-sm"
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/50 hover:bg-background/80 backdrop-blur-sm shadow-md"
       >
         <ChevronLeft className="w-5 h-5" />
       </Button>
@@ -151,20 +148,20 @@ export function AutoSlider() {
         variant="ghost"
         size="icon"
         onClick={goToNext}
-        className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/50 hover:bg-background/80 backdrop-blur-sm"
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/50 hover:bg-background/80 backdrop-blur-sm shadow-md"
       >
         <ChevronRight className="w-5 h-5" />
       </Button>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 bg-background/30 backdrop-blur-md px-4 py-2 rounded-full border border-border/20">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-2 h-2 rounded-full transition-all ${
+            className={`w-2.5 h-2.5 rounded-full transition-all shadow-sm ${
               index === actualIndex
-                ? "bg-primary w-6"
-                : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                ? "bg-primary w-8"
+                : "bg-white/70 hover:bg-white"
             }`}
           />
         ))}
