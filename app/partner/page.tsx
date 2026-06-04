@@ -1,5 +1,5 @@
 // partner/page.tsx
-import {  FileEdit,  FolderUp,  Mic,  ClipboardList,Users} from "lucide-react"
+import {  FileEdit,  FolderUp,  Mic,  ClipboardList,Users,Image} from "lucide-react"
 import { StarBackground } from "@/components/star-background"
 import { Header } from "@/components/header"
 import { AdminNotice } from "@/components/admin-notice"
@@ -39,6 +39,13 @@ const formCards = [
     description: "Discordでパートナー限定チャンネルに招待いたします。こちらのフォームより申請をお願いします。",
     href: "/member_only/partner/member",
     icon: Users,
+    note: "", 
+  },
+  {
+    title: "ロゴデータ・ダウンロード",
+    description: "Cosmo Baseのパートナー・連携団体の皆様が、広報活動、メディア掲載、イベントタイアップ等で使用できる公式アセットです。",
+    href: "/member_only/partner/logos",
+    icon: Image,
     note: "", 
   },
 ]

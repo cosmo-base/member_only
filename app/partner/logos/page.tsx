@@ -15,7 +15,7 @@ const logoAssets = [
     description: "Webサイトや印刷物など、最も優先的に使用する標準のロゴマークです。",
     previewBg: "bg-secondary/20", // プレビュー時の背景色（透明PNGが見えやすいように）
     formats: [
-      { type: "PNG", size: "1200×380 px", path: "/images/cosmo-base-logo.png" },
+      { type: "PNG", size: "1658x348 px", path: "/member_only/CosmoBase.png" },
     ]
   },
   {
@@ -24,7 +24,7 @@ const logoAssets = [
     description: "SNSのアイコンや、スペースが限られた正方形・円形の領域で使用します。",
     previewBg: "bg-secondary/20",
     formats: [
-      { type: "PNG", size: "512×512 px", path: "/CB_icon.png" },
+      { type: "PNG", size: "528x522 px", path: "/member_only/CB_icon.png" },
     ]
   },
   {
@@ -33,7 +33,7 @@ const logoAssets = [
     description: "背景色が暗い場所や、宇宙の背景画像の上に重ねて使用する場合に使用します。",
     previewBg: "bg-neutral-950", // 白抜きが見えるように背景を真っ黒に
     formats: [
-      { type: "PNG", size: "1200×380 px", path: "/images/cosmo-base-logo-light.png" },
+      { type: "PNG", size: "1658x348 px", path: "/member_only/images/cosmo-base-logo.png" },
     ]
   }
 ]
