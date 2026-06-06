@@ -34,8 +34,8 @@ const CBMD_SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PAC
 
 const BUILD_TIMESTAMP = Date.now();
 
-export const facilityTypes = ["科学館", "博物館", "美術館", "JAXA関連施設", "大学展示", "天文台", "イベント施設"]
-export const categoryTags = ["地球", "リモートセンシング", "プラネタリウム", "望遠鏡", "天文・天体", "ロケット", "人工衛星", "地球観測", "宇宙ステーション"]
+export const facilityTypes = ["科学館", "博物館", "美術館", "JAXA関連施設", "大学展示", "天文台", "イベント施設","児童館"]
+export const categoryTags = ["地球", "リモートセンシング", "プラネタリウム", "望遠鏡", "天文・天体", "ロケット", "人工衛星", "地球観測"]
 export const spacecraftTags = ["はやぶさ", "はやぶさ2", "MMX", "ISS", "H3ロケット", "イプシロン", "SLIM", "かぐや", "あかつき", "HTV"]
 
 export const regionsData = {
