@@ -45,7 +45,7 @@ export default function DiagnosisPage() {
           </div>
           <div className="flex items-center gap-2 text-muted-foreground text-sm mb-4">
             <Clock className="w-4 h-4" />
-            <span>所要時間: 約2分</span>
+            <span>所要時間: 約1分</span>
           </div>
           <p className="text-muted-foreground text-sm mb-6">
             5つの質問でサクッと診断。まずはお気軽に試してみてください。
@@ -65,7 +65,7 @@ export default function DiagnosisPage() {
           </div>
           <div className="flex items-center gap-2 text-muted-foreground text-sm mb-4">
             <Clock className="w-4 h-4" />
-            <span>所要時間: 約10分</span>
+            <span>所要時間: 約5分</span>
           </div>
           <p className="text-muted-foreground text-sm mb-6">
             24の質問で詳細に分析。あなたの宇宙への興味の傾向を多角的に診断します。おすすめコンテンツも紹介。
