@@ -30,7 +30,7 @@ const slides = [
     title: "",
     description: "",
     image: partnerImg,
-    href: "https://fsifofficial.github.io/CosmoBase/news",
+    href: "https://fsifofficial.github.io/CosmoBase/news/kitaurora",
   },
   {
     id: 2,
