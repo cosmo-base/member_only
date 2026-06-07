@@ -28,13 +28,6 @@ const level1Content = [
     description: "あなたの宇宙タイプを診断",
     features: ["簡易版", "完全版"],
     href: "/type"
-  },
-  {
-    icon: "diagnosis",
-    title: "宇宙タイプ診断",
-    description: "あなたの宇宙タイプを診断",
-    features: ["簡易版", "完全版"],
-    href: "/type"
   }
 ]
 

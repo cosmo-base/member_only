@@ -68,11 +68,11 @@ export default function EventsPage() {
             月間カレンダーでイベントをチェック。<br />
             スケジュール管理に便利です。
           </p>
-          <a href="https://fsifofficial.github.io/CosmoBase/events">
+          <Link href="/CBED/calendar">
             <Button variant="outline" className="w-full">
               カレンダーで探す
             </Button>
-          </a>
+          </Link>
         </div>
 
         <div className="glass-card rounded-xl p-6">

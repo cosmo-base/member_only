@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Calendar, MapPin, Users, Award, X, Bookmark, Rocket, Home, Search, PlusCircle, ExternalLink } from "lucide-react"
+import { ChevronLeft, ChevronRight, Calendar, MapPin, Users, Award, X, Bookmark, Rocket, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { TagBadge } from "@/components/tag-badge"
 import { GlassCard } from "@/components/glass-card"
@@ -11,24 +11,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SpaceEvent } from "@/data/CBED"
 import { LaunchEvent } from "@/data/launches"
 
-// ★ TypeScriptを黙らせるための安全なカスタム型
-// SpaceEventからstring型のdate/endDateを除外し、Date型として再定義
+// ★ TypeScriptの型安全のためのカスタム型
 type ParsedSpaceEvent = Omit<SpaceEvent, 'date' | 'endDate'> & {
   date: Date;
   endDate: Date | null;
 };
 
-// カレンダーに表示するアイテム（イベント or ロケット）の統合型
 type CalendarItem = ParsedSpaceEvent | LaunchEvent;
 
-// どんな値が来ても絶対に Date 型を返す安全な関数
 function getSafeDate(dateValue: any): Date {
   if (dateValue instanceof Date) return dateValue;
   if (typeof dateValue === 'string' || typeof dateValue === 'number') return new Date(dateValue);
-  return new Date(0); // 無効な場合は1970年を返す（クラッシュ防止）
+  return new Date(0);
 }
 
-// アイテムが「ロケット打ち上げ」かどうかをTypeScriptに確実に教える関数（型ガード）
 function isLaunch(item: CalendarItem): item is LaunchEvent {
   return 'isLaunch' in item && item.isLaunch === true;
 }
@@ -36,6 +32,9 @@ function isLaunch(item: CalendarItem): item is LaunchEvent {
 export default function EventCalendar({ events = [], launches = [] }: { events: SpaceEvent[], launches?: LaunchEvent[] }) {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedEvent, setSelectedEvent] = useState<CalendarItem | null>(null)
+  
+  // ★ 追加: その日のイベントをすべて一覧表示するためのState
+  const [selectedDayItems, setSelectedDayItems] = useState<{ date: Date, items: CalendarItem[] } | null>(null)
   
   const [typeFilter, setTypeFilter] = useState<string>("all")
   const [difficultyFilter, setDifficultyFilter] = useState<string>("all")
@@ -60,7 +59,6 @@ export default function EventCalendar({ events = [], launches = [] }: { events: 
     return null
   })
 
-  // ★ string型のdateをDate型に安全に変換したイベントリスト
   const safeEvents = useMemo(() => {
     return (events || [])
       .filter((e) => e && e.date)
@@ -69,7 +67,7 @@ export default function EventCalendar({ events = [], launches = [] }: { events: 
           ...e,
           date: getSafeDate(e.date),
           endDate: e.endDate ? getSafeDate(e.endDate) : null,
-        } as unknown as ParsedSpaceEvent; // 一旦unknownを経由して型を強制上書き
+        } as unknown as ParsedSpaceEvent;
       })
       .filter((e) => e.date && !isNaN(e.date.getTime()));
   }, [events]);
@@ -85,7 +83,6 @@ export default function EventCalendar({ events = [], launches = [] }: { events: 
 
   const filteredEvents = safeEvents.filter((event) => {
     const isHost = event.organizer && (event.organizer.includes("Cosmo Base") || event.organizer.includes("CosmoBase"));
-    // スプレッドシートから来たisPartnerは文字列の可能性があるため対応
     const isPartner = event.isPartner === true || String(event.isPartner).toUpperCase() === "TRUE";
     const isExternal = !isHost && !isPartner;
 
@@ -174,14 +171,7 @@ export default function EventCalendar({ events = [], launches = [] }: { events: 
 
   return (
     <>
-      <div className="mb-8 border-b border-border/30 pb-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <Link href="/CBED"><Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground"><Home className="w-4 h-4 mr-2" /> トップ</Button></Link>
-          <Link href="/CBED/calendar"><Button variant="ghost" size="sm" className="bg-primary/20 text-primary hover:bg-primary/30 font-bold"><Calendar className="w-4 h-4 mr-2" /> カレンダー</Button></Link>
-          <Link href="/CBED/search"><Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground"><Search className="w-4 h-4 mr-2" /> 検索</Button></Link>
-          <Link href="/CBED/register"><Button variant="outline" size="sm" className="bg-secondary/50 hover:bg-secondary/80 text-muted-foreground hover:text-foreground"><PlusCircle className="w-4 h-4 mr-2" /> 登録・タレコミ</Button></Link>
-        </div>
-      </div>
+      {/* ★ 修正: ご要望通り上部にあったナビゲーションボタン（トップ、カレンダー等）のブロックを削除しました */}
 
       <GlassCard className="mb-8">
         <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
@@ -250,7 +240,7 @@ export default function EventCalendar({ events = [], launches = [] }: { events: 
             return (
               <div
                 key={index}
-                className={`min-h-[80px] sm:min-h-[120px] p-1 sm:p-2 rounded-lg border flex flex-col transition-colors ${
+                className={`min-h-[90px] sm:min-h-[130px] p-1 sm:p-2 rounded-lg border flex flex-col transition-colors ${
                   day ? (isToday ? "bg-primary/10 border-primary/50" : "bg-secondary/20 border-border/40 hover:border-primary/30") : "bg-transparent border-transparent"
                 }`}
               >
@@ -259,47 +249,54 @@ export default function EventCalendar({ events = [], launches = [] }: { events: 
                     <div className={`text-right mb-1 text-xs sm:text-sm font-medium ${index % 7 === 0 ? "text-destructive" : index % 7 === 6 ? "text-blue-400" : "text-foreground"}`}>
                       {day.getDate()}
                     </div>
-                    <div className="space-y-1 flex-grow overflow-hidden">
-                      {displayItems.map((item) => {
-                        if (isLaunch(item)) {
-                          return (
-                            <button
-                              key={item.id}
-                              onClick={() => setSelectedEvent(item)}
-                              className="w-full text-left text-[10px] sm:text-xs p-1 sm:p-1.5 rounded truncate bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border-l-2 border-orange-500 transition-colors"
-                              title={item.title}
-                            >
-                              🚀 {item.title}
-                            </button>
-                          );
-                        }
+                    <div className="space-y-1 flex-grow overflow-hidden flex flex-col justify-between">
+                      <div className="space-y-1">
+                        {displayItems.map((item) => {
+                          if (isLaunch(item)) {
+                            return (
+                              <button
+                                key={item.id}
+                                onClick={() => setSelectedEvent(item)}
+                                className="w-full text-left text-[10px] sm:text-xs p-1 sm:p-1.5 rounded truncate bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border-l-2 border-orange-500 transition-colors block"
+                                title={item.title}
+                              >
+                                🚀 {item.title}
+                              </button>
+                            );
+                          }
 
-                        const event = item as ParsedSpaceEvent;
-                        const isHostEvent = event.organizer && (event.organizer.includes("Cosmo Base") || event.organizer.includes("CosmoBase"));
-                        const isPartnerEvent = event.isPartner === true || String(event.isPartner).toUpperCase() === "TRUE";
-                        
-                        let buttonClass = "bg-secondary/50 hover:bg-secondary border-l-2 border-muted-foreground text-foreground"; 
-                        if (isHostEvent) {
-                          buttonClass = "bg-primary/10 hover:bg-primary/20 border-l-2 border-primary text-primary-foreground"; 
-                        } else if (isPartnerEvent) {
-                          buttonClass = "bg-accent/10 hover:bg-accent/20 border-l-2 border-accent text-accent-foreground"; 
+                          const event = item as ParsedSpaceEvent;
+                          const isHostEvent = event.organizer && (event.organizer.includes("Cosmo Base") || event.organizer.includes("CosmoBase"));
+                          const isPartnerEvent = event.isPartner === true || String(event.isPartner).toUpperCase() === "TRUE";
+                          
+                          let buttonClass = "bg-secondary/50 hover:bg-secondary border-l-2 border-muted-foreground text-foreground"; 
+                          if (isHostEvent) {
+                            buttonClass = "bg-primary/10 hover:bg-primary/20 border-l-2 border-primary text-primary-foreground"; 
+                          } else if (isPartnerEvent) {
+                            buttonClass = "bg-accent/10 hover:bg-accent/20 border-l-2 border-accent text-accent-foreground"; 
                         }
                         
                         return (
                           <button
                             key={event.id}
-                            onClick={() => setSelectedEvent(event)}
-                            className={`w-full text-left text-[10px] sm:text-xs p-1 sm:p-1.5 rounded truncate transition-colors ${buttonClass}`}
+                            onClick={() => setSelectedEvent(event as CalendarItem)}
+                            className={`w-full text-left text-[10px] sm:text-xs p-1 sm:p-1.5 rounded truncate transition-colors block ${buttonClass}`}
                             title={event.title}
                           >
                             {event.title}
                           </button>
                         );
                       })}
+                      </div>
+
+                      {/* ★ 修正: 埋もれていたイベントをすべて見るための「＋他〇件」表示ボタン */}
                       {hasMore && (
-                        <div className="text-[10px] text-muted-foreground text-center mt-1">
-                          +{allItems.length - MAX_EVENTS_PER_DAY}件
-                        </div>
+                        <button 
+                          onClick={() => setSelectedDayItems({ date: day, items: allItems })}
+                          className="w-full text-center text-[10px] sm:text-xs font-bold py-1 rounded bg-primary/20 text-primary hover:bg-primary/30 transition-colors mt-1 block shrink-0"
+                        >
+                          ＋他{allItems.length - MAX_EVENTS_PER_DAY}件
+                        </button>
                       )}
                     </div>
                   </>
@@ -310,6 +307,7 @@ export default function EventCalendar({ events = [], launches = [] }: { events: 
         </div>
       </GlassCard>
 
+      {/* 長期イベント */}
       {currentMonthLongTermEvents.length > 0 && (
         <div className="mt-12 animate-in fade-in slide-in-from-bottom-4">
           <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
@@ -324,7 +322,7 @@ export default function EventCalendar({ events = [], launches = [] }: { events: 
               return (
                 <button
                   key={event.id}
-                  onClick={() => setSelectedEvent(event)}
+                  onClick={() => setSelectedEvent(event as CalendarItem)}
                   className="text-left p-0 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] w-full"
                 >
                   <GlassCard className={`h-full flex flex-col gap-2 ${isHostEvent ? 'border-primary/40 bg-primary/5' : isPartnerEvent ? 'border-accent/40 bg-accent/5' : 'hover:bg-secondary/40'}`}>
@@ -357,6 +355,72 @@ export default function EventCalendar({ events = [], launches = [] }: { events: 
         </div>
       )}
 
+      {/* ★ 新設: 「＋他〇件」を押したときに開くその日の全イベント一覧リストモーダル */}
+      {selectedDayItems && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+          <div className="bg-secondary/30 backdrop-blur-xl border border-border/50 rounded-2xl max-w-md w-full max-h-[80vh] flex flex-col shadow-2xl">
+            <div className="p-6 flex flex-col h-full min-h-0">
+              <div className="flex justify-between items-center mb-4 shrink-0">
+                <h3 className="text-base sm:text-lg font-bold text-foreground">
+                  {selectedDayItems.date.getMonth() + 1}月{selectedDayItems.date.getDate()}日のイベント一覧 ({selectedDayItems.items.length}件)
+                </h3>
+                <Button onClick={() => setSelectedDayItems(null)} variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground hover:bg-secondary/50 rounded-full">
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              <div className="space-y-2 overflow-y-auto pr-1 flex-1 min-h-0">
+                {selectedDayItems.items.map((item) => {
+                  const isRocket = isLaunch(item);
+                  let badgeText = "外部イベント";
+                  let badgeVariant: "primary" | "accent" | "default" = "default";
+                  
+                  if (isRocket) {
+                    badgeText = "ロケット打ち上げ";
+                  } else {
+                    const isHost = item.organizer && (item.organizer.includes("Cosmo Base") || item.organizer.includes("CosmoBase"));
+                    const isPartner = item.isPartner === true || String(item.isPartner).toUpperCase() === "TRUE";
+                    if (isHost) {
+                      badgeText = "主催イベント";
+                      badgeVariant = "primary";
+                    } else if (isPartner) {
+                      badgeText = "パートナー";
+                      badgeVariant = "accent";
+                    }
+                  }
+
+                  return (
+                    <div 
+                      key={item.id} 
+                      onClick={() => {
+                        setSelectedEvent(item);
+                        setSelectedDayItems(null); // 一覧モーダルは閉じて詳細を開く
+                      }}
+                      className="p-3 rounded-xl border border-border/40 hover:bg-primary/10 hover:border-primary/30 transition-all cursor-pointer bg-background/40 flex flex-col gap-1.5"
+                    >
+                      <div className="flex items-center gap-2">
+                        {isRocket ? (
+                          <TagBadge className="bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px]">🚀 {badgeText}</TagBadge>
+                        ) : (
+                          <TagBadge variant={badgeVariant}>{badgeText}</TagBadge>
+                        )}
+                        {item.time && <TagBadge className="bg-secondary/80 text-[10px] text-muted-foreground">{item.time}</TagBadge>}
+                      </div>
+                      <h4 className="text-sm font-bold text-foreground line-clamp-2 mt-0.5">{item.title}</h4>
+                      {item.location && (
+                        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5 truncate">
+                          <MapPin className="w-3 h-3 text-primary shrink-0" /> {item.location}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* イベント詳細・ロケット詳細モーダル */}
       {selectedEvent && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
           <div className="bg-secondary/30 backdrop-blur-xl border border-border/50 rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl">
@@ -389,16 +453,16 @@ export default function EventCalendar({ events = [], launches = [] }: { events: 
                 <div className="flex items-center gap-3 text-foreground">
                   <div className="p-2 bg-primary/20 rounded-lg shrink-0"><Calendar className="h-4 w-4 text-primary" /></div>
                   <span className="font-medium text-sm sm:text-base">
-                    {selectedEvent.date.getFullYear()}年
-                    {selectedEvent.date.getMonth() + 1}月
-                    {selectedEvent.date.getDate()}日
+                    {getSafeDate(selectedEvent.date).getFullYear()}年
+                    {getSafeDate(selectedEvent.date).getMonth() + 1}月
+                    {getSafeDate(selectedEvent.date).getDate()}日
                     
                     {!isLaunch(selectedEvent) && selectedEvent.endDate && (
-                      selectedEvent.endDate.getTime() !== selectedEvent.date.getTime()
+                      getSafeDate(selectedEvent.endDate).getTime() !== getSafeDate(selectedEvent.date).getTime()
                     ) && (
-                      <> 〜 {selectedEvent.endDate.getFullYear()}年
-                           {selectedEvent.endDate.getMonth() + 1}月
-                           {selectedEvent.endDate.getDate()}日</>
+                      <> 〜 {getSafeDate(selectedEvent.endDate).getFullYear()}年
+                           {getSafeDate(selectedEvent.endDate).getMonth() + 1}月
+                           {getSafeDate(selectedEvent.endDate).getDate()}日</>
                     )}
                     {" "}{selectedEvent.time}
                   </span>
