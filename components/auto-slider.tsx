@@ -12,7 +12,10 @@ import Link from "next/link"
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 import welcomeImg from "../public/images/slider-welcome.jpg"
 import partnerImg from "../public/CBP.png"
-import feedbackImg from "../public/images/slider-feedback.jpg"
+import shittokuImg from "../public/shittoku/1.png"
+import feedbackImg from "../public/feedback.png"
+import memberImg from "../public/member.png"
+import partImg from "../public/part.jpg"
 
 const slides = [
   {
@@ -27,14 +30,35 @@ const slides = [
     title: "",
     description: "",
     image: partnerImg,
-    href: "https://fsifofficial.github.io/CosmoBase/partners",
+    href: "https://fsifofficial.github.io/CosmoBase/news",
   },
+  // {
+  //   id: 2,
+  //   title: "",
+  //   description: "",
+  //   image: shittokuImg,
+  //   href: "https://cosmo-base.github.io/member_only/shittoku/",
+  // },
   {
-    id: 2,
-    title: "意見箱",
-    description: "Cosmo Baseへのご意見・ご要望をお聞かせください。より良いコミュニティーづくりにご協力ください。",
+    id: 3,
+    title: "",
+    description: "",
     image: feedbackImg,
     href: "https://fsifofficial.github.io/CosmoBase/contact",
+  },
+  {
+    id: 4,
+    title: "",
+    description: "",
+    image: memberImg,
+    href: "https://fsifofficial.github.io/CosmoBase/contact",
+  },
+  {
+    id: 5,
+    title: "",
+    description: "",
+    image: partImg,
+    href: "https://fsifofficial.github.io/CosmoBase/partner",
   },
 ]
 
@@ -116,9 +140,6 @@ export function AutoSlider() {
                 loading="eager"
               />
               
-              {/* ★修正: 画面全体を覆っていた黒いグラデーションカバーを削除しました */}
-              
-              {/* ★修正: テキストがある場合のみ、文字の背景に半透明のGlass効果を追加して可読性を確保 */}
               {(slide.title || slide.description) && (
                 <div className="absolute inset-0 flex items-center p-6 md:p-12">
                   <div className="max-w-xl bg-background/60 backdrop-blur-md p-6 rounded-2xl border border-border/50 shadow-xl transition-all group-hover:bg-background/80">
