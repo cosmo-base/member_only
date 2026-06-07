@@ -12,7 +12,7 @@ import Link from "next/link"
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 import welcomeImg from "../public/images/slider-welcome.jpg"
 import partnerImg from "../public/CBP.png"
-import shittokuImg from "../public/shittoku/1.png"
+import shittokuImg from "../public/shittoku/8.png"
 import feedbackImg from "../public/feedback.png"
 import memberImg from "../public/member.png"
 import partImg from "../public/part.jpg"
@@ -32,13 +32,13 @@ const slides = [
     image: partnerImg,
     href: "https://fsifofficial.github.io/CosmoBase/news",
   },
-  // {
-  //   id: 2,
-  //   title: "",
-  //   description: "",
-  //   image: shittokuImg,
-  //   href: "https://cosmo-base.github.io/member_only/shittoku/",
-  // },
+  {
+    id: 2,
+    title: "",
+    description: "",
+    image: shittokuImg,
+    href: "https://cosmo-base.github.io/member_only/shittoku/",
+  },
   {
     id: 3,
     title: "",
