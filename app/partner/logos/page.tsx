@@ -2,6 +2,7 @@
 "use client"
 
 import Link from "next/link"
+import { StarBackground } from "@/components/star-background"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { Button } from "@/components/ui/button"
