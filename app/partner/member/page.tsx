@@ -2,6 +2,7 @@
 "use client"
 
 import { useState } from "react"
+import { StarBackground } from "@/components/star-background"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
