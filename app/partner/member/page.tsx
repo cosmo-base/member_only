@@ -1,12 +1,13 @@
-// app/partner/join/page.tsx (※お好みのパスに配置してください)
+// app/partner/join/page.tsx
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { StarBackground } from "@/components/star-background"
 import { Header } from "@/components/header"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, Users, Loader2, Send } from "lucide-react"
+import { CheckCircle2, Users, Loader2, Send, ArrowLeft } from "lucide-react"
 
 export default function PartnerJoinFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -35,7 +36,7 @@ export default function PartnerJoinFormPage() {
     // 抽出した entry.ID にデータを紐付け
     const submitData = new FormData()
     submitData.append("entry.1112089264", formData.groupName) // 団体名
-    submitData.append("entry.87242204", formData.discord)     // Discordの名前
+    submitData.append("entry.87242204", formData.discord)      // Discordの名前
 
     try {
       // CORSエラーを回避するために mode: 'no-cors' を指定
@@ -119,57 +120,56 @@ export default function PartnerJoinFormPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="glass-card rounded-xl p-6 md:p-10 border border-border/50 shadow-sm space-y-8">
-
             <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-bold text-foreground mb-2">
-                団体名 <span className="text-red-500 ml-1">*</span>
-              </label>
-              <Input 
-                required 
-                type="text" 
-                name="groupName" 
-                value={formData.groupName} 
-                onChange={handleChange} 
-                placeholder="宇宙研究会" 
-                className="bg-secondary/50 h-12" 
-              />
+              <div>
+                <label className="block text-sm font-bold text-foreground mb-2">
+                  団体名 <span className="text-red-500 ml-1">*</span>
+                </label>
+                <Input 
+                  required 
+                  type="text" 
+                  name="groupName" 
+                  value={formData.groupName} 
+                  onChange={handleChange} 
+                  placeholder="宇宙研究会" 
+                  className="bg-secondary/50 h-12" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-foreground mb-2">
+                  Discordの名前 <span className="text-red-500 ml-1">*</span>
+                </label>
+                <Input 
+                  required 
+                  type="text" 
+                  name="discord" 
+                  value={formData.discord} 
+                  onChange={handleChange} 
+                  placeholder="CosmoPartner#5678" 
+                  className="bg-secondary/50 h-12" 
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-bold text-foreground mb-2">
-                Discordの名前 <span className="text-red-500 ml-1">*</span>
-              </label>
-              <Input 
-                required 
-                type="text" 
-                name="discord" 
-                value={formData.discord} 
-                onChange={handleChange} 
-                placeholder="CosmoPartner#5678" 
-                className="bg-secondary/50 h-12" 
-              />
+            <div className="pt-6">
+              <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-base font-bold bg-primary hover:bg-primary/90">
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    送信中...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5 mr-2" />
+                    申請を送信する
+                  </>
+                )}
+              </Button>
             </div>
-          </div>
-
-          <div className="pt-6">
-            <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-base font-bold bg-primary hover:bg-primary/90">
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  送信中...
-                </>
-              ) : (
-                <>
-                  <Send className="w-5 h-5 mr-2" />
-                  申請を送信する
-                </>
-              )}
-            </Button>
-          </div>
-          
           </form>
-        </div>
+        </main>
       </div>
+    </div>
   )
 }
