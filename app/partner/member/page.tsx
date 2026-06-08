@@ -56,40 +56,70 @@ export default function PartnerJoinFormPage() {
   // 送信成功時の画面
   if (isSuccess) {
     return (
-      <ContentPageLayout title="メンバー申請" level={0} levelTitle="" logo="">
-        <div className="glass-card rounded-xl p-10 max-w-2xl mx-auto border border-primary/30 text-center animate-in fade-in zoom-in duration-500">
-          <CheckCircle2 className="w-20 h-20 text-emerald-500 mx-auto mb-6" />
-          <h2 className="text-3xl font-bold text-foreground mb-4">申請を受け付けました</h2>
-          <p className="text-muted-foreground mb-8 leading-relaxed">
-            ご入力ありがとうございます。内容を確認の上、<br />
-            記載いただいたDiscordアカウントへパートナー限定チャンネルへの招待をお送りいたします。
-          </p>
-          <Button onClick={() => window.location.reload()} variant="outline" className="w-full sm:w-auto">
-            別の申請を送信する
-          </Button>
+      <div className="min-h-screen relative">
+        <StarBackground />
+        
+        <div className="relative z-10 flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-1 container mx-auto px-4 py-8 max-w-3xl">
+            <div className="mb-6">
+              <Link href="/partner">
+                <Button variant="ghost" className="text-muted-foreground hover:text-foreground -ml-4">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  パートナーマイページに戻る
+                </Button>
+              </Link>
+            </div>
+
+            <div className="mb-8">
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">メンバー申請</h1>
+              <CheckCircle2 className="w-20 h-20 text-emerald-500 mx-auto mb-6" />
+              <h2 className="text-3xl font-bold text-foreground mb-4">申請を受け付けました</h2>
+            </div>
+            <div className="glass-card rounded-xl p-10 max-w-2xl mx-auto border border-primary/30 text-center animate-in fade-in zoom-in duration-500">
+              <p className="text-muted-foreground mb-8 leading-relaxed">
+                ご入力ありがとうございます。内容を確認の上、<br />記載いただいたDiscordアカウントへパートナー限定チャンネルへの招待をお送りいたします。
+              </p>
+              <Button onClick={() => window.location.reload()} variant="outline" className="w-full sm:w-auto">
+                別の申請を送信する
+              </Button>
+            </div> 
+          </main>
         </div>
-      </ContentPageLayout>
+      </div>
     )
   }
 
   // 入力フォーム画面
   return (
-    <ContentPageLayout title="メンバー申請" level={0} levelTitle="" logo="">
-      <div className="max-w-2xl mx-auto">
-        
-        <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full mb-4">
-            <Users className="w-10 h-10 text-primary" />
+    <div className="min-h-screen relative">
+      <StarBackground />
+      
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1 container mx-auto px-4 py-8 max-w-3xl">
+          <div className="mb-6">
+            <Link href="/partner">
+              <Button variant="ghost" className="text-muted-foreground hover:text-foreground -ml-4">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                パートナーマイページに戻る
+              </Button>
+            </Link>
           </div>
-          <p className="text-muted-foreground text-sm md:text-base text-balance">
-            Discordでパートナー限定チャンネルに招待いたします。<br/>
-            以下のフォームより申請をお願いします。
-          </p>
-        </div>
 
-        <form onSubmit={handleSubmit} className="glass-card rounded-xl p-6 md:p-10 border border-border/50 shadow-sm space-y-8">
-          
-          <div className="space-y-6">
+          <div className="mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">メンバー申請</h1>
+            <div className="inline-flex items-center justify-center p-4 bg-primary/10 rounded-full mb-4">
+              <Users className="w-10 h-10 text-primary" />
+            </div>
+            <p className="text-muted-foreground text-sm md:text-base text-balance">
+              Discordでパートナー限定チャンネルに招待いたします。<br/>以下のフォームより申請をお願いします。
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="glass-card rounded-xl p-6 md:p-10 border border-border/50 shadow-sm space-y-8">
+
+            <div className="space-y-6">
             <div>
               <label className="block text-sm font-bold text-foreground mb-2">
                 団体名 <span className="text-red-500 ml-1">*</span>
@@ -137,8 +167,9 @@ export default function PartnerJoinFormPage() {
             </Button>
           </div>
           
-        </form>
+          </form>
+        </div>
       </div>
-    </ContentPageLayout>
+    </div>
   )
 }
