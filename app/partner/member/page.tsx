@@ -171,6 +171,5 @@ export default function PartnerJoinFormPage() {
           </form>
         </div>
       </div>
-    </div>
   )
 }
