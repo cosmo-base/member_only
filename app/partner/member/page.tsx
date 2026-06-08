@@ -3,7 +3,7 @@
 
 import { useState } from "react"
 import { StarBackground } from "@/components/star-background"
-import { ContentPageLayout } from "@/components/content-page-layout"
+import { Header } from "@/components/header"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, Users, Loader2, Send } from "lucide-react"
