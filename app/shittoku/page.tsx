@@ -6,7 +6,7 @@ import { Calendar, History, CalendarDays, MessageSquare, Users } from "lucide-re
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 画像を直接インポートする
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-import eventImg from "../../public/shittoku/2604.jpeg"
+import eventImg from "../../public/shittoku/2606.jpg"
 
 export default function ShittokuPage() {
   return (
