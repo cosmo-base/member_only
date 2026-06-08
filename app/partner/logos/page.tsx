@@ -40,19 +40,25 @@ const logoAssets = [
 
 export default function LogoDownloadPage() {
   return (
-    <ContentPageLayout
-      title=""
-      level={0}
-      levelTitle=""
-      logo=""
-    >
-      <div className="min-h-screen relative">
-        <main className="relative z-10 pt-8 pb-16 px-4 max-w-5xl mx-auto">
-          
-          {/* ページヘッダー */}
-          <div className="text-center mb-12">
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">ロゴデータ・ダウンロード</h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed text-sm sm:text-base">
+    <div className="min-h-screen relative">
+      <StarBackground />
+
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Header />
+
+        <main className="flex-1 container mx-auto px-4 py-8 max-w-3xl">
+          <div className="mb-6">
+            <Link href="/partner">
+              <Button variant="ghost" className="text-muted-foreground hover:text-foreground -ml-4">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                パートナーマイページに戻る
+              </Button>
+            </Link>
+          </div>
+
+          <div className="mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">ロゴデータ・ダウンロード</h1>
+            <p className="text-muted-foreground">
               Cosmo Baseのパートナー・連携団体の皆様が、広報活動、メディア掲載、イベントタイアップ等で使用できる公式アセットです。利用規約・ガイドラインに準拠してご利用ください。
             </p>
           </div>
@@ -183,6 +189,6 @@ export default function LogoDownloadPage() {
 
         </main>
       </div>
-    </ContentPageLayout>
+    </div>
   )
 }
