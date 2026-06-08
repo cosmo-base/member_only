@@ -3,7 +3,7 @@
 
 import Link from "next/link"
 import { StarBackground } from "@/components/star-background"
-import { ContentPageLayout } from "@/components/content-page-layout"
+import { Header } from "@/components/header"
 import { GlassCard } from "@/components/glass-card"
 import { Button } from "@/components/ui/button"
 import { Download, Image as ImageIcon, ShieldAlert, CheckCircle2, FileDown, ArrowRight } from "lucide-react"
