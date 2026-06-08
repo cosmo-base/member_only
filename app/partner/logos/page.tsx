@@ -6,7 +6,7 @@ import { StarBackground } from "@/components/star-background"
 import { Header } from "@/components/header"
 import { GlassCard } from "@/components/glass-card"
 import { Button } from "@/components/ui/button"
-import { Download, Image as ImageIcon, ShieldAlert, CheckCircle2, FileDown, ArrowRight } from "lucide-react"
+import { Download, Image as ImageIcon, ShieldAlert, CheckCircle2, FileDown, ArrowRight,ArrowLeft } from "lucide-react"
 
 // ダウンロード対象のロゴアセット定義
 const logoAssets = [
