@@ -35,6 +35,7 @@ export default function OshietePage() {
       </div>
 
       {/* Discord Section */}
+      <div className="grid md:grid-cols-2 gap-6">
       <div className="glass-card rounded-xl p-6 border-2 border-primary/30">
         <div className="flex items-center gap-3 mb-4">
           <svg className="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="currentColor">
@@ -43,9 +44,9 @@ export default function OshietePage() {
           <h3 className="text-lg font-semibold text-foreground">Discordで聞いてみよう</h3>
         </div>
         <p className="text-muted-foreground text-sm mb-6">
-          Cosmo Baseの公式Discordサーバーでは、リアルタイムで質問・回答ができます。
-          専用チャンネルで宇宙に関する疑問を投稿すると、コミュニティメンバーが親切に答えてくれます。
-          テキストチャットだけでなく、ボイスチャットで直接お話しすることも可能です。
+          Cosmo Baseの公式Discordサーバーでは、リアルタイムで質問・回答ができます。<br />
+          専用チャンネルで宇宙に関する疑問を投稿すると、コミュニティメンバーが親切に答えてくれます。<br />
+          テキストチャットだけでなく、ボイスチャットで直接お話しすることも可能です。<br />
           初めての方も歓迎！まずはお気軽に参加してみてください。
         </p>
         <a
@@ -57,6 +58,31 @@ export default function OshietePage() {
           Discordで聞く
           <ExternalLink className="w-4 h-4" />
         </a>
+      </div>
+      <div className="glass-card rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <MessageSquare className="w-5 h-5 text-accent" />
+            <h3 className="text-lg font-semibold text-foreground">匿名質問フォーム</h3>
+          </div>
+          <p className="text-muted-foreground text-sm mb-4">
+            このフォームは、Cosmo Baseに関する質問を【完全匿名】で送ることができます。<br /><br />
+
+            <ul>
+              <li>宇宙の基礎的な疑問</li>
+              <li>ニュースで気になったこと</li>
+              <li>「こんなこと聞いていいのかな？」という質問</li>
+            </ul>
+            なんでもOKです。<br /><br />
+
+            回答は、Discord内や定期コンテンツとして共有します。<br />
+            ※個人が特定される情報は投稿しないでください。
+          </p>
+          <Link href="/shittoku/request">
+            <Button variant="outline" className="w-full">
+              リクエストを送る
+            </Button>
+          </Link>
+        </div>
       </div>
     </ContentPageLayout>
   )
