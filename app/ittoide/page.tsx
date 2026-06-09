@@ -42,20 +42,6 @@ export default function IttoidePage() {
         </div>
       </div>
 
-      {/* Recommended Event Image */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold text-foreground mb-4">おすすめのイベント</h3>
-        <div className="relative aspect-[1260/670] rounded-xl overflow-hidden">
-          {/* ★ Imageタグのsrcをインポートした変数に変更 */}
-          <Image
-            src={ittoideEventImg}
-            alt="おすすめのイベント"
-            fill
-            className="object-cover"
-          />
-        </div>
-      </div>
-
       {/* Features Grid */}
       <div className="grid md:grid-cols-2 gap-6">
         <div className="glass-card rounded-xl p-6">
