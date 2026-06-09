@@ -13,15 +13,15 @@ export default async function IttoideArchivePage() {
   const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
   today.setHours(0, 0, 0, 0);
 
-  // isRecommendがtrue かつ、昨日以前に終了したイベントを抽出
+  // isRecommendがtrue かつ dateが存在し、昨日以前に終了したイベントを抽出
   const pastEvents = allEvents
-    .filter(event => event.isRecommend === true)
+    .filter(event => event.isRecommend === true && !!event.date) // ★ event.date が空でないことを保証
     .filter(event => {
-      const eventDate = new Date(event.date);
-      const eventEndDate = event.endDate ? new Date(event.endDate) : eventDate;
+      const eventDate = new Date(event.date as string); // ★ stringとして安全に変換
+      const eventEndDate = event.endDate ? new Date(event.endDate as string) : eventDate;
       return eventEndDate < today;
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // 新しい順（降順）
+    .sort((a, b) => new Date(b.date as string).getTime() - new Date(a.date as string).getTime()); // 新しい順（降順）
 
   return (
     <ContentPageLayout
@@ -50,7 +50,8 @@ export default async function IttoideArchivePage() {
             </TableHeader>
             <TableBody>
               {pastEvents.map((event) => {
-                const dateObj = new Date(event.date);
+                // ★ ここでも as string で型を明示
+                const dateObj = new Date(event.date as string);
                 const month = dateObj.getMonth() + 1;
                 const day = dateObj.getDate();
                 const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
