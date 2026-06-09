@@ -70,30 +70,13 @@ export default function DiagnosisPage() {
           <p className="text-muted-foreground text-sm mb-6">
             24の質問で詳細に分析。あなたの宇宙への興味の傾向を多角的に診断します。おすすめコンテンツも紹介。
           </p>
-          {/*<Link href="/detail/">*/}
+          <Link href="/detail/">
           <Button className="w-full" variant="outline">
-            近日公開{/*完全診断を始める*/}
+            完全診断を始める
           </Button>
-          {/*</Link>*/}
+          </Link>
         </div>
       </div>
-
-      {/* Type List */}
-      {/*<div className="glass-card rounded-xl p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <Users className="w-5 h-5 text-accent" />
-          <h3 className="text-lg font-semibold text-foreground">タイプ一覧</h3>
-        </div>
-        <p className="text-muted-foreground text-sm mb-4">
-          全8種類の宇宙タイプを紹介。それぞれの特徴と
-          おすすめの楽しみ方をチェックしてみましょう。
-        </p>
-        <Link href="/diagnosis/types">
-          <Button variant="outline" className="w-full">
-            タイプ一覧を見る
-          </Button>
-        </Link>
-      </div>*/}
     </ContentPageLayout>
   )
 }
