@@ -1,5 +1,7 @@
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { MessageCircle, ExternalLink ,MessageSquare } from "lucide-react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 export default function OshietePage() {
   return (
