@@ -66,7 +66,7 @@ export default function IttekitaPage() {
             詳細な体験記事やイベントの記録をチェック。
           </p>
           <a
-            href="https://cosmo-base.github.io/library/index.html"
+            href="https://cosmo-base.github.io/library/index.html?utm_source=CBMO&utm_medium=ittekita"
             target="_blank"
             rel="noopener noreferrer"
           >
