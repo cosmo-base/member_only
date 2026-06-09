@@ -44,7 +44,7 @@ export default function LibraryPage() {
           宇宙の知識を深めましょう
         </p>
         <a
-          href="https://cosmo-base.github.io/library/index.html"
+          href="https://cosmo-base.github.io/library/index.html?utm_source=CBMO&utm_medium=CBL"
           target="_blank"
           rel="noopener noreferrer"
         >
