@@ -20,6 +20,7 @@ export interface SpaceEvent {
   link?: string;
   lat?: number;
   lng?: number;
+  isRecommend?: boolean; // ★ おすすめイベントかどうかのフラグ
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -90,8 +91,14 @@ function parseCSV(csvText: string): SpaceEvent[] {
       let value = rowData[index] || "";
       value = value.trim();
       
+      // ★ 特殊な型の変換処理
       if (header === "lat" || header === "lng") {
         event[header] = value ? parseFloat(value) : undefined;
+      } else if (header === "isRecommend") {
+        // "TRUE", "true", "1" などを真偽値に変換
+        event[header] = value.toUpperCase() === "TRUE" || value === "1";
+      } else if (header === "isPartner") {
+        event[header] = value.toUpperCase() === "TRUE" || value === "1" || value;
       } else {
         event[header] = value;
       }
