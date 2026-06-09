@@ -1,5 +1,5 @@
 import { ContentPageLayout } from "@/components/content-page-layout"
-import { MessageCircle, ExternalLink } from "lucide-react"
+import { MessageCircle, ExternalLink ,MessageSquare } from "lucide-react"
 
 export default function OshietePage() {
   return (
@@ -77,9 +77,9 @@ export default function OshietePage() {
             回答は、Discord内や定期コンテンツとして共有します。<br />
             ※個人が特定される情報は投稿しないでください。
           </p>
-          <Link href="/shittoku/request">
+          <Link href="/oshiete/ask">
             <Button variant="outline" className="w-full">
-              リクエストを送る
+              完全匿名で質問を送る
             </Button>
           </Link>
         </div>
