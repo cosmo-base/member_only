@@ -70,7 +70,7 @@ export default function DiagnosisPage() {
           <p className="text-muted-foreground text-sm mb-6">
             24の質問で詳細に分析。あなたの宇宙への興味の傾向を多角的に診断します。おすすめコンテンツも紹介。
           </p>
-          <Link href="/detail/">
+          <Link href="/type/detail/">
           <Button className="w-full" variant="outline">
             完全診断を始める
           </Button>
