@@ -1,15 +1,22 @@
+// app/shittoku/upcoming/page.tsx
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { fetchShittokuData } from "@/data/shittoku"
 
-const upcomingEvents = [
-  { month: "4", day: "1", weekday: "水", venue: "Discordイベント用VC", content: "アルテミス計画解説" },
-  { month: "4", day: "8", weekday: "水", venue: "Discordイベント用VC", content: "ニュース解説&雑談" },
-  { month: "4", day: "15", weekday: "水", venue: "", content: "未定" },
-  { month: "4", day: "22", weekday: "水", venue: "Discordイベント用VC", content: "H3ロケット解説" },
-  { month: "4", day: "29", weekday: "水", venue: "Discordイベント用VC", content: "ニュース解説&雑談" },
-]
+export const dynamic = 'force-static';
 
-export default function ShittokuUpcomingPage() {
+export default async function ShittokuUpcomingPage() {
+  const allEvents = await fetchShittokuData();
+
+  // 今日の日付（日本時間基準・時刻リセット）
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+  today.setHours(0, 0, 0, 0);
+
+  // 今日以降のイベントを抽出し、日付の近い順にソート
+  const upcomingEvents = allEvents
+    .filter(event => event.parsedDate >= today)
+    .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime());
+
   return (
     <ContentPageLayout
       title="今後のイベント"
@@ -25,28 +32,34 @@ export default function ShittokuUpcomingPage() {
       </div>
 
       <div className="glass-card rounded-xl overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-border/50">
-              <TableHead className="text-foreground">月</TableHead>
-              <TableHead className="text-foreground">日</TableHead>
-              <TableHead className="text-foreground">曜日</TableHead>
-              <TableHead className="text-foreground">会場</TableHead>
-              <TableHead className="text-foreground">内容</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {upcomingEvents.map((event, index) => (
-              <TableRow key={index} className="border-border/50 hover:bg-secondary/30">
-                <TableCell className="text-muted-foreground">{event.month}月</TableCell>
-                <TableCell className="text-muted-foreground">{event.day}日</TableCell>
-                <TableCell className="text-muted-foreground">{event.weekday}</TableCell>
-                <TableCell className="text-muted-foreground">{event.venue}</TableCell>
-                <TableCell className="text-foreground">{event.content}</TableCell>
+        {upcomingEvents.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border/50">
+                <TableHead className="text-foreground whitespace-nowrap">月</TableHead>
+                <TableHead className="text-foreground whitespace-nowrap">日</TableHead>
+                <TableHead className="text-foreground whitespace-nowrap">曜日</TableHead>
+                <TableHead className="text-foreground">会場</TableHead>
+                <TableHead className="text-foreground">内容</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {upcomingEvents.map((event, index) => (
+                <TableRow key={index} className="border-border/50 hover:bg-secondary/30">
+                  <TableCell className="text-muted-foreground font-medium">{event.month}月</TableCell>
+                  <TableCell className="text-muted-foreground font-medium">{event.day}日</TableCell>
+                  <TableCell className="text-muted-foreground">{event.weekday || "-"}</TableCell>
+                  <TableCell className="text-muted-foreground">{event.venue || "Discordイベント用VC"}</TableCell>
+                  <TableCell className="text-foreground font-bold">{event.content}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <div className="p-12 text-center text-muted-foreground bg-secondary/10">
+            現在、予定されている今後のイベントはありません。
+          </div>
+        )}
       </div>
     </ContentPageLayout>
   )
