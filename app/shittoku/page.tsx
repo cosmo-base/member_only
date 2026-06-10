@@ -4,11 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Calendar, History, CalendarDays, MessageSquare } from "lucide-react"
 import { ShittokuMonthlyCard } from "@/components/shittoku-monthly-card"
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 画像を直接インポートする
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-import eventImg from "../../public/shittoku/2606.jpg"
-
 export default function ShittokuPage() {
   return (
     <ContentPageLayout
@@ -42,22 +37,7 @@ export default function ShittokuPage() {
         </div>
       </div>
 
-      {/* Current Month Event Image */}
-      <div className="mb-8 flex flex-col items-center">
-        <h3 className="text-lg font-semibold text-foreground mb-4 self-start w-full">
-          今月のイベント
-        </h3>
-
-        <div className="w-full max-w-3xl mx-auto rounded-xl overflow-hidden border border-border/50 shadow-md">
-          {/*インポートした画像の .src を指定します */}
-          <img
-            src={eventImg.src}
-            alt="今月のイベント"
-            className="w-full h-auto object-cover transition-transform duration-500"
-          />
-        </div>
-      </div>
-
+      {/* Current Month Event */}
       <ShittokuMonthlyCard />
 
       {/* Features Grid */}
@@ -105,6 +85,22 @@ export default function ShittokuPage() {
           <Link href="/shittoku/request">
             <Button variant="outline" className="w-full">
               リクエストを送る
+            </Button>
+          </Link>
+        </div>
+
+        <div className="glass-card rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <MessageSquare className="w-5 h-5 text-accent" />
+            <h3 className="text-lg font-semibold text-foreground">参加後アンケート</h3>
+          </div>
+          <p className="text-muted-foreground text-sm mb-4">
+            イベントにご参加いただき、誠にありがとうございました。<br/>
+            今後のより良いイベント運営のため、アンケートへのご協力をお願いいたします。
+          </p>
+          <Link href="/shittoku/feedback">
+            <Button variant="outline" className="w-full">
+              アンケートに回答する
             </Button>
           </Link>
         </div>
