@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { User, Zap, BarChart, Users, Clock } from "lucide-react"
+import { FullDiagnosisCard } from "@/components/full-diagnosis-card"
 
 export default function DiagnosisPage() {
   return (
@@ -77,6 +78,7 @@ export default function DiagnosisPage() {
           </Link>
         </div>
       </div>
+      <FullDiagnosisCard />
     </ContentPageLayout>
   )
 }
