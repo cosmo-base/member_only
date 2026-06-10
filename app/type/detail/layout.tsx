@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "宇宙タイプ診断詳細版",
+  title: "宇宙タイプ診断 完全版 | Cosmo Base参加者ページ",
 }
 
 export default function SubPageLayout({
