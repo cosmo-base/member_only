@@ -2,7 +2,7 @@ import { Metadata } from "next"
 import { SpaceType } from "@/components/space-type"
 
 export const metadata: Metadata = {
-  title: "宇宙タイプ診断| Cosmo Base",
+  title: "宇宙タイプ診断 簡易版 | Cosmo Base参加者ページ",
   description: "30秒の診断で、あなたが宇宙で活躍する未来がわかる。宇宙診断コンテンツ。",
 }
 
