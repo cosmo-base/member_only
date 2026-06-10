@@ -1,7 +1,8 @@
 import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
-import { Calendar, History, CalendarDays, MessageSquare, Users } from "lucide-react"
+import { Calendar, History, CalendarDays, MessageSquare } from "lucide-react"
+import { ShittokuMonthlyCard } from "@/components/shittoku-monthly-card"
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // 画像を直接インポートする
@@ -57,6 +58,8 @@ export default function ShittokuPage() {
         </div>
       </div>
 
+      <ShittokuMonthlyCard />
+
       {/* Features Grid */}
       <div className="grid md:grid-cols-2 gap-6">
         <div className="glass-card rounded-xl p-6">
@@ -65,8 +68,8 @@ export default function ShittokuPage() {
             <h3 className="text-lg font-semibold text-foreground">過去イベント一覧</h3>
           </div>
           <p className="text-muted-foreground text-sm mb-4">
-            これまでに開催されたイベントのアーカイブ。<br />
-            見逃したイベントも録画で視聴できます。
+            これまでに開催されたイベントのアーカイブ。
+            {/* <br />見逃したイベントも録画で視聴できます。 */}
           </p>
           <Link href="/shittoku/archive">
             <Button variant="outline" className="w-full">

@@ -27,8 +27,7 @@ export default async function ShittokuUpcomingPage() {
     >
       <div className="glass-card rounded-xl p-6 mb-8">
         <p className="text-muted-foreground leading-relaxed">
-          これから開催予定の「Cosmo Baseで宇宙知っトク」イベントの一覧です。<br/>
-          参加希望の方は、各イベントの申込フォームからお申し込みください。
+          これから開催予定の「Cosmo Baseで宇宙知っトク」イベントの一覧です。
         </p>
       </div>
 

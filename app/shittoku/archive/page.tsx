@@ -26,8 +26,8 @@ export default async function ShittokuArchivePage() {
     >
       <div className="glass-card rounded-xl p-6 mb-8">
         <p className="text-muted-foreground leading-relaxed">
-          これまでに開催された「Cosmo Baseで宇宙知っトク」イベントの一覧です。<br/>
-          各イベントの録画アーカイブは、参加者限定で視聴できます。
+          これまでに開催された「Cosmo Baseで宇宙知っトク」イベントの一覧です。
+          {/* <br/>各イベントの録画アーカイブは、参加者限定で視聴できます。 */}
         </p>
       </div>
 
