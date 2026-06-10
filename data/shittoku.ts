@@ -7,7 +7,8 @@ export interface ShittokuEvent {
   venue: string;
   content: string;
   theme: string; // テーマの判定用
-  parsedDate: Date; // 自動ソート・未来過去判定用のDate型
+  participantsCount: number; // ★ 追加: 参加者数の判定用
+  parsedDate: Date; // 自動ソート用のDate型
 }
 
 // 「宇宙知っトク」専用の独立スプレッドシートURL
@@ -35,7 +36,6 @@ function parseShittokuCSV(csvText: string): ShittokuEvent[] {
     arr[row][col] += cc;
   }
 
-  // 変則構造（1行目セクション、2行目ヘッダー、3行目補足、4行目データ）の最低行数チェック
   if (arr.length < 4) return [];
 
   const headers = arr[1].map(h => h.trim()); // 2行目から正確に列名ヘッダーを抽出
@@ -60,29 +60,26 @@ function parseShittokuCSV(csvText: string): ShittokuEvent[] {
     const parsedDate = new Date(kaisaiDateStr);
     if (isNaN(parsedDate.getTime())) continue;
 
-    // 日付オブジェクトからカレンダーに必要な要素を自動抽出
     const month = String(parsedDate.getMonth() + 1);
     const day = String(parsedDate.getDate());
     const weekday = weekdays[parsedDate.getDay()];
 
     const meisho = rowObj["名称"] || "";
     const tema = rowObj["テーマ"] || "";
-    
-    // スプレッドシートの「会場」列を直接読み取る
-    // ※もし旧フォーマットで「形式」として残っていた場合の安全策も兼ねています
-    const kaijo = rowObj["会場"] || "";
+    const kaijo = rowObj["会場"] || rowObj["形式"] || "";
 
-    // 💡 会場の自動判定
-    // 記載があればそれに、空欄なら「Discordイベント用VC」
     const venue = kaijo ? kaijo : "Discordイベント用VC";
 
-    // 名称とテーマを美しくマージした内容（ content ）を自動生成
     let content = "";
     if (meisho && tema) {
       content = `${meisho} 「${tema}」`;
     } else {
       content = tema || meisho || "内容未定";
     }
+
+    // ★ 追加: 「参加者数」列の数値をパース（空欄の場合は未来の予定として0にする）
+    const participantsRaw = rowObj["参加者数"] || "";
+    const participantsCount = participantsRaw ? parseInt(participantsRaw, 10) : 0;
 
     events.push({
       month,
@@ -91,6 +88,7 @@ function parseShittokuCSV(csvText: string): ShittokuEvent[] {
       venue,
       content,
       theme: tema,
+      participantsCount, // ★ 格納
       parsedDate
     });
   }
@@ -108,7 +106,7 @@ export async function fetchShittokuData(): Promise<ShittokuEvent[]> {
     const text = await res.text();
     const parsed = parseShittokuCSV(text);
     
-    console.log(`✅ shittoku.ts: 変則スプレッドシートから ${parsed.length} 件の知っトクイベントを完璧にパースしました！`);
+    console.log(`✅ shittoku.ts: 参加者数を含む ${parsed.length} 件のイベントをパースしました。`);
     return parsed;
   } catch (error) {
     console.error("Shittoku fetch error:", error);
