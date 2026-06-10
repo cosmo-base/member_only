@@ -6,6 +6,7 @@ export interface ShittokuEvent {
   weekday: string;
   venue: string;
   content: string;
+  theme: string; // ★ テーマの判定用に追加
   parsedDate: Date; // 自動ソート・未来過去判定用のDate型
 }
 
@@ -88,6 +89,7 @@ function parseShittokuCSV(csvText: string): ShittokuEvent[] {
       weekday,
       venue,
       content,
+      theme: tema, // ★ 追加: 判定用にテーマの文字列をそのまま持たせる
       parsedDate
     });
   }

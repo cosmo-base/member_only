@@ -68,11 +68,11 @@ export default function ShittokuPage() {
             これまでに開催されたイベントのアーカイブ。<br />
             見逃したイベントも録画で視聴できます。
           </p>
-          {/*<Link href="/shittoku/archive">*/}
-          <Button variant="outline" className="w-full">
-            近日公開{/*アーカイブを見る*/}
-          </Button>
-          {/*</Link>*/}
+          <Link href="/shittoku/archive">
+            <Button variant="outline" className="w-full">
+              アーカイブを見る
+            </Button>
+          </Link>
         </div>
 
         <div className="glass-card rounded-xl p-6">

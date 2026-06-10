@@ -12,9 +12,10 @@ export default async function ShittokuUpcomingPage() {
   const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
   today.setHours(0, 0, 0, 0);
 
-  // 今日以降のイベントを抽出し、日付の近い順にソート
+  // 今日以降のイベント かつ 「テーマが空白でない」ものを抽出し、日付の近い順にソート
   const upcomingEvents = allEvents
     .filter(event => event.parsedDate >= today)
+    .filter(event => event.theme.trim() !== "") // ★ ここを追加（テーマが空の行を表示しない）
     .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime());
 
   return (
@@ -57,7 +58,7 @@ export default async function ShittokuUpcomingPage() {
           </Table>
         ) : (
           <div className="p-12 text-center text-muted-foreground bg-secondary/10">
-            現在、予定されている今後のイベントはありません。
+            現在、確定している今後のイベントはありません。
           </div>
         )}
       </div>
