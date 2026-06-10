@@ -256,6 +256,7 @@ function ResultScreen({ answers }: { answers: number[] }) {
           </div>
         </div>
       </div>
+      <FullDiagnosisCard />
     </div>
   );
 }
