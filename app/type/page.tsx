@@ -78,7 +78,6 @@ export default function DiagnosisPage() {
           </Link>
         </div>
       </div>
-      <FullDiagnosisCard />
     </ContentPageLayout>
   )
 }
