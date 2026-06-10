@@ -3,6 +3,7 @@ import { Telescope, Satellite, Rocket, Building, ArrowLeft, ArrowRight, Share2, 
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { AutoLink } from "@/components/auto-link"
+import { FullDiagnosisCard } from "@/components/full-diagnosis-card"
 
 // ==========================================
 // 1. データ定義（質問＆結果）
