@@ -8,6 +8,7 @@ import { CosmoBaseSection } from "@/components/space-voyager/cosmo-base-section"
 import { QuizSection } from "@/components/space-voyager/quiz-section";
 import { FaqSection } from "@/components/space-voyager/faq-section";
 import { Footer } from "@/components/space-voyager/footer";
+import { VoyagerPopup } from "@/components/space-voyager/voyager-popup"
 
 export default function SpaceVoyagerPage() {
   return (
@@ -19,7 +20,7 @@ export default function SpaceVoyagerPage() {
       >
         メインコンテンツへスキップ
       </a>
-
+      <VoyagerPopup />
       <Header />
 
       <main id="main-content">
