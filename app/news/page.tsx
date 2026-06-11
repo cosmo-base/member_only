@@ -1,6 +1,10 @@
+// app/news/page.tsx
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { Newspaper, Archive, ExternalLink } from "lucide-react"
+import { LatestNewsCard } from "@/components/latest-news-card" // ★ 追加
+
+export const dynamic = 'force-static';
 
 export default function NewsPage() {
   return (
@@ -34,6 +38,9 @@ export default function NewsPage() {
           </div>
         </div>
       </div>
+
+      {/* 最新ニュースカード */}
+      <LatestNewsCard />
 
       {/* Link */}
       <div className="glass-card rounded-xl p-6">
