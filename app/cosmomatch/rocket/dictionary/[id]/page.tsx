@@ -1,36 +1,42 @@
 // app/cosmomatch/rocket/dictionary/[id]/page.tsx
+"use client"; // ★ Rechartsを使うため client コンポーネントにします
+
+import React, { use } from "react" // ★ Next.js 15対策で React.use をインポート
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/glass-card"
-import { ROCKETS } from "@/data/rocket"
-import { Globe, Shield, Calendar, Layers, ExternalLink, ArrowLeft, Bookmark } from "lucide-react"
-
-export const dynamic = 'force-static';
-
-// GitHub Actionsのビルド時に確実にHTMLを書き出させる
-export async function generateStaticParams() {
-  return ROCKETS.map((rocket) => ({
-    id: rocket.slug, 
-  }))
-}
+import { ROCKETS } from "@/data/rockets"
+import { Globe, Shield, Calendar, Layers, ExternalLink, ArrowLeft, Bookmark, Activity } from "lucide-react"
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from "recharts" // ★ 追加: Rechartsをインポート
 
 interface PageProps {
-  // Next.js 14（同期）と Next.js 15（非同期 Promise）の両方でエラーにならない型定義
-  params: Promise<{ id: string }> | { id: string } | any;
+  params: Promise<{ id: string }>
 }
 
-export default async function RocketDetailPage({ params }: PageProps) {
-  // ★ Next.js 15対策: paramsを確実にawaitして安全にidを取り出す
-  const resolvedParams = await params;
-  const currentId = resolvedParams?.id;
+export default function RocketDetailPage({ params }: PageProps) {
+  // ★ 修正: React.use() を使ってPromiseである params を安全にアンラップ
+  const resolvedParams = use(params);
+  const currentId = resolvedParams.id;
 
   const rocket = ROCKETS.find(r => r.slug === currentId)
   
   if (!rocket) notFound()
 
   const relatedList = ROCKETS.filter(r => rocket.relatedRockets.includes(r.slug))
+
+  // ★ 追加: チャート用のデータ整形
+  const chartData = [
+    { subject: "パワー", A: rocket.stats.power },
+    { subject: "技術", A: rocket.stats.technology },
+    { subject: "歴史", A: rocket.stats.history },
+    { subject: "エース", A: rocket.stats.ace },
+    { subject: "挑戦", A: rocket.stats.challenge },
+    { subject: "個性", A: rocket.stats.individuality },
+    { subject: "未来", A: rocket.stats.future },
+    { subject: "信頼", A: rocket.stats.trust },
+  ]
 
   return (
     <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="CBtype">
@@ -79,7 +85,24 @@ export default async function RocketDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* 3. ドラマチックストーリー */}
+        {/* 3. ★ 追加: 機体パラメーター (レーダーチャート) */}
+        <div className="space-y-6 mb-10">
+          <h3 className="text-xl font-bold text-foreground border-b border-border pb-2 flex items-center gap-2">
+            <Activity className="w-5 h-5 text-primary" />
+            機体パラメーター
+          </h3>
+          <div className="bg-secondary/10 border border-border/40 p-4 rounded-2xl h-[320px] flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
+                <PolarGrid stroke="#38bdf8" opacity={0.2} />
+                <PolarAngleAxis dataKey="subject" stroke="#94a3b8" fontSize={12} fontWeight="bold" />
+                <Radar name={rocket.name} dataKey="A" stroke="#00f2fe" fill="#00f2fe" fillOpacity={0.4} />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* 4. ドラマチックストーリー */}
         <div className="space-y-6 mb-10">
           <h3 className="text-xl font-bold text-foreground border-b border-border pb-2 flex items-center gap-2">
             <Bookmark className="w-5 h-5 text-accent" />
@@ -102,7 +125,7 @@ export default async function RocketDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* 4. コミュニティ回遊層 */}
+        {/* 5. コミュニティ回遊層 */}
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <h4 className="font-bold text-foreground text-base">関連するロケット</h4>
