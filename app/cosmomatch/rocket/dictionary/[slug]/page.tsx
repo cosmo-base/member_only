@@ -1,4 +1,4 @@
-// app/rocket-match/dictionary/[slug]/page.tsx
+// app/cosmomatch/rocket/dictionary/[slug]/page.tsx
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ContentPageLayout } from "@/components/content-page-layout"
