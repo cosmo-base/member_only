@@ -132,7 +132,7 @@ export default function DiagnosePage() {
 
   if (!started) {
     return (
-      <ContentPageLayout title="推しロケット診断" level={1} levelTitle="" logo="CBtype">
+      <ContentPageLayout title="推しロケット診断" level={1} levelTitle="" logo="">
         <div className="max-w-2xl mx-auto text-center py-12 animate-in fade-in duration-500">
           <div className="inline-flex items-center justify-center p-5 bg-primary/20 rounded-full mb-6 border border-primary/30 shadow-[0_0_20px_rgba(0,242,254,0.2)]">
             <RocketIcon className="w-12 h-12 text-primary animate-pulse" />
@@ -170,7 +170,7 @@ export default function DiagnosePage() {
 
   if (isLoading) {
     return (
-      <ContentPageLayout title="推しロケット診断" level={1} levelTitle="" logo="CBtype">
+      <ContentPageLayout title="推しロケット診断" level={1} levelTitle="" logo="">
         <div className="max-w-md mx-auto text-center py-24 flex flex-col items-center justify-center animate-in fade-in duration-300">
           <Loader2 className="w-12 h-12 text-accent animate-spin mb-6" />
           <h3 className="text-2xl font-bold text-foreground mb-2">推しロケットを分析中...</h3>
@@ -186,7 +186,7 @@ export default function DiagnosePage() {
   const progressPercent = ((currentStep + 1) / QUESTIONS.length) * 100
 
   return (
-    <ContentPageLayout title="推しロケット診断" level={1} levelTitle="" logo="CBtype">
+    <ContentPageLayout title="推しロケット診断" level={1} levelTitle="" logo="">
       <div className="max-w-xl mx-auto py-6">
         <div className="flex items-center justify-between mb-8">
           <button onClick={handleBack} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors group">

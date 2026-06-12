@@ -1,32 +1,32 @@
-// app/cosmomatch/rocket/dictionary/[slug]/page.tsx
+// app/cosmomatch/rocket/dictionary/[id]/page.tsx
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ContentPageLayout } from "@/components/content-page-layout"
-import { Button } from "@/components/ui/button"
-import { GlassCard } from "@/components/glass-card"
 import { ROCKETS } from "@/data/rocket"
-import { LayoutGrid, Globe, Shield, Calendar, Layers, ExternalLink, ArrowLeft, Bookmark } from "lucide-react"
+import { Globe, Shield, Calendar, Layers, ExternalLink, ArrowLeft, Bookmark } from "lucide-react"
 
 export const dynamic = 'force-static';
 
 export async function generateStaticParams() {
   return ROCKETS.map((rocket) => ({
-    slug: rocket.slug,
+    id: rocket.slug, 
   }))
 }
 
 interface PageProps {
-  params: { slug: string }
+  params: { id: string }
 }
 
 export default function RocketDetailPage({ params }: PageProps) {
-  const rocket = ROCKETS.find(r => r.slug === params.slug)
+  // ★ 修正: URLから渡ってきた params.id を使ってロケットを探す
+  const rocket = ROCKETS.find(r => r.slug === params.id)
+  
   if (!rocket) notFound()
 
   const relatedList = ROCKETS.filter(r => rocket.relatedRockets.includes(r.slug))
 
   return (
-    <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="CBtype">
+    <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="">
       <div className="max-w-4xl mx-auto pb-16 animate-in fade-in duration-500">
         
         <div className="mb-6">
@@ -95,7 +95,7 @@ export default function RocketDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* 4. コミュニティ回遊層 (関連ロケット ＆ CBL記事) */}
+        {/* 4. コミュニティ回遊層 */}
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <h4 className="font-bold text-foreground text-base">関連するロケット</h4>
