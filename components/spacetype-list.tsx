@@ -1,7 +1,7 @@
 // components/spacetype-list.tsx
 "use client";
 
-import { Telescope, Satellite, Rocket, Earth, Search, ChevronRight } from "lucide-react"
+import { Telescope, Satellite, Rocket, Earth, Search, ChevronRight, CheckCircle2, Star } from "lucide-react"
 import Link from 'next/link';
 import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/glass-card"
@@ -82,7 +82,7 @@ export function SpaceTypeList() {
             </div>
 
             {/* ページ遷移用タブ */}
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center mb-12">
                 <div className="inline-flex bg-secondary/30 p-1.5 rounded-full border border-border/50">
                     <div className="px-8 py-3 rounded-full text-sm font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/25 cursor-default">
                         簡易版（4タイプ）
@@ -96,35 +96,84 @@ export function SpaceTypeList() {
                 </div>
             </div>
 
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="grid md:grid-cols-2 gap-6">
-                    {BASIC_TYPES.map((type) => {
-                        const Icon = type.icon;
-                        return (
-                            <GlassCard key={type.id} className="relative overflow-hidden p-6 group">
-                                
-                                {/* ★ 修正: GlassCard自体にstyleを渡すのをやめ、内側に色付きの絶対配置要素を置いて左ボーダーを表現 */}
-                                <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-current" style={{ backgroundColor: type.color }} />
-                                
-                                {/* 背景のうっすらグラデーション */}
-                                <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-10 pointer-events-none transition-opacity group-hover:opacity-20" style={{ backgroundColor: type.color }} />
-
-                                <div className="relative z-10 flex items-start gap-4">
-                                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border border-white/10" style={{ backgroundColor: `${type.color}20` }}>
-                                        <Icon className="w-7 h-7" style={{ color: type.color }} />
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
+                {BASIC_TYPES.map((type) => {
+                    const Icon = type.icon;
+                    return (
+                        <GlassCard key={type.id} className="relative overflow-hidden p-0 group">
+                            <div className="absolute left-0 top-0 bottom-0 w-2 bg-current z-20" style={{ backgroundColor: type.color }} />
+                            
+                            <div className="flex flex-col md:flex-row relative z-10">
+                                {/* 画像エリア */}
+                                <div className="md:w-5/12 lg:w-1/3 relative bg-secondary/30 aspect-square md:aspect-auto flex items-center justify-center overflow-hidden pl-2">
+                                    <img 
+                                        src={`/images/${type.img}`} // ★ 画像パス（適宜修正してください）
+                                        alt={type.title}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        onError={(e) => {
+                                            // 画像が見つからなかった場合のフォールバック
+                                            (e.target as HTMLImageElement).style.display = 'none';
+                                            (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                                        }}
+                                    />
+                                    {/* 画像がない時の代替表示 */}
+                                    <div className="hidden absolute inset-0 flex flex-col items-center justify-center bg-secondary/50">
+                                        <Icon className="w-20 h-20 opacity-50" style={{ color: type.color }} />
                                     </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-foreground mb-1">{type.emoji} {type.title}</h3>
-                                        <p className="text-sm font-bold mb-3" style={{ color: type.color }}>「{type.catchcopy}」</p>
-                                        <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-wrap">{type.explanation}</p>
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background hidden md:block" />
+                                </div>
+
+                                {/* 詳細テキストエリア */}
+                                <div className="p-6 md:p-8 md:w-7/12 lg:w-2/3 flex flex-col justify-center">
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className="p-2 rounded-lg bg-background/50 border border-border/50">
+                                            <Icon className="w-5 h-5" style={{ color: type.color }} />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-foreground">{type.title}</h3>
+                                    </div>
+                                    
+                                    <p className="text-lg font-bold mb-6" style={{ color: type.color }}>
+                                        「{type.catchcopy}」
+                                    </p>
+
+                                    <div className="grid sm:grid-cols-2 gap-6">
+                                        <div className="space-y-4">
+                                            <div>
+                                                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">特徴</h4>
+                                                <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                                                    {type.explanation}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">おすすめの過ごし方</h4>
+                                                <p className="text-sm font-medium text-accent">
+                                                    {type.howToSpend}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-secondary/20 p-4 rounded-xl border border-border/50">
+                                            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                                <Star className="w-3.5 h-3.5 text-primary" />
+                                                相性の良いコンテンツ
+                                            </h4>
+                                            <ul className="space-y-2">
+                                                {type.contents.map((content, idx) => (
+                                                    <li key={idx} className="flex items-start gap-2 text-sm text-foreground font-medium">
+                                                        <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                                                        {content}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
-                            </GlassCard>
-                        )
-                    })}
-                </div>
+                            </div>
+                        </GlassCard>
+                    )
+                })}
 
-                <div className="mt-10 text-center">
+                <div className="mt-12 text-center">
                     <Link href="/type/content">
                         <Button className="bg-primary text-primary-foreground hover:bg-primary/90 glow h-14 px-8 rounded-full font-bold text-base">
                             簡易版診断を受けてみる
