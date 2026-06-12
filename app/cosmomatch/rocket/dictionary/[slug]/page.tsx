@@ -28,12 +28,12 @@ export default function RocketDetailPage({ params }: PageProps) {
   const relatedList = ROCKETS.filter(r => rocket.relatedRockets.includes(r.slug))
 
   return (
-    <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="CBtype">
+    <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="">
       <div className="max-w-4xl mx-auto pb-16 animate-in fade-in duration-500">
         
         {/* 上部パンくず */}
         <div className="mb-6">
-          <Link href="/rocket-match" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <Link href="/cosmomatch/rocket" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-4 h-4" /> 診断トップに戻る
           </Link>
         </div>
@@ -104,7 +104,7 @@ export default function RocketDetailPage({ params }: PageProps) {
             <h4 className="font-bold text-foreground text-base">関連するロケット</h4>
             <div className="space-y-2">
               {relatedList.map((rel) => (
-                <Link key={rel.slug} href={`/rocket-match/dictionary/${rel.slug}`} className="block bg-background/50 hover:bg-secondary/30 border border-border/50 rounded-xl p-3 transition-colors">
+                <Link key={rel.slug} href={`/cosmomatch/rocket/dictionary/${rel.slug}`} className="block bg-background/50 hover:bg-secondary/30 border border-border/50 rounded-xl p-3 transition-colors">
                   <div className="flex items-center gap-3">
                     <span className="text-xl">{rel.emoji}</span>
                     <span className="text-sm font-medium text-foreground">{rel.name}</span>

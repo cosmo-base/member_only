@@ -153,7 +153,7 @@ function ResultContent() {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export default function ResultPage() {
   return (
-    <ContentPageLayout title="診断結果" level={1} levelTitle="" logo="CBtype">
+    <ContentPageLayout title="診断結果" level={1} levelTitle="" logo="">
       <Suspense fallback={
         <div className="max-w-3xl mx-auto py-24 flex flex-col items-center justify-center">
           <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
