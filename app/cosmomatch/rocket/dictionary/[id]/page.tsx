@@ -1,24 +1,27 @@
 // app/cosmomatch/rocket/dictionary/[id]/page.tsx
-"use client"; // ★ Rechartsを使うため client コンポーネントにします
-
-import React, { use } from "react" // ★ Next.js 15対策で React.use をインポート
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ContentPageLayout } from "@/components/content-page-layout"
-import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/glass-card"
-import { ROCKETS } from "@/data/rockets"
+import { ROCKETS } from "@/data/CMrockets"
 import { Globe, Shield, Calendar, Layers, ExternalLink, ArrowLeft, Bookmark, Activity } from "lucide-react"
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from "recharts" // ★ 追加: Rechartsをインポート
+import { CMRadarChart } from "@/components/ui/radar-chart"
 
-interface PageProps {
-  params: Promise<{ id: string }>
+export const dynamic = 'force-static';
+
+export async function generateStaticParams() {
+  return ROCKETS.map((rocket) => ({
+    id: rocket.slug, 
+  }))
 }
 
-export default function RocketDetailPage({ params }: PageProps) {
-  // ★ 修正: React.use() を使ってPromiseである params を安全にアンラップ
-  const resolvedParams = use(params);
-  const currentId = resolvedParams.id;
+interface PageProps {
+  params: Promise<{ id: string }> | { id: string } | any;
+}
+
+export default async function RocketDetailPage({ params }: PageProps) {
+  const resolvedParams = await params;
+  const currentId = resolvedParams?.id;
 
   const rocket = ROCKETS.find(r => r.slug === currentId)
   
@@ -26,7 +29,7 @@ export default function RocketDetailPage({ params }: PageProps) {
 
   const relatedList = ROCKETS.filter(r => rocket.relatedRockets.includes(r.slug))
 
-  // ★ 追加: チャート用のデータ整形
+  // チャート用のデータ整形
   const chartData = [
     { subject: "パワー", A: rocket.stats.power },
     { subject: "技術", A: rocket.stats.technology },
@@ -85,20 +88,15 @@ export default function RocketDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* 3. ★ 追加: 機体パラメーター (レーダーチャート) */}
+        {/* 3. 機体パラメーター (レーダーチャート) */}
         <div className="space-y-6 mb-10">
           <h3 className="text-xl font-bold text-foreground border-b border-border pb-2 flex items-center gap-2">
             <Activity className="w-5 h-5 text-primary" />
             機体パラメーター
           </h3>
           <div className="bg-secondary/10 border border-border/40 p-4 rounded-2xl h-[320px] flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
-                <PolarGrid stroke="#38bdf8" opacity={0.2} />
-                <PolarAngleAxis dataKey="subject" stroke="#94a3b8" fontSize={12} fontWeight="bold" />
-                <Radar name={rocket.name} dataKey="A" stroke="#00f2fe" fill="#00f2fe" fillOpacity={0.4} />
-              </RadarChart>
-            </ResponsiveContainer>
+            {/* ★ クライアントコンポーネントを呼び出す */}
+            <CMRadarChart rocketName={rocket.name} data={chartData} />
           </div>
         </div>
 

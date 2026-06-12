@@ -7,7 +7,7 @@ import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/glass-card"
-import { ROCKETS } from "@/data/rockets"
+import { ROCKETS } from "@/data/CMrockets"
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Legend } from "recharts"
 import { Award, ArrowRight, RefreshCw, BookOpen, Star, Sparkles, Loader2, ChevronRight } from "lucide-react"
 

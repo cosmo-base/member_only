@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/glass-card"
-import { ROCKETS, RocketStats, Question } from "@/data/rockets"
+import { ROCKETS, RocketStats, Question } from "@/data/CMrockets"
 import { Zap, Clock, Rocket as RocketIcon, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 
 export const QUESTIONS: Question[] = [
