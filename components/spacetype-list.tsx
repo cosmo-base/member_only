@@ -104,7 +104,7 @@ export function SpaceTypeList() {
                                     <img
                                         src={`/member_only/${type.img}`} //  画像パス
                                         alt={type.title}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        className="w-full object-contain transition-transform duration-700 group-hover:scale-105"
                                         onError={(e) => {
                                             // 画像が見つからなかった場合のフォールバック
                                             (e.target as HTMLImageElement).style.display = 'none';

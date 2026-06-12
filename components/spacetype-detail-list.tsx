@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link"
-import { ExternalLink, Search, ChevronRight, Activity, ArrowRight, Lightbulb, AlertTriangle } from "lucide-react"
+import { ExternalLink, Search, ChevronRight, Activity, ArrowRight, Lightbulb, AlertTriangle, Compass } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/glass-card"
 
@@ -57,11 +57,131 @@ export function SpaceTypeDetailList() {
       </div>
 
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+        
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        {/* 🚀 新規追加: 4象限マトリクス */}
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        <div className="mb-16">
+          <GlassCard className="p-6 md:p-10 relative overflow-hidden border border-primary/20 shadow-lg shadow-primary/5">
+            <h3 className="text-center font-bold text-xl md:text-2xl mb-8 flex items-center justify-center gap-2">
+              <Compass className="w-6 h-6 text-primary" />
+              16分類 属性マトリクス
+            </h3>
+
+            <div className="flex flex-col items-center max-w-4xl mx-auto">
+              {/* Y軸 上 (能動) */}
+              <div className="text-sm md:text-base font-bold text-accent mb-2 tracking-widest bg-accent/10 px-4 py-1 rounded-full border border-accent/20">
+                ⬆ 能動 (A)
+              </div>
+              
+              <div className="flex w-full items-stretch relative">
+                {/* X軸 左 (ロマン) */}
+                <div className="flex items-center justify-center mr-2 md:mr-4">
+                  <div className="text-sm md:text-base font-bold text-primary tracking-widest [writing-mode:vertical-rl] rotate-180 bg-primary/10 py-4 px-1 rounded-full border border-primary/20">
+                    ロマン (R) ➡
+                  </div>
+                </div>
+
+                {/* 2x2 マトリクス本体 */}
+                <div className="flex-grow grid grid-cols-2 gap-2 md:gap-4 relative bg-background/30 p-2 md:p-4 rounded-2xl border border-border/40">
+                  {/* 中央の十字線 */}
+                  <div className="absolute top-0 bottom-0 left-1/2 w-px bg-border/80 -translate-x-1/2" />
+                  <div className="absolute left-0 right-0 top-1/2 h-px bg-border/80 -translate-y-1/2" />
+
+                  {/* 1象限: RA (ロマン×能動) */}
+                  <div className="bg-secondary/40 p-3 md:p-5 rounded-xl border border-border/30 hover:bg-secondary/60 transition-colors z-10 relative group">
+                    <div className="absolute inset-0 bg-[#F5E69C]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <div className="text-center mb-3 pb-2 border-b border-border/50">
+                      <p className="text-[10px] text-muted-foreground">ロマン × 能動</p>
+                      <p className="font-bold text-sm md:text-base text-foreground tracking-wide">RA 領域</p>
+                    </div>
+                    <ul className="space-y-1.5">
+                      {FULL_TYPES.filter(t => t.id.startsWith("RA")).map(t => (
+                        <li key={t.id} className="flex items-center gap-2 text-xs md:text-sm">
+                          <span className="text-base md:text-lg">{t.emoji}</span>
+                          <span className="font-medium text-foreground/90">{t.typeTitle}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* 2象限: PA (実用×能動) */}
+                  <div className="bg-secondary/40 p-3 md:p-5 rounded-xl border border-border/30 hover:bg-secondary/60 transition-colors z-10 relative group">
+                    <div className="absolute inset-0 bg-[#76C5E8]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <div className="text-center mb-3 pb-2 border-b border-border/50">
+                      <p className="text-[10px] text-muted-foreground">実用 × 能動</p>
+                      <p className="font-bold text-sm md:text-base text-foreground tracking-wide">PA 領域</p>
+                    </div>
+                    <ul className="space-y-1.5">
+                      {FULL_TYPES.filter(t => t.id.startsWith("PA")).map(t => (
+                        <li key={t.id} className="flex items-center gap-2 text-xs md:text-sm">
+                          <span className="text-base md:text-lg">{t.emoji}</span>
+                          <span className="font-medium text-foreground/90">{t.typeTitle}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* 3象限: RV (ロマン×受動) */}
+                  <div className="bg-secondary/40 p-3 md:p-5 rounded-xl border border-border/30 hover:bg-secondary/60 transition-colors z-10 relative group">
+                    <div className="absolute inset-0 bg-[#D1B3E8]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <div className="text-center mb-3 pb-2 border-b border-border/50">
+                      <p className="text-[10px] text-muted-foreground">ロマン × 受動</p>
+                      <p className="font-bold text-sm md:text-base text-foreground tracking-wide">RV 領域</p>
+                    </div>
+                    <ul className="space-y-1.5">
+                      {FULL_TYPES.filter(t => t.id.startsWith("RV")).map(t => (
+                        <li key={t.id} className="flex items-center gap-2 text-xs md:text-sm">
+                          <span className="text-base md:text-lg">{t.emoji}</span>
+                          <span className="font-medium text-foreground/90">{t.typeTitle}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* 4象限: PV (実用×受動) */}
+                  <div className="bg-secondary/40 p-3 md:p-5 rounded-xl border border-border/30 hover:bg-secondary/60 transition-colors z-10 relative group">
+                    <div className="absolute inset-0 bg-[#96CE9C]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <div className="text-center mb-3 pb-2 border-b border-border/50">
+                      <p className="text-[10px] text-muted-foreground">実用 × 受動</p>
+                      <p className="font-bold text-sm md:text-base text-foreground tracking-wide">PV 領域</p>
+                    </div>
+                    <ul className="space-y-1.5">
+                      {FULL_TYPES.filter(t => t.id.startsWith("PV")).map(t => (
+                        <li key={t.id} className="flex items-center gap-2 text-xs md:text-sm">
+                          <span className="text-base md:text-lg">{t.emoji}</span>
+                          <span className="font-medium text-foreground/90">{t.typeTitle}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* X軸 右 (実用) */}
+                <div className="flex items-center justify-center ml-2 md:ml-4">
+                  <div className="text-sm md:text-base font-bold text-primary tracking-widest [writing-mode:vertical-rl] bg-primary/10 py-4 px-1 rounded-full border border-primary/20">
+                    ⬅ 実用 (P)
+                  </div>
+                </div>
+              </div>
+
+              {/* Y軸 下 (受動) */}
+              <div className="text-sm md:text-base font-bold text-accent mt-2 tracking-widest bg-accent/10 px-4 py-1 rounded-full border border-accent/20">
+                ⬇ 受動 (V)
+              </div>
+            </div>
+          </GlassCard>
+        </div>
+
+
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        {/* 以下、既存の詳細カードリスト */}
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         <div className="grid md:grid-cols-2 gap-6">
           {FULL_TYPES.map((type) => (
             <GlassCard key={type.id} className="relative overflow-hidden p-0 flex flex-col h-full group">
               
-              {/* GlassCardのstyleを外し、一番上に絶対配置でカラー線を引く */}
+              {/* 一番上に絶対配置でカラー線を引く */}
               <div className="absolute top-0 left-0 right-0 h-1.5 z-30" style={{ backgroundColor: type.color }} />
               
               {/* 背景のグロウ */}
@@ -74,23 +194,18 @@ export function SpaceTypeDetailList() {
                   alt={type.typeTitle}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   onError={(e) => {
-                    // 画像が見つからなかった場合のフォールバック
                     (e.target as HTMLImageElement).style.display = 'none';
                     (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
                   }}
                 />
-                {/* 画像がない時の代替表示（絵文字） */}
                 <div className="hidden absolute inset-0 flex flex-col items-center justify-center bg-secondary/50">
                   <div className="text-6xl filter drop-shadow-md opacity-30">{type.emoji}</div>
                 </div>
-                {/* 自然なフェードグラデーション */}
                 <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent pointer-events-none" />
               </div>
 
               {/* コンテンツエリア */}
               <div className="p-6 md:p-8 flex-grow flex flex-col relative z-20">
-                
-                {/* 1. ヘッダー部分 */}
                 <div className="flex items-center gap-4 mb-4">
                   <div className="text-5xl filter drop-shadow-lg">{type.emoji}</div>
                   <div>
@@ -100,10 +215,7 @@ export function SpaceTypeDetailList() {
                 </div>
                 <p className="text-base font-bold text-foreground mb-6">「{type.catchphrase}」</p>
 
-                {/* 2. 詳細情報部分 */}
                 <div className="flex-grow space-y-4">
-                  
-                  {/* 分析 */}
                   <div className="bg-secondary/30 p-4 rounded-xl border border-border/50">
                     <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
                       <Activity className="w-3.5 h-3.5" />
@@ -112,7 +224,6 @@ export function SpaceTypeDetailList() {
                     <p className="text-sm text-foreground leading-relaxed">{type.analysis}</p>
                   </div>
 
-                  {/* 強みと弱み */}
                   <div className="grid sm:grid-cols-2 gap-3">
                     <div className="bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20">
                       <h4 className="text-xs font-bold text-emerald-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
@@ -130,7 +241,6 @@ export function SpaceTypeDetailList() {
                     </div>
                   </div>
 
-                  {/* アクション */}
                   <div className="bg-primary/10 p-4 rounded-xl border border-primary/20 mt-4">
                     <div className="mb-4">
                       <h4 className="text-xs font-bold text-primary uppercase tracking-wider mb-1.5">👣 最初の一歩</h4>
@@ -141,13 +251,11 @@ export function SpaceTypeDetailList() {
                       <p className="text-xs text-foreground leading-relaxed">{type.cta}</p>
                     </div>
                   </div>
-
                 </div>
 
-                {/* noteへのリンク */}
                 <div className="mt-6 pt-4 border-t border-border/50 flex justify-end">
                   <a
-                    href={`https://note.com/cosmo_base/n/${type.noteUrl}`}
+                    href={`https://note.com/cosmobase/n/${type.noteUrl}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center text-sm font-bold text-muted-foreground hover:text-primary transition-colors group"
