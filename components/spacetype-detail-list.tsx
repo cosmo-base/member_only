@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link"
-import { ExternalLink, Search, ChevronRight, Activity, ArrowRight, Lightbulb, AlertTriangle, Compass } from "lucide-react"
+import { Search, ChevronRight, Activity, ArrowRight, Lightbulb, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/glass-card"
 
@@ -26,6 +26,15 @@ const FULL_TYPES = [
 ];
 
 export function SpaceTypeDetailList() {
+  // スムーズスクロール用の関数
+  const scrollToTarget = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto pb-12">
       {/* ヒーローセクション */}
@@ -59,26 +68,24 @@ export function SpaceTypeDetailList() {
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
         
         {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-        {/* 🚀 新規追加: 4象限マトリクス */}
+        {/* 🚀 4象限マトリクス */}
         {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         <div className="mb-16">
           <GlassCard className="p-6 md:p-10 relative overflow-hidden border border-primary/20 shadow-lg shadow-primary/5">
-            <h3 className="text-center font-bold text-xl md:text-2xl mb-8 flex items-center justify-center gap-2">
-              <Compass className="w-6 h-6 text-primary" />
-              16分類 属性マトリクス
-            </h3>
 
             <div className="flex flex-col items-center max-w-4xl mx-auto">
-              {/* Y軸 上 (能動) */}
+              
+              {/* Y軸 上 (受動) */}
               <div className="text-sm md:text-base font-bold text-accent mb-2 tracking-widest bg-accent/10 px-4 py-1 rounded-full border border-accent/20">
-                ⬆ 能動 (A)
+                受動 (V)
               </div>
               
               <div className="flex w-full items-stretch relative">
-                {/* X軸 左 (ロマン) */}
+                
+                {/* X軸 左 (ロマン) ★ 逆さ文字を解除 */}
                 <div className="flex items-center justify-center mr-2 md:mr-4">
-                  <div className="text-sm md:text-base font-bold text-primary tracking-widest [writing-mode:vertical-rl] rotate-180 bg-primary/10 py-4 px-1 rounded-full border border-primary/20">
-                    ロマン (R) ➡
+                  <div className="text-sm md:text-base font-bold text-primary tracking-widest [writing-mode:vertical-rl] bg-primary/10 py-4 px-1 rounded-full border border-primary/20">
+                    ロマン (R)
                   </div>
                 </div>
 
@@ -88,86 +95,115 @@ export function SpaceTypeDetailList() {
                   <div className="absolute top-0 bottom-0 left-1/2 w-px bg-border/80 -translate-x-1/2" />
                   <div className="absolute left-0 right-0 top-1/2 h-px bg-border/80 -translate-y-1/2" />
 
-                  {/* 1象限: RA (ロマン×能動) */}
-                  <div className="bg-secondary/40 p-3 md:p-5 rounded-xl border border-border/30 hover:bg-secondary/60 transition-colors z-10 relative group">
-                    <div className="absolute inset-0 bg-[#F5E69C]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <div className="text-center mb-3 pb-2 border-b border-border/50">
-                      <p className="text-[10px] text-muted-foreground">ロマン × 能動</p>
-                      <p className="font-bold text-sm md:text-base text-foreground tracking-wide">RA 領域</p>
-                    </div>
-                    <ul className="space-y-1.5">
-                      {FULL_TYPES.filter(t => t.id.startsWith("RA")).map(t => (
-                        <li key={t.id} className="flex items-center gap-2 text-xs md:text-sm">
-                          <span className="text-base md:text-lg">{t.emoji}</span>
-                          <span className="font-medium text-foreground/90">{t.typeTitle}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* 2象限: PA (実用×能動) */}
-                  <div className="bg-secondary/40 p-3 md:p-5 rounded-xl border border-border/30 hover:bg-secondary/60 transition-colors z-10 relative group">
-                    <div className="absolute inset-0 bg-[#76C5E8]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <div className="text-center mb-3 pb-2 border-b border-border/50">
-                      <p className="text-[10px] text-muted-foreground">実用 × 能動</p>
-                      <p className="font-bold text-sm md:text-base text-foreground tracking-wide">PA 領域</p>
-                    </div>
-                    <ul className="space-y-1.5">
-                      {FULL_TYPES.filter(t => t.id.startsWith("PA")).map(t => (
-                        <li key={t.id} className="flex items-center gap-2 text-xs md:text-sm">
-                          <span className="text-base md:text-lg">{t.emoji}</span>
-                          <span className="font-medium text-foreground/90">{t.typeTitle}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* 3象限: RV (ロマン×受動) */}
-                  <div className="bg-secondary/40 p-3 md:p-5 rounded-xl border border-border/30 hover:bg-secondary/60 transition-colors z-10 relative group">
-                    <div className="absolute inset-0 bg-[#D1B3E8]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <div className="text-center mb-3 pb-2 border-b border-border/50">
-                      <p className="text-[10px] text-muted-foreground">ロマン × 受動</p>
-                      <p className="font-bold text-sm md:text-base text-foreground tracking-wide">RV 領域</p>
-                    </div>
+                  {/* 1象限: RV (ロマン×受動) */}
+                  <div className="bg-secondary/40 p-3 md:p-5 rounded-xl border border-border/30 transition-colors z-10 relative">
+                    <div className="absolute inset-0 bg-[#D1B3E8]/5 rounded-xl pointer-events-none" />
                     <ul className="space-y-1.5">
                       {FULL_TYPES.filter(t => t.id.startsWith("RV")).map(t => (
-                        <li key={t.id} className="flex items-center gap-2 text-xs md:text-sm">
-                          <span className="text-base md:text-lg">{t.emoji}</span>
-                          <span className="font-medium text-foreground/90">{t.typeTitle}</span>
+                        <li key={t.id}>
+                          <a 
+                            href={`#${t.id}`}
+                            onClick={(e) => scrollToTarget(e, t.id)}
+                            className="flex items-center gap-2 text-xs md:text-sm group/link hover:bg-white/5 p-1 -ml-1 rounded transition-colors"
+                          >
+                            <span className="text-base md:text-lg transition-transform group-hover/link:scale-110">{t.emoji}</span>
+                            <span 
+                              className="font-bold underline-offset-4 group-hover/link:brightness-125 transition-all" 
+                              style={{ color: t.color }}
+                            >
+                              {t.typeTitle}
+                            </span>
+                          </a>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  {/* 4象限: PV (実用×受動) */}
-                  <div className="bg-secondary/40 p-3 md:p-5 rounded-xl border border-border/30 hover:bg-secondary/60 transition-colors z-10 relative group">
-                    <div className="absolute inset-0 bg-[#96CE9C]/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    <div className="text-center mb-3 pb-2 border-b border-border/50">
-                      <p className="text-[10px] text-muted-foreground">実用 × 受動</p>
-                      <p className="font-bold text-sm md:text-base text-foreground tracking-wide">PV 領域</p>
-                    </div>
+                  {/* 2象限: PV (実用×受動) */}
+                  <div className="bg-secondary/40 p-3 md:p-5 rounded-xl border border-border/30 transition-colors z-10 relative">
+                    <div className="absolute inset-0 bg-[#96CE9C]/5 rounded-xl pointer-events-none" />
                     <ul className="space-y-1.5">
                       {FULL_TYPES.filter(t => t.id.startsWith("PV")).map(t => (
-                        <li key={t.id} className="flex items-center gap-2 text-xs md:text-sm">
-                          <span className="text-base md:text-lg">{t.emoji}</span>
-                          <span className="font-medium text-foreground/90">{t.typeTitle}</span>
+                        <li key={t.id}>
+                          <a 
+                            href={`#${t.id}`}
+                            onClick={(e) => scrollToTarget(e, t.id)}
+                            className="flex items-center gap-2 text-xs md:text-sm group/link hover:bg-white/5 p-1 -ml-1 rounded transition-colors"
+                          >
+                            <span className="text-base md:text-lg transition-transform group-hover/link:scale-110">{t.emoji}</span>
+                            <span 
+                              className="font-bold underline-offset-4 group-hover/link:brightness-125 transition-all" 
+                              style={{ color: t.color }}
+                            >
+                              {t.typeTitle}
+                            </span>
+                          </a>
                         </li>
                       ))}
                     </ul>
                   </div>
+
+                  {/* 3象限: RA (ロマン×能動) */}
+                  <div className="bg-secondary/40 p-3 md:p-5 rounded-xl border border-border/30 transition-colors z-10 relative">
+                    <div className="absolute inset-0 bg-[#F5E69C]/5 rounded-xl pointer-events-none" />
+                    <ul className="space-y-1.5">
+                      {FULL_TYPES.filter(t => t.id.startsWith("RA")).map(t => (
+                        <li key={t.id}>
+                          <a 
+                            href={`#${t.id}`}
+                            onClick={(e) => scrollToTarget(e, t.id)}
+                            className="flex items-center gap-2 text-xs md:text-sm group/link hover:bg-white/5 p-1 -ml-1 rounded transition-colors"
+                          >
+                            <span className="text-base md:text-lg transition-transform group-hover/link:scale-110">{t.emoji}</span>
+                            <span 
+                              className="font-bold underline-offset-4 group-hover/link:brightness-125 transition-all" 
+                              style={{ color: t.color }}
+                            >
+                              {t.typeTitle}
+                            </span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* 4象限: PA (実用×能動) */}
+                  <div className="bg-secondary/40 p-3 md:p-5 rounded-xl border border-border/30 transition-colors z-10 relative">
+                    <div className="absolute inset-0 bg-[#76C5E8]/5 rounded-xl pointer-events-none" />
+                    <ul className="space-y-1.5">
+                      {FULL_TYPES.filter(t => t.id.startsWith("PA")).map(t => (
+                        <li key={t.id}>
+                          <a 
+                            href={`#${t.id}`}
+                            onClick={(e) => scrollToTarget(e, t.id)}
+                            className="flex items-center gap-2 text-xs md:text-sm group/link hover:bg-white/5 p-1 -ml-1 rounded transition-colors"
+                          >
+                            <span className="text-base md:text-lg transition-transform group-hover/link:scale-110">{t.emoji}</span>
+                            <span 
+                              className="font-bold underline-offset-4 group-hover/link:brightness-125 transition-all" 
+                              style={{ color: t.color }}
+                            >
+                              {t.typeTitle}
+                            </span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
                 </div>
 
                 {/* X軸 右 (実用) */}
                 <div className="flex items-center justify-center ml-2 md:ml-4">
                   <div className="text-sm md:text-base font-bold text-primary tracking-widest [writing-mode:vertical-rl] bg-primary/10 py-4 px-1 rounded-full border border-primary/20">
-                    ⬅ 実用 (P)
+                    実用 (P)
                   </div>
                 </div>
               </div>
 
-              {/* Y軸 下 (受動) */}
+              {/* Y軸 下 (能動) */}
               <div className="text-sm md:text-base font-bold text-accent mt-2 tracking-widest bg-accent/10 px-4 py-1 rounded-full border border-accent/20">
-                ⬇ 受動 (V)
+                能動 (A)
               </div>
             </div>
           </GlassCard>
@@ -175,98 +211,95 @@ export function SpaceTypeDetailList() {
 
 
         {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-        {/* 以下、既存の詳細カードリスト */}
+        {/* 詳細カードリスト */}
         {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         <div className="grid md:grid-cols-2 gap-6">
           {FULL_TYPES.map((type) => (
-            <GlassCard key={type.id} className="relative overflow-hidden p-0 flex flex-col h-full group">
-              
-              {/* 一番上に絶対配置でカラー線を引く */}
-              <div className="absolute top-0 left-0 right-0 h-1.5 z-30" style={{ backgroundColor: type.color }} />
-              
-              {/* 背景のグロウ */}
-              <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-10 pointer-events-none z-0" style={{ backgroundColor: type.color }} />
+            <div id={type.id} key={type.id} className="scroll-mt-24 h-full">
+              <GlassCard className="relative overflow-hidden p-0 flex flex-col h-full group">
+                
+                <div className="absolute top-0 left-0 right-0 h-1.5 z-30" style={{ backgroundColor: type.color }} />
+                <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-10 pointer-events-none z-0" style={{ backgroundColor: type.color }} />
 
-              {/* 画像エリア (フル幅) */}
-              <div className="w-full relative aspect-video bg-secondary/30 overflow-hidden flex items-center justify-center z-10 border-b border-border/30">
-                <img 
-                  src={`/member_only/type/${type.id}.png`} // フォルダ指定: public/type/〇〇.png
-                  alt={type.typeTitle}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                    (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                  }}
-                />
-                <div className="hidden absolute inset-0 flex flex-col items-center justify-center bg-secondary/50">
-                  <div className="text-6xl filter drop-shadow-md opacity-30">{type.emoji}</div>
+                <div className="w-full relative aspect-video bg-secondary/30 overflow-hidden flex items-center justify-center z-10 border-b border-border/30">
+                  <img 
+                    src={`/member_only/type/${type.id}.png`}
+                    alt={type.typeTitle}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                    }}
+                  />
+                  <div className="hidden absolute inset-0 flex flex-col items-center justify-center bg-secondary/50">
+                    <div className="text-6xl filter drop-shadow-md opacity-30">{type.emoji}</div>
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent pointer-events-none" />
                 </div>
-                <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background to-transparent pointer-events-none" />
-              </div>
 
-              {/* コンテンツエリア */}
-              <div className="p-6 md:p-8 flex-grow flex flex-col relative z-20">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="text-5xl filter drop-shadow-lg">{type.emoji}</div>
-                  <div>
-                    <p className="text-sm font-bold tracking-wider mb-1" style={{ color: type.color }}>{type.roleName}</p>
-                    <h3 className="text-2xl font-bold text-foreground leading-tight">{type.typeTitle}</h3>
-                  </div>
-                </div>
-                <p className="text-base font-bold text-foreground mb-6">「{type.catchphrase}」</p>
-
-                <div className="flex-grow space-y-4">
-                  <div className="bg-secondary/30 p-4 rounded-xl border border-border/50">
-                    <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                      <Activity className="w-3.5 h-3.5" />
-                      性格と傾向
-                    </h4>
-                    <p className="text-sm text-foreground leading-relaxed">{type.analysis}</p>
-                  </div>
-
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    <div className="bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20">
-                      <h4 className="text-xs font-bold text-emerald-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <Lightbulb className="w-3.5 h-3.5" />
-                        一番の強み
-                      </h4>
-                      <p className="text-xs text-foreground leading-relaxed">{type.strength}</p>
-                    </div>
-                    <div className="bg-amber-500/10 p-4 rounded-xl border border-amber-500/20">
-                      <h4 className="text-xs font-bold text-amber-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                        <AlertTriangle className="w-3.5 h-3.5" />
-                        もったいない点
-                      </h4>
-                      <p className="text-xs text-foreground leading-relaxed">{type.mottainai}</p>
-                    </div>
-                  </div>
-
-                  <div className="bg-primary/10 p-4 rounded-xl border border-primary/20 mt-4">
-                    <div className="mb-4">
-                      <h4 className="text-xs font-bold text-primary uppercase tracking-wider mb-1.5">👣 最初の一歩</h4>
-                      <p className="text-sm text-foreground font-medium">{type.firstStep}</p>
-                    </div>
+                <div className="p-6 md:p-8 flex-grow flex flex-col relative z-20">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="text-5xl filter drop-shadow-lg">{type.emoji}</div>
                     <div>
-                      <h4 className="text-xs font-bold text-accent uppercase tracking-wider mb-1.5">🎯 おすすめのアクション</h4>
-                      <p className="text-xs text-foreground leading-relaxed">{type.cta}</p>
+                      <p className="text-sm font-bold tracking-wider mb-1" style={{ color: type.color }}>{type.roleName}</p>
+                      <h3 className="text-2xl font-bold text-foreground leading-tight">{type.typeTitle}</h3>
                     </div>
                   </div>
-                </div>
+                  <p className="text-base font-bold text-foreground mb-6">「{type.catchphrase}」</p>
 
-                <div className="mt-6 pt-4 border-t border-border/50 flex justify-end">
-                  <a
-                    href={`https://note.com/cosmobase/n/${type.noteUrl}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-sm font-bold text-muted-foreground hover:text-primary transition-colors group"
-                  >
-                    noteでさらに詳しく読む
-                    <ArrowRight className="w-4 h-4 ml-1.5 transition-transform group-hover:translate-x-1" />
-                  </a>
-                </div>
+                  <div className="flex-grow space-y-4">
+                    <div className="bg-secondary/30 p-4 rounded-xl border border-border/50">
+                      <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <Activity className="w-3.5 h-3.5" />
+                        性格と傾向
+                      </h4>
+                      <p className="text-sm text-foreground leading-relaxed">{type.analysis}</p>
+                    </div>
 
-              </div>
-            </GlassCard>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div className="bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20">
+                        <h4 className="text-xs font-bold text-emerald-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                          <Lightbulb className="w-3.5 h-3.5" />
+                          一番の強み
+                        </h4>
+                        <p className="text-xs text-foreground leading-relaxed">{type.strength}</p>
+                      </div>
+                      <div className="bg-amber-500/10 p-4 rounded-xl border border-amber-500/20">
+                        <h4 className="text-xs font-bold text-amber-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5" />
+                          もったいない点
+                        </h4>
+                        <p className="text-xs text-foreground leading-relaxed">{type.mottainai}</p>
+                      </div>
+                    </div>
+
+                    <div className="bg-primary/10 p-4 rounded-xl border border-primary/20 mt-4">
+                      <div className="mb-4">
+                        <h4 className="text-xs font-bold text-primary uppercase tracking-wider mb-1.5">👣 最初の一歩</h4>
+                        <p className="text-sm text-foreground font-medium">{type.firstStep}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-accent uppercase tracking-wider mb-1.5">🎯 おすすめのアクション</h4>
+                        <p className="text-xs text-foreground leading-relaxed">{type.cta}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-border/50 flex justify-end">
+                    <a
+                      href={`https://note.com/cosmobase/n/${type.noteUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-sm font-bold text-muted-foreground hover:text-primary transition-colors group"
+                    >
+                      noteでさらに詳しく読む
+                      <ArrowRight className="w-4 h-4 ml-1.5 transition-transform group-hover:translate-x-1" />
+                    </a>
+                  </div>
+
+                </div>
+              </GlassCard>
+            </div>
           ))}
         </div>
 

@@ -1,7 +1,7 @@
 // components/spacetype-list.tsx
 "use client";
 
-import { Telescope, Satellite, Rocket, Earth, Search, ChevronRight, CheckCircle2, Star } from "lucide-react"
+import { Search, ChevronRight, CheckCircle2, Star } from "lucide-react"
 import Link from 'next/link';
 import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/glass-card"

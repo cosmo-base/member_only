@@ -1,8 +1,7 @@
 import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
-import { User, Zap, BarChart, Users, Clock } from "lucide-react"
-import { FullDiagnosisCard } from "@/components/full-diagnosis-card"
+import { User, Zap, BarChart, Users, Clock, ArrowRight } from "lucide-react"
 
 export default function DiagnosisPage() {
   return (
@@ -39,7 +38,8 @@ export default function DiagnosisPage() {
 
       {/* Diagnosis Options */}
       <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="glass-card rounded-xl p-6 border-2 border-primary/30">
+        {/* 簡易版 */}
+        <div className="glass-card rounded-xl p-6 border-2 border-primary/30 flex flex-col h-full">
           <div className="flex items-center gap-3 mb-4">
             <Zap className="w-6 h-6 text-primary" />
             <h3 className="text-xl font-semibold text-foreground">簡易版</h3>
@@ -48,18 +48,19 @@ export default function DiagnosisPage() {
             <Clock className="w-4 h-4" />
             <span>所要時間: 約1分</span>
           </div>
-          <p className="text-muted-foreground text-sm mb-6">
+          <p className="text-muted-foreground text-sm mb-8 flex-grow">
             5つの質問でサクッと診断。まずはお気軽に試してみてください。
             結果はSNSでシェアできます。
           </p>
           <Link href="/type/content/">
-            <Button className="w-full bg-primary/70 hover:bg-primary/60 text-primary-foreground">
+            <Button className="w-full bg-primary/70 hover:bg-primary/60 text-primary-foreground font-bold">
               簡易診断を始める
             </Button>
           </Link>
         </div>
 
-        <div className="glass-card rounded-xl p-6 border-2 border-accent/30">
+        {/* 完全版 */}
+        <div className="glass-card rounded-xl p-6 border-2 border-accent/30 flex flex-col h-full">
           <div className="flex items-center gap-3 mb-4">
             <BarChart className="w-6 h-6 text-accent" />
             <h3 className="text-xl font-semibold text-foreground">完全版</h3>
@@ -68,16 +69,44 @@ export default function DiagnosisPage() {
             <Clock className="w-4 h-4" />
             <span>所要時間: 約5分</span>
           </div>
-          <p className="text-muted-foreground text-sm mb-6">
+          <p className="text-muted-foreground text-sm mb-8 flex-grow">
             24の質問で詳細に分析。あなたの宇宙への興味の傾向を多角的に診断します。おすすめコンテンツも紹介。
           </p>
           <Link href="/type/detail/">
-          <Button className="w-full" variant="outline">
-            完全診断を始める
-          </Button>
+            <Button className="w-full font-bold" variant="outline">
+              完全診断を始める
+            </Button>
           </Link>
         </div>
       </div>
+
+      {/* ★ ここに追加: タイプ一覧へのリンク */}
+      <div className="glass-card rounded-xl p-6 sm:p-8 border border-border/50 bg-secondary/10 group hover:bg-secondary/30 transition-colors">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-lg bg-background border border-border/50 shrink-0">
+              <Users className="w-6 h-6 text-foreground" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-foreground mb-2">
+                すべての宇宙タイプを見る
+              </h3>
+              <p className="text-muted-foreground text-sm leading-relaxed max-w-2xl">
+                簡易版（4タイプ）と完全版（16タイプ）のすべてのタイプを図鑑形式で確認できます。周りの友達のタイプを調べたり、他の属性との違いを見比べてみましょう。
+              </p>
+            </div>
+          </div>
+          <div className="w-full sm:w-auto shrink-0 mt-2 sm:mt-0">
+            <Link href="/type/content/list">
+              <Button variant="secondary" className="w-full sm:w-auto font-bold px-6 border border-border/50 group-hover:bg-background transition-colors">
+                タイプ一覧を見る
+                <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
     </ContentPageLayout>
   )
 }
