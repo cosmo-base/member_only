@@ -1,5 +1,5 @@
 import { ContentPageLayout } from "@/components/content-page-layout"
-import { Home, Menu, Users, BookOpen, Calendar, Award, MessageCircle, Map } from "lucide-react"
+import { Home, Menu, Users } from "lucide-react"
 
 export default function GuidePage() {
   return (

@@ -43,7 +43,7 @@ export default function IttekitaCalendarPage() {
       })
       
       setEventsMap(mappedData)
-      setIsLoading(false) // ★ 修正: isLoading(false) から setIsLoading(false) に変更
+      setIsLoading(false) 
     }
     loadEvents()
   }, [])
@@ -117,7 +117,7 @@ export default function IttekitaCalendarPage() {
       <div className="glass-card rounded-xl p-6 mb-8">
         <p className="text-muted-foreground leading-relaxed">
           過去に投稿された「行ってきた」レポートをカレンダー形式で確認できます。
-          イベントの詳細や、共有ドライブの写真リンクもこちらからアクセス可能です。
+          イベントの詳細もこちらからアクセス可能です。
         </p>
       </div>
 

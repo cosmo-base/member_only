@@ -1,13 +1,7 @@
 import Link from "next/link"
-import Image from "next/image"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { MapPin, History, CalendarDays } from "lucide-react"
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ★ 画像を直接インポートする
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-import ittoideEventImg from "../../public/images/ittoide-event.jpg"
 
 export default function IttoidePage() {
   return (

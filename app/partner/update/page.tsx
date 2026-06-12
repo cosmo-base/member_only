@@ -10,7 +10,6 @@ import { ArrowLeft, CheckCircle2, Loader2, UploadCloud, ChevronDown, ChevronUp }
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 
-// ★ 発行していただいたGASのURL
 const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxuct1PbLjnQmUg9VMjsU6V2BkTmHRDC-mRmOO4CM5v-9d1qYnKdM6peWG6WV9529bb/exec"
 
 export default function PartnerUpdateFormPage() {

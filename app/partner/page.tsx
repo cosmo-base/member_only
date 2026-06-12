@@ -2,7 +2,6 @@
 import {  FileEdit,  FolderUp,  Mic,  ClipboardList,Users,Image} from "lucide-react"
 import { StarBackground } from "@/components/star-background"
 import { Header } from "@/components/header"
-import { AdminNotice } from "@/components/admin-notice"
 import { FormCard } from "@/components/form-card"
 
 const formCards = [
@@ -68,11 +67,6 @@ export default function PartnerDashboard() {
               宇宙を、楽しむ。
             </p>
           </div>
-
-          {/* Admin Notice */}
-         {/* <div className="mb-10 max-w-4xl mx-auto">
-            <AdminNotice />
-          </div>*/}
 
           {/* Form Cards Grid */}
           <section>

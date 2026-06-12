@@ -4,12 +4,25 @@ import { HeroSection } from "@/components/hero-section"
 import { LevelSection } from "@/components/level-section"
 import { ContentCard } from "@/components/content-card"
 import { FooterSection } from "@/components/footer-section"
-import { HelpCircle,Landmark,Newspaper,User,Calendar,MessageCircle,MapPin,Camera,Database,Award,BookOpen} from "lucide-react"
+import { HelpCircle, Landmark, Newspaper, User, Calendar, MessageCircle, MapPin, Camera, Database, Award, BookOpen } from "lucide-react"
 
-// Define content data with proper encoding
+import cbedLogo from "../public/CBED_logo.png"
+import cblLogo from "../public/CBL_logo.png" 
+import ittekitaLogo from "../public/CBittekita_logo.png" 
+import ittoideLogo from "../public/CBittoide_logo.png" 
+import newsLogo from "../public/CBnews_logo.png" 
+import oshieteLogo from "../public/CBoshiete_logo.png" 
+import quizLogo from "../public/CBquiz_logo.png" 
+import shittokuLogo from "../public/CBshittoku_logo.png" 
+import typeLogo from "../public/CBtype_logo.png" 
+import voyagerLogo from "../public/CBvoyager_logo.png"
+import cbmdLogo from "../public/CBMD_logo.png"
+
+// ★ logoプロパティを追加し、インポートした画像をマッピング
 const level1Content = [
   {
     icon: "quiz",
+    logo: quizLogo,
     title: "毎日宇宙クイズ",
     description: "毎日気軽に宇宙に触れられるクイズ",
     features: ["過去の問題一覧", "クイズ体験ボタン"],
@@ -17,6 +30,7 @@ const level1Content = [
   },
   {
     icon: "news",
+    logo: newsLogo,
     title: "週刊宇宙ニュース",
     description: "1週間の宇宙ニュースを分かりやすく整理",
     features: [],
@@ -24,6 +38,7 @@ const level1Content = [
   },
   {
     icon: "diagnosis",
+    logo: typeLogo,
     title: "宇宙タイプ診断",
     description: "あなたの宇宙タイプを診断",
     features: ["簡易版", "完全版"],
@@ -34,6 +49,7 @@ const level1Content = [
 const level2Content = [
   {
     icon: "calendar",
+    logo: shittokuLogo,
     title: "Cosmo Baseで宇宙知っトク",
     description: "毎週開催の宇宙イベント・講座",
     features: ["過去イベント一覧", "今後のイベント", "要望フォーム"],
@@ -41,13 +57,15 @@ const level2Content = [
   },
   {
     icon: "message",
+    logo: oshieteLogo,
     title: "Cosmo Baseで宇宙教えて",
     description: "宇宙の疑問を解決するコミュニティ",
     features: [],
     href: "/oshiete"
   },
-　{
+  {
     icon: "landmark",
+    logo: cbmdLogo,
     title: "Cosmo Base Museum Database",
     description: "日本全国の宇宙関連施設を検索・探索できます。",
     features: [],
@@ -55,6 +73,7 @@ const level2Content = [
   },
   {
     icon: "mappin",
+    logo: ittoideLogo,
     title: "宇宙に行っといで",
     description: "おすすめ宇宙イベント紹介",
     features: [],
@@ -65,6 +84,7 @@ const level2Content = [
 const level3Content = [
   {
     icon: "camera",
+    logo: ittekitaLogo,
     title: "宇宙のイベント行ってきた",
     description: "イベントレポート＆体験共有",
     features: ["カレンダー表示", "イベントデータベース"],
@@ -72,6 +92,7 @@ const level3Content = [
   },
   {
     icon: "database",
+    logo: cbedLogo,
     title: "Cosmo Base Event Database",
     description: "全国の宇宙イベント一覧",
     features: [],
@@ -82,6 +103,7 @@ const level3Content = [
 const level4Content = [
   {
     icon: "award",
+    logo: voyagerLogo,
     title: "Space Voyager 検定",
     description: "宇宙知識を体系的に学び、認定を取得",
     features: ["※毎日宇宙クイズの回答数が20000件を超え次第運営を開始いたします。","検定とは", "レベル構造", "過去の問題", "次回試験日", "申し込み"],
@@ -89,6 +111,7 @@ const level4Content = [
   },
   {
     icon: "book",
+    logo: cblLogo,
     title: "Cosmo Base Library",
     description: "宇宙の知識を体系的に整理したライブラリ",
     features: ["カテゴリ別学習", "記事・動画コンテンツ", "ブックマーク機能"],
@@ -128,6 +151,7 @@ export default function CosmoBasePage() {
               <ContentCard
                 key={item.href}
                 icon={getIcon(item.icon)}
+                logo={item.logo} // ★ ContentCardにロゴ画像を渡す
                 title={item.title}
                 description={item.description}
                 features={item.features}
@@ -141,6 +165,7 @@ export default function CosmoBasePage() {
               <ContentCard
                 key={item.href}
                 icon={getIcon(item.icon)}
+                logo={item.logo}
                 title={item.title}
                 description={item.description}
                 features={item.features}
@@ -154,6 +179,7 @@ export default function CosmoBasePage() {
               <ContentCard
                 key={item.href}
                 icon={getIcon(item.icon)}
+                logo={item.logo}
                 title={item.title}
                 description={item.description}
                 features={item.features}
@@ -167,6 +193,7 @@ export default function CosmoBasePage() {
               <ContentCard
                 key={item.href}
                 icon={getIcon(item.icon)}
+                logo={item.logo}
                 title={item.title}
                 description={item.description}
                 features={item.features}

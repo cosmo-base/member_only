@@ -6,7 +6,7 @@ import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { MessageCircle, Send, Loader2, Info, ChevronLeft } from "lucide-react"
+import { MessageCircle, Send, Loader2, Info } from "lucide-react"
 
 export default function OshieteAskPage() {
   const [submitted, setSubmitted] = useState(false)

@@ -7,7 +7,6 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ArrowLeft, CheckCircle2, Loader2, UploadCloud, FileText, ShieldCheck } from "lucide-react"
-import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 
 const GAS_API_URL = "https://script.google.com/macros/s/AKfycbw2GY6EKyoAdbegq089wKGARZgSAbP2nqz9H0QHx2wq5CsqPphRMKguj3Rog_QhgG6PWA/exec"
