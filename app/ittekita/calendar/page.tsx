@@ -1,11 +1,12 @@
-// app/ittekita/carender/page.tsx
+// app/ittekita/calendar/page.tsx
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Loader2, Image as ImageIcon, ExternalLink, FileText } from "lucide-react"
-import { fetchIttekitaData, IttekitaEvent } from "@/data/ittekita" // ★作成したデータをインポート
+import { ChevronLeft, ChevronRight, Loader2, Image as ImageIcon, ExternalLink, Info } from "lucide-react"
+import { fetchIttekitaData, IttekitaEvent } from "@/data/ittekita"
 
 const months = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
 const weekdays = ["月", "火", "水", "木", "金", "土", "日"]
@@ -24,17 +25,14 @@ export default function IttekitaCalendarPage() {
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
 
-  // ★ スプレッドシートからのデータ保存用State
   const [eventsMap, setEventsMap] = useState<Record<string, IttekitaEvent[]>>({})
   const [isLoading, setIsLoading] = useState(true)
 
-  // ★ 画面表示時にスプレッドシートからデータを取得
   useEffect(() => {
     async function loadEvents() {
       setIsLoading(true)
       const data = await fetchIttekitaData()
       
-      // 取得したデータを日付ごとにグループ化する（例: "2026-04-01": [イベント情報]）
       const mappedData: Record<string, IttekitaEvent[]> = {}
       data.forEach(event => {
         const dateStr = String(event.date).trim()
@@ -45,7 +43,7 @@ export default function IttekitaCalendarPage() {
       })
       
       setEventsMap(mappedData)
-      setIsLoading(false)
+      setIsLoading(false) // ★ 修正: isLoading(false) から setIsLoading(false) に変更
     }
     loadEvents()
   }, [])
@@ -58,12 +56,10 @@ export default function IttekitaCalendarPage() {
 
   const days = []
 
-  // 月初めの空マス
   for (let i = 0; i < firstDayOffset; i++) {
     days.push(<div key={`empty-${i}`} className="p-2" />)
   }
 
-  // 日付の描画
   for (let day = 1; day <= daysInMonth; day++) {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
     const dayEvents = eventsMap[dateStr] || []
@@ -72,24 +68,27 @@ export default function IttekitaCalendarPage() {
     days.push(
       <div
         key={day}
-        className={`p-2 min-h-[100px] border border-border/30 rounded-lg flex flex-col gap-1 ${hasEvents ? "bg-primary/5" : ""}`}
+        className={`p-2 min-h-[110px] border border-border/30 rounded-lg flex flex-col gap-1 ${hasEvents ? "bg-primary/5" : ""}`}
       >
         <span className={`text-sm font-medium ${hasEvents ? "text-primary" : "text-muted-foreground"}`}>
           {day}
         </span>
 
-        {/* イベントカードの描画 */}
         {dayEvents.map((event, index) => (
           <div key={index} className="bg-background rounded shadow-sm border border-border/50 p-1.5 flex flex-col gap-1">
             <p className="text-xs font-bold text-foreground leading-tight">{event.title}</p>
             {event.venue && <p className="text-[10px] text-muted-foreground truncate">{event.venue}</p>}
             
-            {/* 詳細・写真リンク・URLのボタン群 */}
             <div className="flex flex-wrap gap-1 mt-1">
               {event.url && (
                 <a href={event.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-0.5 text-[10px] text-primary hover:underline bg-primary/10 px-1.5 py-0.5 rounded">
                   <ExternalLink className="w-3 h-3" /> レポ
                 </a>
+              )}
+              {event.cbedId && (
+                <Link href={`/events/${event.cbedId}`} className="flex items-center gap-0.5 text-[10px] text-foreground hover:underline bg-secondary/60 px-1.5 py-0.5 rounded border border-border/40">
+                  <Info className="w-3 h-3 text-primary" /> 詳細
+                </Link>
               )}
               {event.photoLink && (
                 <a href={event.photoLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-0.5 text-[10px] text-accent hover:underline bg-accent/10 px-1.5 py-0.5 rounded">
@@ -97,7 +96,6 @@ export default function IttekitaCalendarPage() {
                 </a>
               )}
             </div>
-            {/* イベント詳細テキスト（長すぎる場合は省略） */}
             {event.details && (
               <p className="text-[10px] text-muted-foreground line-clamp-2 mt-0.5 border-t border-border/50 pt-0.5" title={event.details}>
                 {event.details}
@@ -124,7 +122,6 @@ export default function IttekitaCalendarPage() {
       </div>
 
       <div className="glass-card rounded-xl p-6 relative min-h-[400px]">
-        {/* ローディング表示 */}
         {isLoading && (
           <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex flex-col items-center justify-center z-10 rounded-xl">
             <Loader2 className="w-8 h-8 animate-spin text-primary mb-2" />

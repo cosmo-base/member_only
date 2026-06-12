@@ -1,9 +1,17 @@
+// app/ittekita/page.tsx
 import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
-import { Camera, Calendar, Image, Archive, ExternalLink } from "lucide-react"
+import { Camera, Calendar, Image as ImageIcon, Archive, ExternalLink, MapPin, Clock, Info } from "lucide-react"
+import { GlassCard } from "@/components/glass-card"
+import { fetchIttekitaData } from "@/data/ittekita"
 
-export default function IttekitaPage() {
+export const dynamic = 'force-static';
+
+export default async function IttekitaPage() {
+  const events = await fetchIttekitaData();
+  const latestEvent = events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
   return (
     <ContentPageLayout
       title="宇宙のイベント行ってきた"
@@ -36,6 +44,79 @@ export default function IttekitaPage() {
         </div>
       </div>
 
+      {/* 最新のレポートピックアップ */}
+      {latestEvent && (
+        <div className="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
+            </span>
+            最新のレポート
+          </h3>
+          
+          <GlassCard className="relative overflow-hidden p-6 md:p-8 group">
+            <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-[#00f2fe] z-20" />
+            <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-10 bg-accent pointer-events-none transition-opacity group-hover:opacity-20" />
+
+            <div className="flex flex-col md:flex-row gap-6 items-start md:items-center relative z-10">
+              <div className="flex-grow space-y-4">
+                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1.5 bg-secondary/40 border border-border/50 px-2.5 py-1 rounded-md">
+                    <Clock className="w-4 h-4 text-accent" />
+                    {latestEvent.date}
+                  </span>
+                  {latestEvent.venue && (
+                    <span className="flex items-center gap-1.5 bg-secondary/40 border border-border/50 px-2.5 py-1 rounded-md">
+                      <MapPin className="w-4 h-4 text-primary" />
+                      {latestEvent.venue}
+                    </span>
+                  )}
+                </div>
+                
+                <h4 className="text-xl md:text-2xl font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
+                  {latestEvent.title}
+                </h4>
+                
+                {latestEvent.details && (
+                  <p className="text-muted-foreground leading-relaxed line-clamp-2 md:line-clamp-3">
+                    {latestEvent.details}
+                  </p>
+                )}
+              </div>
+
+              <div className="w-full md:w-auto flex flex-col sm:flex-row md:flex-col gap-3 shrink-0">
+                {latestEvent.url && (
+                  <a href={latestEvent.url} target="_blank" rel="noopener noreferrer">
+                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow font-bold h-12 px-6 rounded-full">
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      レポートを読む
+                    </Button>
+                  </a>
+                )}
+                {/* ★ 追加: CBEDのIDが登録されている場合のみ詳細ボタンを表示 */}
+                {latestEvent.cbedId && (
+                  <Link href={`/events/${latestEvent.cbedId}`}>
+                    <Button className="w-full bg-secondary hover:bg-secondary/80 text-foreground font-bold h-12 px-6 rounded-full border border-border/50">
+                      <Info className="w-4 h-4 mr-2 text-primary" />
+                      イベント詳細
+                    </Button>
+                  </Link>
+                )}
+                {latestEvent.photoLink && (
+                  <a href={latestEvent.photoLink} target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline" className="w-full font-bold border-accent/50 hover:bg-accent/10 text-accent h-12 px-6 rounded-full">
+                      <ImageIcon className="w-4 h-4 mr-2" />
+                      会場の写真を見る
+                    </Button>
+                  </a>
+                )}
+              </div>
+            </div>
+          </GlassCard>
+        </div>
+      )}
+
       {/* Links */}
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <div className="glass-card rounded-xl p-6">
@@ -48,14 +129,12 @@ export default function IttekitaPage() {
             カレンダー形式で振り返れます。
           </p>
           <Link href="/ittekita/calendar">
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full font-bold">
               カレンダーを見る
             </Button>
           </Link>
         </div>
 
-
-        {/* Backnumber link */}
         <div className="glass-card rounded-xl p-6">
           <div className="flex items-center gap-3 mb-4">
             <Archive className="w-5 h-5 text-accent" />
@@ -70,8 +149,8 @@ export default function IttekitaPage() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Button variant="outline" className="w-full">
-              Cosmo Base Libraryで読む
+            <Button variant="outline" className="w-full font-bold">
+              CBLで探す
               <ExternalLink className="w-4 h-4 ml-2" />
             </Button>
           </a>
