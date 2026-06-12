@@ -1,7 +1,7 @@
 // app/cosmomatch/rocket/page.tsx
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
@@ -61,17 +61,14 @@ export const QUESTIONS: Question[] = [
 export default function DiagnosePage() {
   const router = useRouter()
   const [started, setStarted] = useState(false)
-  const [currentStep, setCurrentStep] = useState(0) // 0 to 4
+  const [currentStep, setCurrentStep] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   
-  // ユーザーの8軸合計スコア
   const [userStats, setUserStats] = useState<RocketStats>({
     power: 0, technology: 0, history: 0, ace: 0, challenge: 0, individuality: 0, future: 0, trust: 0
   })
 
-  // 回答を選択したときの処理
   const handleChoice = (score: Partial<RocketStats>) => {
-    // スコアの加算
     const updatedStats = { ...userStats }
     Object.keys(score).forEach((key) => {
       const k = key as keyof RocketStats
@@ -82,12 +79,10 @@ export default function DiagnosePage() {
     if (currentStep < QUESTIONS.length - 1) {
       setCurrentStep(currentStep + 1)
     } else {
-      // 全問回答終了 -> 計算中アニメーションへ
       calculateResult(updatedStats)
     }
   }
 
-  // ベストマッチなロケットを算出するロジック（ユークリッド距離アルゴリズム）
   const calculateResult = (finalStats: RocketStats) => {
     setIsLoading(true)
 
@@ -101,7 +96,6 @@ export default function DiagnosePage() {
           const k = key as keyof RocketStats
           const userScore = finalStats[k] || 0
           const rocketScore = rocket.stats[k]
-          // 距離の二乗を累積
           distance += Math.pow(userScore - rocketScore, 2)
         })
 
@@ -111,12 +105,23 @@ export default function DiagnosePage() {
         }
       })
 
-      // 計算完了、結果ページへパラメータ付きで遷移
-      router.push(`/cosmomatch/rocket/result?rocket=${bestRocket.slug}`)
-    }, 2200) // 演出のために2.2秒待たせる
+      // ★ 修正: ユーザーのスコアもパラメータに含めて結果ページへ渡す
+      const queryParams = new URLSearchParams({
+        rocket: bestRocket.slug,
+        power: String(finalStats.power),
+        technology: String(finalStats.technology),
+        history: String(finalStats.history),
+        ace: String(finalStats.ace),
+        challenge: String(finalStats.challenge),
+        individuality: String(finalStats.individuality),
+        future: String(finalStats.future),
+        trust: String(finalStats.trust),
+      }).toString()
+
+      router.push(`/cosmomatch/rocket/result?${queryParams}`)
+    }, 2200)
   }
 
-  // 1つ前の質問に戻る処理
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1)
@@ -125,10 +130,9 @@ export default function DiagnosePage() {
     }
   }
 
-  // スタート画面
   if (!started) {
     return (
-      <ContentPageLayout title="推しロケット診断" level={1} levelTitle="" logo="">
+      <ContentPageLayout title="推しロケット診断" level={1} levelTitle="" logo="CBtype">
         <div className="max-w-2xl mx-auto text-center py-12 animate-in fade-in duration-500">
           <div className="inline-flex items-center justify-center p-5 bg-primary/20 rounded-full mb-6 border border-primary/30 shadow-[0_0_20px_rgba(0,242,254,0.2)]">
             <RocketIcon className="w-12 h-12 text-primary animate-pulse" />
@@ -164,10 +168,9 @@ export default function DiagnosePage() {
     )
   }
 
-  // 計算中（ローディング）画面
   if (isLoading) {
     return (
-      <ContentPageLayout title="推しロケット診断" level={1} levelTitle="" logo="">
+      <ContentPageLayout title="推しロケット診断" level={1} levelTitle="" logo="CBtype">
         <div className="max-w-md mx-auto text-center py-24 flex flex-col items-center justify-center animate-in fade-in duration-300">
           <Loader2 className="w-12 h-12 text-accent animate-spin mb-6" />
           <h3 className="text-2xl font-bold text-foreground mb-2">推しロケットを分析中...</h3>
@@ -179,15 +182,12 @@ export default function DiagnosePage() {
     )
   }
 
-  // 診断中の問題カード
   const currentQuestion = QUESTIONS[currentStep]
   const progressPercent = ((currentStep + 1) / QUESTIONS.length) * 100
 
   return (
-    <ContentPageLayout title="推しロケット診断" level={1} levelTitle="" logo="">
+    <ContentPageLayout title="推しロケット診断" level={1} levelTitle="" logo="CBtype">
       <div className="max-w-xl mx-auto py-6">
-        
-        {/* 上部進行バー＆戻るボタン */}
         <div className="flex items-center justify-between mb-8">
           <button onClick={handleBack} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors group">
             <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
@@ -198,12 +198,10 @@ export default function DiagnosePage() {
           </div>
         </div>
 
-        {/* 進行状況バー */}
         <div className="w-full h-1 bg-secondary rounded-full overflow-hidden mb-10">
           <div className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300" style={{ width: `${progressPercent}%` }} />
         </div>
 
-        {/* 質問カードカード */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-400">
           <h3 className="text-2xl font-bold text-foreground text-center mb-8 leading-snug">
             {currentQuestion.title}
@@ -224,7 +222,6 @@ export default function DiagnosePage() {
             ))}
           </div>
         </div>
-
       </div>
     </ContentPageLayout>
   )

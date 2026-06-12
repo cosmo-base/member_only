@@ -9,7 +9,6 @@ import { LayoutGrid, Globe, Shield, Calendar, Layers, ExternalLink, ArrowLeft, B
 
 export const dynamic = 'force-static';
 
-// Static パスの生成（高速表示対応）
 export async function generateStaticParams() {
   return ROCKETS.map((rocket) => ({
     slug: rocket.slug,
@@ -24,14 +23,12 @@ export default function RocketDetailPage({ params }: PageProps) {
   const rocket = ROCKETS.find(r => r.slug === params.slug)
   if (!rocket) notFound()
 
-  // 関連ロケットオブジェクトの抽出
   const relatedList = ROCKETS.filter(r => rocket.relatedRockets.includes(r.slug))
 
   return (
-    <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="">
+    <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="CBtype">
       <div className="max-w-4xl mx-auto pb-16 animate-in fade-in duration-500">
         
-        {/* 上部パンくず */}
         <div className="mb-6">
           <Link href="/cosmomatch/rocket" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-4 h-4" /> 診断トップに戻る
@@ -40,6 +37,7 @@ export default function RocketDetailPage({ params }: PageProps) {
 
         {/* 1. ファーストビュー */}
         <div className="glass-card rounded-2xl p-6 md:p-8 mb-6 border border-border/50 relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1.5 z-30" style={{ backgroundColor: rocket.stats.ace > 4 ? '#00f2fe' : '#38bdf8' }} />
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
             <div className="flex flex-wrap gap-2">
               <span className="bg-primary/20 text-primary border border-primary/30 text-xs font-bold px-3 py-1 rounded-full">{rocket.country}</span>
@@ -70,7 +68,7 @@ export default function RocketDetailPage({ params }: PageProps) {
           </div>
           <div className="bg-secondary/20 p-4 rounded-xl border border-border/40">
             <span className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><Calendar className="w-3.5 h-3.5" /> 評価軸モデル</span>
-            <p className="text-sm font-bold text-foreground">8軸共通レーダー</p>
+            <p className="text-sm font-bold text-foreground">8軸共通モデル</p>
           </div>
         </div>
 
@@ -99,7 +97,6 @@ export default function RocketDetailPage({ params }: PageProps) {
 
         {/* 4. コミュニティ回遊層 (関連ロケット ＆ CBL記事) */}
         <div className="grid md:grid-cols-2 gap-6">
-          {/* 関連ロケット */}
           <div className="space-y-4">
             <h4 className="font-bold text-foreground text-base">関連するロケット</h4>
             <div className="space-y-2">
@@ -114,9 +111,8 @@ export default function RocketDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* CBLへのリンク */}
           <div className="space-y-4">
-            <h4 className="font-bold text-foreground text-base">CBLでもっと知識を深める</h4>
+            <h4 className="font-bold text-foreground text-base">CBL（ライブラリ）で知識を深める</h4>
             <div className="space-y-2">
               {rocket.articleLinks.map((link, idx) => (
                 <a key={idx} href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between bg-background/50 hover:bg-secondary/30 border border-border/50 rounded-xl p-3 transition-colors group">

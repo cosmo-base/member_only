@@ -8,38 +8,54 @@ import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/glass-card"
 import { ROCKETS } from "@/data/rocket"
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from "recharts"
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Legend } from "recharts"
 import { Award, ArrowRight, RefreshCw, BookOpen, Star, Sparkles, Loader2, ChevronRight } from "lucide-react"
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ★ 1. 中身のコンテンツコンポーネント (useSearchParamsを使う部分)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function ResultContent() {
   const searchParams = useSearchParams()
   const rocketSlug = searchParams.get("rocket") || "h3"
 
-  // マッチしたロケットを特定
   const rocket = ROCKETS.find(r => r.slug === rocketSlug) || ROCKETS[0]
 
-  // レーダーチャート用のデータ整形
+  // ★ パラメータからユーザーの各スコアをパース (無ければデフォルト値)
+  const userScores = {
+    power: Number(searchParams.get("power") || 3),
+    technology: Number(searchParams.get("technology") || 3),
+    history: Number(searchParams.get("history") || 2),
+    ace: Number(searchParams.get("ace") || 3),
+    challenge: Number(searchParams.get("challenge") || 3),
+    individuality: Number(searchParams.get("individuality") || 2),
+    future: Number(searchParams.get("future") || 3),
+    trust: Number(searchParams.get("trust") || 3),
+  }
+
+  // ★ ユーザーとロケットのスコアを重ねたチャートデータ構造を作成
   const chartData = [
-    { subject: "パワー", A: rocket.stats.power },
-    { subject: "技術", A: rocket.stats.technology },
-    { subject: "歴史", A: rocket.stats.history },
-    { subject: "エース", A: rocket.stats.ace },
-    { subject: "挑戦", A: rocket.stats.challenge },
-    { subject: "個性", A: rocket.stats.individuality },
-    { subject: "未来", A: rocket.stats.future },
-    { subject: "信頼", A: rocket.stats.trust },
+    { subject: "パワー", あなた: userScores.power, ロケット: rocket.stats.power },
+    { subject: "技術", あなた: userScores.technology, ロケット: rocket.stats.technology },
+    { subject: "歴史", あなた: userScores.history, ロケット: rocket.stats.history },
+    { subject: "エース", あなた: userScores.ace, ロケット: rocket.stats.ace },
+    { subject: "挑戦", あなた: userScores.challenge, ロケット: rocket.stats.challenge },
+    { subject: "個性", あなた: userScores.individuality, ロケット: rocket.stats.individuality },
+    { subject: "未来", あなた: userScores.future, ロケット: rocket.stats.future },
+    { subject: "信頼", あなた: userScores.trust, ロケット: rocket.stats.trust },
   ]
 
-  // 推し以外の第2候補をランダムまたは近似で2機選定
-  const otherCandidates = ROCKETS.filter(r => r.slug !== rocket.slug).slice(0, 2)
+  // ★ 動的な相性同調率の計算 (絶対値の差分から高揚感のある数値を算出)
+  const totalDiff = Object.keys(userScores).reduce((acc, key) => {
+    const k = key as keyof typeof userScores
+    return acc + Math.abs(userScores[k] - rocket.stats[k])
+  }, 0)
+  const matchPercent = Math.max(78, AppLimits(98, Math.round(100 - totalDiff * 2.5)));
+
+  function AppLimits(max: number, val: number) {
+    return val > max ? max : val;
+  }
+
+  const subcontractors = ROCKETS.filter(r => r.slug !== rocket.slug).slice(0, 2)
 
   return (
     <div className="max-w-3xl mx-auto pb-16 animate-in fade-in zoom-in-95 duration-500">
-      
-      {/* ファーストビュー */}
       <div className="text-center mb-8 relative">
         <span className="px-3 py-1 text-xs font-bold bg-accent/20 text-accent rounded-full border border-accent/30 tracking-widest uppercase glow-sm mb-3 inline-block">
           BEST MATCH
@@ -52,7 +68,6 @@ function ResultContent() {
         </p>
       </div>
 
-      {/* 巨大ビジュアル (シルエットまたはモック画像) */}
       <div className="w-full relative aspect-[21/9] bg-gradient-to-b from-secondary/30 to-background rounded-2xl border border-border/40 overflow-hidden flex items-center justify-center mb-8 shadow-inner">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5" />
         <div className="text-7xl filter drop-shadow-[0_0_20px_rgba(0,242,254,0.5)] transform -rotate-12 animate-bounce duration-1000">
@@ -63,29 +78,29 @@ function ResultContent() {
 
       {/* チャート ＆ 納得感セクション */}
       <div className="grid md:grid-cols-5 gap-6 items-center mb-10">
-        {/* 左側: チャート */}
-        <div className="md:col-span-3 bg-secondary/10 border border-border/40 p-4 rounded-2xl h-[280px] flex items-center justify-center">
+        <div className="md:col-span-3 bg-secondary/10 border border-border/40 p-4 rounded-2xl h-[300px] flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
-            <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
+            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
               <PolarGrid stroke="#38bdf8" opacity={0.2} />
               <PolarAngleAxis dataKey="subject" stroke="#94a3b8" fontSize={11} fontWeight="bold" />
-              <Radar name={rocket.name} dataKey="A" stroke="#00f2fe" fill="#00f2fe" fillOpacity={0.3} />
+              {/* ★ 2つのデータを重ねて描画 */}
+              <Radar name="あなた" dataKey="あなた" stroke="#ff007f" fill="#ff007f" fillOpacity={0.25} />
+              <Radar name={rocket.name} dataKey="ロケット" stroke="#00f2fe" fill="#00f2fe" fillOpacity={0.2} />
+              <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
             </RadarChart>
           </ResponsiveContainer>
         </div>
-        {/* 右側: 補足説明 */}
         <div className="md:col-span-2 space-y-4">
-          <div className="inline-flex items-center gap-2 font-bold text-lg text-foreground bg-primary/10 px-4 py-2 rounded-xl border border-primary/20">
+          <div className="inline-flex items-center gap-2 font-bold text-lg text-foreground bg-primary/10 px-4 py-2 rounded-xl border border-primary/20 shadow-[0_0_15px_rgba(0,242,254,0.1)]">
             <Award className="w-5 h-5 text-primary" />
-            相性同調率: 94%
+            相性同調率: {matchPercent}%
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            あなたの「惹かれる感情のパラメータ」と、{rocket.name}の持つ機体設計・背景ストーリーのグラフが最も高い純度で美しく重なり合いました。
+            あなたの「惹かれる重要ポイント」と、{rocket.name}が持つ設計思想・役割パラメータを重ね合わせました。このグラフのシンクロ率が、相性の証明です。
           </p>
         </div>
       </div>
 
-      {/* 魅力カード */}
       <div className="space-y-4 mb-12">
         <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
           <Star className="w-4 h-4 text-primary fill-primary" />
@@ -103,15 +118,14 @@ function ResultContent() {
         </div>
       </div>
 
-      {/* 第2候補 */}
-      {otherCandidates.length > 0 && (
+      {subcontractors.length > 0 && (
         <div className="mb-12">
           <h3 className="text-sm font-bold text-muted-foreground tracking-wider uppercase mb-4">
             あなたに近い他のロケット候補
           </h3>
           <div className="grid sm:grid-cols-2 gap-4">
-            {otherCandidates.map((cand) => (
-              <Link key={cand.slug} href={`/cosmomatch/rocket/result?rocket=${cand.slug}`} className="block group">
+            {subcontractors.map((cand) => (
+              <Link key={cand.slug} href={`/cosmomatch/rocket/result?rocket=${cand.slug}&power=${userScores.power}&technology=${userScores.technology}&history=${userScores.history}&ace=${userScores.ace}&challenge=${userScores.challenge}&individuality=${userScores.individuality}&future=${userScores.future}&trust=${userScores.trust}`} className="block group">
                 <div className="bg-secondary/10 border border-border/40 rounded-xl p-4 flex items-center justify-between hover:border-primary/40 hover:bg-secondary/30 transition-all">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{cand.emoji}</span>
@@ -128,32 +142,27 @@ function ResultContent() {
         </div>
       )}
 
-      {/* 最終CTAアクション */}
       <div className="border-t border-border/50 pt-8 flex flex-col sm:flex-row gap-4 justify-center">
         <Link href={`/cosmomatch/rocket/dictionary/${rocket.slug}`} className="w-full sm:w-auto">
-          <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow h-13 px-8 rounded-full font-bold">
+          <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow h-12 px-8 rounded-full font-bold">
             <BookOpen className="w-4 h-4 mr-2" />
             {rocket.name}の図鑑でもっと深掘りする
           </Button>
         </Link>
         <Link href="/cosmomatch/rocket" className="w-full sm:w-auto">
-          <Button variant="outline" className="w-full border-border/60 text-muted-foreground hover:text-foreground h-13 px-6 rounded-full font-bold">
+          <Button variant="outline" className="w-full border-border/60 text-muted-foreground hover:text-foreground h-12 px-6 rounded-full font-bold">
             <RefreshCw className="w-4 h-4 mr-2" />
             もう一度診断する
           </Button>
         </Link>
       </div>
-
     </div>
   )
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ★ 2. ページ本体 (Suspenseで囲んでビルドエラーを回避)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export default function ResultPage() {
   return (
-    <ContentPageLayout title="診断結果" level={1} levelTitle="" logo="">
+    <ContentPageLayout title="診断結果" level={1} levelTitle="" logo="CBtype">
       <Suspense fallback={
         <div className="max-w-3xl mx-auto py-24 flex flex-col items-center justify-center">
           <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
