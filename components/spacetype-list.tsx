@@ -9,9 +9,8 @@ import { GlassCard } from "@/components/glass-card"
 const BASIC_TYPES = [
     {
         id: "RI",
-        title: "🔭 天文台トラベラー",
+        title: "天文台トラベラー",
         emoji: "🔭",
-        icon: Telescope,
         catchcopy: "宇宙、普通にロマンすぎない？",
         explanation: "・難しい話はちょっと苦手\n・でも宇宙はめちゃくちゃ気になる\n・気づいたら宇宙の画像見てる",
         howToSpend: "👉 まずは“見るだけ”でOK",
@@ -23,9 +22,8 @@ const BASIC_TYPES = [
     },
     {
         id: "DI",
-        title: "🛰️ 人工衛星",
+        title: "人工衛星",
         emoji: "🛰️",
-        icon: Satellite,
         catchcopy: "宇宙って色んな楽しみ方あるよね",
         explanation: "・ニュースも気になる\n・雑談も好き\n・とりあえず全部ちょっとずつ見たい",
         howToSpend: "👉 気になるところからつまみ食いでOK",
@@ -37,9 +35,8 @@ const BASIC_TYPES = [
     },
     {
         id: "RO",
-        title: "🚀 ロケット打ち上げ",
+        title: "ロケット打ち上げ",
         emoji: "🚀",
-        icon: Rocket,
         catchcopy: "それ、実際に行けるの？",
         explanation: "・イベント見つけたら調べてる\n・気づいたら応募ページ見てる\n・とりあえず一歩踏みがち",
         howToSpend: "👉 小さくてもいいから1回動いてみる",
@@ -51,9 +48,8 @@ const BASIC_TYPES = [
     },
     {
         id: "DO",
-        title: "🌍 宇宙ステーション",
+        title: "宇宙ステーション",
         emoji: "🌍",
-        icon: Earth,
         catchcopy: "それ、どういう仕組み？",
         explanation: "・ちゃんと理解したい\n・人に説明したくなる\n・気づいたら深掘りしてる",
         howToSpend: "👉 知識を“誰かに話す”と一気に楽しくなる",
@@ -87,8 +83,8 @@ export function SpaceTypeList() {
                     <div className="px-8 py-3 rounded-full text-sm font-bold bg-primary text-primary-foreground shadow-lg shadow-primary/25 cursor-default">
                         簡易版（4タイプ）
                     </div>
-                    <Link 
-                        href="/type/detail/list" 
+                    <Link
+                        href="/type/detail/list"
                         className="px-8 py-3 rounded-full text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all duration-300"
                     >
                         完全版（16タイプ）
@@ -98,16 +94,15 @@ export function SpaceTypeList() {
 
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
                 {BASIC_TYPES.map((type) => {
-                    const Icon = type.icon;
                     return (
                         <GlassCard key={type.id} className="relative overflow-hidden p-0 group">
                             <div className="absolute left-0 top-0 bottom-0 w-2 bg-current z-20" style={{ backgroundColor: type.color }} />
-                            
+
                             <div className="flex flex-col md:flex-row relative z-10">
                                 {/* 画像エリア */}
                                 <div className="md:w-5/12 lg:w-1/3 relative bg-secondary/30 aspect-square md:aspect-auto flex items-center justify-center overflow-hidden pl-2">
-                                    <img 
-                                        src={`/images/${type.img}`} // ★ 画像パス（適宜修正してください）
+                                    <img
+                                        src={`/member_only/${type.img}`} //  画像パス
                                         alt={type.title}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                         onError={(e) => {
@@ -118,7 +113,7 @@ export function SpaceTypeList() {
                                     />
                                     {/* 画像がない時の代替表示 */}
                                     <div className="hidden absolute inset-0 flex flex-col items-center justify-center bg-secondary/50">
-                                        <Icon className="w-20 h-20 opacity-50" style={{ color: type.color }} />
+                                        <div className="text-6xl filter drop-shadow-md opacity-30">{type.emoji}</div>
                                     </div>
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background hidden md:block" />
                                 </div>
@@ -127,11 +122,11 @@ export function SpaceTypeList() {
                                 <div className="p-6 md:p-8 md:w-7/12 lg:w-2/3 flex flex-col justify-center">
                                     <div className="flex items-center gap-3 mb-2">
                                         <div className="p-2 rounded-lg bg-background/50 border border-border/50">
-                                            <Icon className="w-5 h-5" style={{ color: type.color }} />
+                                            <div className="text-2xl filter drop-shadow-lg">{type.emoji}</div>
                                         </div>
                                         <h3 className="text-2xl font-bold text-foreground">{type.title}</h3>
                                     </div>
-                                    
+
                                     <p className="text-lg font-bold mb-6" style={{ color: type.color }}>
                                         「{type.catchcopy}」
                                     </p>

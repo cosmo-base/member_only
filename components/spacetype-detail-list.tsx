@@ -61,16 +61,16 @@ export function SpaceTypeDetailList() {
           {FULL_TYPES.map((type) => (
             <GlassCard key={type.id} className="relative overflow-hidden p-0 flex flex-col h-full group">
               
-              {/* ★ エラー修正: GlassCardのstyleを外し、一番上に絶対配置でカラー線を引く */}
+              {/* GlassCardのstyleを外し、一番上に絶対配置でカラー線を引く */}
               <div className="absolute top-0 left-0 right-0 h-1.5 z-30" style={{ backgroundColor: type.color }} />
               
               {/* 背景のグロウ */}
               <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-10 pointer-events-none z-0" style={{ backgroundColor: type.color }} />
 
-              {/* ★ 追加: 画像エリア (フル幅) */}
+              {/* 画像エリア (フル幅) */}
               <div className="w-full relative aspect-video bg-secondary/30 overflow-hidden flex items-center justify-center z-10 border-b border-border/30">
                 <img 
-                  src={`/type/${type.id}.png`} // フォルダ指定: public/type/〇〇.png
+                  src={`/member_only/type/${type.id}.png`} // フォルダ指定: public/type/〇〇.png
                   alt={type.typeTitle}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   onError={(e) => {
