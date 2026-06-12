@@ -2,11 +2,14 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ContentPageLayout } from "@/components/content-page-layout"
+import { Button } from "@/components/ui/button"
+import { GlassCard } from "@/components/glass-card"
 import { ROCKETS } from "@/data/rocket"
 import { Globe, Shield, Calendar, Layers, ExternalLink, ArrowLeft, Bookmark } from "lucide-react"
 
 export const dynamic = 'force-static';
 
+// GitHub Actionsのビルド時に確実にHTMLを書き出させる
 export async function generateStaticParams() {
   return ROCKETS.map((rocket) => ({
     id: rocket.slug, 
@@ -14,19 +17,23 @@ export async function generateStaticParams() {
 }
 
 interface PageProps {
-  params: { id: string }
+  // Next.js 14（同期）と Next.js 15（非同期 Promise）の両方でエラーにならない型定義
+  params: Promise<{ id: string }> | { id: string } | any;
 }
 
-export default function RocketDetailPage({ params }: PageProps) {
-  // ★ 修正: URLから渡ってきた params.id を使ってロケットを探す
-  const rocket = ROCKETS.find(r => r.slug === params.id)
+export default async function RocketDetailPage({ params }: PageProps) {
+  // ★ Next.js 15対策: paramsを確実にawaitして安全にidを取り出す
+  const resolvedParams = await params;
+  const currentId = resolvedParams?.id;
+
+  const rocket = ROCKETS.find(r => r.slug === currentId)
   
   if (!rocket) notFound()
 
   const relatedList = ROCKETS.filter(r => rocket.relatedRockets.includes(r.slug))
 
   return (
-    <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="">
+    <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="CBtype">
       <div className="max-w-4xl mx-auto pb-16 animate-in fade-in duration-500">
         
         <div className="mb-6">
