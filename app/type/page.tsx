@@ -53,7 +53,7 @@ export default function DiagnosisPage() {
             結果はSNSでシェアできます。
           </p>
           <Link href="/type/content/">
-            <Button className="w-full bg-primary/70 hover:bg-primary/60 text-primary-foreground font-bold">
+            <Button id="type4" className="w-full bg-primary/70 hover:bg-primary/60 text-primary-foreground font-bold">
               簡易診断を始める
             </Button>
           </Link>

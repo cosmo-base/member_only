@@ -323,7 +323,7 @@ export default function SpaceTypeDiagnosis() {
                 あなたの「関心」や「関わり方」から<br />
                 16種類のタイプを分析します。
               </p>
-            <button onClick={() => handleStepChange('page1')} className="bg-[#EEEEFF] text-[#000033] font-bold py-4 px-10 rounded-full hover:scale-105 transition-transform">
+            <button id="type16" onClick={() => handleStepChange('page1')} className="bg-[#EEEEFF] text-[#000033] font-bold py-4 px-10 rounded-full hover:scale-105 transition-transform">
               診断を始める
             </button>
           </div>

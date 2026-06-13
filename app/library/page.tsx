@@ -43,7 +43,7 @@ export default function LibraryPage() {
         <p className="text-muted-foreground text-sm mb-4">
           宇宙の知識を深めましょう
         </p>
-        <a
+        <a id="cbl"
           href="https://cosmo-base.github.io/library/index.html?utm_source=CBMO&utm_medium=CBL"
           target="_blank"
           rel="noopener noreferrer"

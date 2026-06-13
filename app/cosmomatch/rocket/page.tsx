@@ -157,7 +157,7 @@ export default function DiagnosePage() {
             </div>
           </GlassCard>
 
-          <Button 
+          <Button id="CMrocket"
             onClick={() => setStarted(true)}
             className="bg-primary text-primary-foreground hover:bg-primary/90 glow h-14 px-12 rounded-full font-bold text-lg transition-transform active:scale-95"
           >

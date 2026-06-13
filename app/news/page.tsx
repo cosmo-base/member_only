@@ -52,7 +52,7 @@ export default function NewsPage() {
           過去の週刊ニュースをアーカイブ。見逃したニュースも
           いつでも振り返ることができます。テーマ別や時系列での検索も可能です。
         </p>
-        <a
+        <a id="news"
           href="https://cosmo-base.github.io/library/index.html"
           target="_blank"
           rel="noopener noreferrer"
