@@ -1,7 +1,7 @@
 // app/cosmomatch/rocket/result/page.tsx
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { ROCKETS } from "@/data/CMrockets"
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Legend } from "recharts"
 import { Award, RefreshCw, BookOpen, Star, Sparkles, Loader2, ChevronRight } from "lucide-react"
+import { saveDiagnosisResult } from "@/app/actions/save-match-result"
 
 function ResultContent() {
   const searchParams = useSearchParams()
@@ -50,6 +51,29 @@ function ResultContent() {
   function AppLimits(max: number, val: number) {
     return val > max ? max : val;
   }
+
+  const hasSaved = useRef(false);
+
+  useEffect(() => {
+    // 開発環境で2回送信されるのを防ぐためのブロック
+    if (!hasSaved.current) {
+      hasSaved.current = true;
+      
+      // 非同期で裏側でこっそり送信
+      saveDiagnosisResult({
+        rocket: rocket.name,
+        matchPercent: matchPercent,
+        power: userScores.power,
+        technology: userScores.technology,
+        history: userScores.history,
+        ace: userScores.ace,
+        challenge: userScores.challenge,
+        individuality: userScores.individuality,
+        future: userScores.future,
+        trust: userScores.trust,
+      });
+    }
+  }, [rocket.name, matchPercent, userScores]);
 
   const subcontractors = ROCKETS.filter(r => r.slug !== rocket.slug).slice(0, 2)
 
