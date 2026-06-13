@@ -105,7 +105,7 @@ function getGoogleCalendarUrl(event: any) {
         datesParam = `&dates=${startDate}/${endDate}&ctz=Asia/Tokyo`;
       } else {
         // 終日イベント処理 (Googleカレンダー仕様: 終了日を翌日にする)
-        const endObj = new Date(`${endDate.slice(0,4)}-${endDate.slice(4,6)}-${endDate.slice(6,8)}`);
+        const endObj = new Date(`${endDate.slice(0, 4)}-${endDate.slice(4, 6)}-${endDate.slice(6, 8)}`);
         endObj.setDate(endObj.getDate() + 1);
         const nextDay = `${endObj.getFullYear()}${String(endObj.getMonth() + 1).padStart(2, '0')}${String(endObj.getDate()).padStart(2, '0')}`;
         datesParam = `&dates=${startDate}/${nextDay}`;
@@ -241,20 +241,24 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             </a>
           )}
 
-          {/* ★ カレンダー追加ボタン */}
           {event.date && (
             <a href={getGoogleCalendarUrl(event)} target="_blank" rel="noopener noreferrer" className="flex-1 sm:min-w-[200px]">
               <Button variant="outline" className="w-full font-bold border-accent/50 text-accent hover:bg-accent/10">
-                カレンダーに追加
+                Googleカレンダーに追加
                 <CalendarPlus className="w-4 h-4 ml-2" />
               </Button>
             </a>
           )}
 
-          {/* GoogleマップのURLを修正 */}
-          {event.lat && event.lng && (
+          {event.location && (
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${event.lat},${event.lng}`}
+              href={
+                event.lat && event.lng
+                  // 座標と施設名の両方がある場合: 座標付近で施設名検索
+                  ? `https://maps.google.com/maps?q=${encodeURIComponent(event.location)}&ll=${event.lat},${event.lng}&z=16`
+                  // 施設名（住所）しかない場合: シンプルなテキスト検索
+                  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 sm:min-w-[200px]"
