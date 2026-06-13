@@ -6,10 +6,9 @@ import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
-import { GlassCard } from "@/components/glass-card"
 import { ROCKETS } from "@/data/CMrockets"
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Legend } from "recharts"
-import { Award, ArrowRight, RefreshCw, BookOpen, Star, Sparkles, Loader2, ChevronRight } from "lucide-react"
+import { Award, RefreshCw, BookOpen, Star, Sparkles, Loader2, ChevronRight } from "lucide-react"
 
 function ResultContent() {
   const searchParams = useSearchParams()
@@ -162,7 +161,7 @@ function ResultContent() {
 
 export default function ResultPage() {
   return (
-    <ContentPageLayout title="診断結果" level={1} levelTitle="" logo="">
+    <ContentPageLayout title="診断結果" level={1} levelTitle="" logo="CosmoMatch">
       <Suspense fallback={
         <div className="max-w-3xl mx-auto py-24 flex flex-col items-center justify-center">
           <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />

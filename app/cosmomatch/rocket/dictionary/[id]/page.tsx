@@ -2,9 +2,8 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ContentPageLayout } from "@/components/content-page-layout"
-import { GlassCard } from "@/components/glass-card"
 import { ROCKETS } from "@/data/CMrockets"
-import { Globe, Shield, Calendar, Layers, ExternalLink, ArrowLeft, Bookmark, Activity } from "lucide-react"
+import { Globe, Shield, Layers, ExternalLink, ArrowLeft, Bookmark, Activity } from "lucide-react"
 import { CMRadarChart } from "@/components/ui/radar-chart"
 
 export const dynamic = 'force-static';
@@ -42,7 +41,7 @@ export default async function RocketDetailPage({ params }: PageProps) {
   ]
 
   return (
-    <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="CBtype">
+    <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="CosmoMatch">
       <div className="max-w-4xl mx-auto pb-16 animate-in fade-in duration-500">
         
         <div className="mb-6">
@@ -69,7 +68,7 @@ export default async function RocketDetailPage({ params }: PageProps) {
         </div>
 
         {/* 2. 基本スペック */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-secondary/20 p-4 rounded-xl border border-border/40">
             <span className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><Globe className="w-3.5 h-3.5" /> 国 / 地域</span>
             <p className="text-sm font-bold text-foreground">{rocket.country}</p>
@@ -81,10 +80,6 @@ export default async function RocketDetailPage({ params }: PageProps) {
           <div className="bg-secondary/20 p-4 rounded-xl border border-border/40">
             <span className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><Shield className="w-3.5 h-3.5" /> 運用ステータス</span>
             <p className="text-sm font-bold text-foreground">{rocket.status === "active" ? "現役" : "退役"}</p>
-          </div>
-          <div className="bg-secondary/20 p-4 rounded-xl border border-border/40">
-            <span className="text-xs text-muted-foreground flex items-center gap-1 mb-1"><Calendar className="w-3.5 h-3.5" /> 評価軸モデル</span>
-            <p className="text-sm font-bold text-foreground">8軸共通モデル</p>
           </div>
         </div>
 

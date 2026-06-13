@@ -17,6 +17,7 @@ import shittokuLogo from "../public/CBshittoku_logo.png"
 import typeLogo from "../public/CBtype_logo.png" 
 import voyagerLogo from "../public/CBvoyager_logo.png"
 import cbmdLogo from "../public/CBMD_logo.png"
+import cmlogo from "../public/CosmoMatch.png"
 
 // ★ logoプロパティを追加し、インポートした画像をマッピング
 const level1Content = [
