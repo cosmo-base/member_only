@@ -2,7 +2,7 @@
 import { Metadata } from "next"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
-import { MapPin, Calendar, Clock, ArrowLeft, ExternalLink, User, Users, Building } from "lucide-react"
+import { MapPin, Calendar, Clock, ArrowLeft, ExternalLink, User, Users, Building, CalendarPlus } from "lucide-react"
 import Link from "next/link"
 import { fetchEventsData } from "@/data/CBED"
 import { notFound } from "next/navigation"
@@ -10,12 +10,11 @@ import { notFound } from "next/navigation"
 export const dynamicParams = false;
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ★ 1. ページ生成の指示出し（ここで146件分の指示を強制的に出させます！）
+// ★ 1. ページ生成の指示出し
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export async function generateStaticParams() {
   const events = await fetchEventsData();
 
-  // 重複IDや空のIDを排除して確実に全件渡す最強のロジック
   const uniqueIds = new Set<string>();
   const params: { id: string }[] = [];
 
@@ -27,7 +26,6 @@ export async function generateStaticParams() {
     }
   });
 
-  // ターミナルに強制的に生成件数を表示させます！
   console.log(`\n=========================================`);
   console.log(`🚀 generateStaticParams が ${params.length} ページ分の作成を指示しました！`);
   console.log(`=========================================\n`);
@@ -40,7 +38,6 @@ export async function generateStaticParams() {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  // Next.jsのURLエンコード（%20など）のバグ対策
   const eventId = decodeURIComponent(resolvedParams.id);
 
   const allEvents = await fetchEventsData();
@@ -61,6 +58,67 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ★ Googleカレンダー連携URLの生成ロジック
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function getGoogleCalendarUrl(event: any) {
+  const baseUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE";
+  const title = encodeURIComponent(event.title || "宇宙イベント");
+  const details = encodeURIComponent((event.description || "") + (event.link ? `\n\n🔗 詳細・申込: ${event.link}` : ""));
+  const location = encodeURIComponent(event.location || "");
+
+  let datesParam = "";
+
+  try {
+    // 日付の抽出 (YYYY/MM/DD, YYYY-MM-DD などに対応)
+    const matchDate = event.date?.match(/(\d{4})[-/年\.]\s*(\d{1,2})[-/月\.]\s*(\d{1,2})/);
+    if (matchDate) {
+      const y = matchDate[1];
+      const m = matchDate[2].padStart(2, '0');
+      const d = matchDate[3].padStart(2, '0');
+      let startDate = `${y}${m}${d}`;
+      let endDate = startDate;
+
+      const matchEndDate = event.endDate?.match(/(\d{4})[-/年\.]\s*(\d{1,2})[-/月\.]\s*(\d{1,2})/);
+      if (matchEndDate) {
+        const ey = matchEndDate[1];
+        const em = matchEndDate[2].padStart(2, '0');
+        const ed = matchEndDate[3].padStart(2, '0');
+        endDate = `${ey}${em}${ed}`;
+      }
+
+      // 時間の抽出 (HH:MM を探し出す)
+      const timeMatches = event.time?.match(/(\d{1,2}):(\d{2})/g);
+      if (timeMatches && timeMatches.length >= 1) {
+        const startT = timeMatches[0].replace(':', '').padStart(4, '0') + "00";
+        startDate += `T${startT}`;
+
+        if (timeMatches.length >= 2) {
+          const endT = timeMatches[1].replace(':', '').padStart(4, '0') + "00";
+          endDate += `T${endT}`;
+        } else {
+          // 終了時間が記載されていない場合は、仮で1時間後に設定
+          const startHour = parseInt(timeMatches[0].split(':')[0], 10);
+          const startMin = timeMatches[0].split(':')[1];
+          const endHour = String((startHour + 1) % 24).padStart(2, '0');
+          endDate += `T${endHour}${startMin}00`;
+        }
+        datesParam = `&dates=${startDate}/${endDate}&ctz=Asia/Tokyo`;
+      } else {
+        // 終日イベント処理 (Googleカレンダー仕様: 終了日を翌日にする)
+        const endObj = new Date(`${endDate.slice(0,4)}-${endDate.slice(4,6)}-${endDate.slice(6,8)}`);
+        endObj.setDate(endObj.getDate() + 1);
+        const nextDay = `${endObj.getFullYear()}${String(endObj.getMonth() + 1).padStart(2, '0')}${String(endObj.getDate()).padStart(2, '0')}`;
+        datesParam = `&dates=${startDate}/${nextDay}`;
+      }
+    }
+  } catch (e) {
+    // パース失敗時でも、タイトルや詳細は引き継いでGoogleカレンダーを開かせる
+  }
+
+  return `${baseUrl}&text=${title}&details=${details}&location=${location}${datesParam}`;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 3. ページ本体の表示
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -70,7 +128,6 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   const allEvents = await fetchEventsData()
   const event = allEvents.find(e => String(e.id).trim() === eventId)
 
-  // ページ生成時に見つからなかった場合は404ページを出す（ここで弾かれていた可能性大）
   if (!event) {
     notFound()
   }
@@ -135,7 +192,6 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             {event.time && (
               <div className="flex items-start gap-3">
                 <Clock className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                {/* 修正：時間が複数行になっても綺麗に表示されるように whitespace-pre-wrap を追加 */}
                 <span className="whitespace-pre-wrap leading-relaxed">{event.time}</span>
               </div>
             )}
@@ -175,24 +231,35 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-border/50">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4 pt-6 border-t border-border/50">
           {event.link && (
-            <a href={event.link} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-              <Button className="w-full bg-primary/80 hover:bg-primary/70 text-primary-foreground">
-                詳細・申し込みページへ
+            <a href={event.link} target="_blank" rel="noopener noreferrer" className="flex-1 sm:min-w-[200px]">
+              <Button className="w-full bg-primary/80 hover:bg-primary/70 text-primary-foreground font-bold">
+                詳細・申し込み
                 <ExternalLink className="w-4 h-4 ml-2" />
               </Button>
             </a>
           )}
 
+          {/* ★ カレンダー追加ボタン */}
+          {event.date && (
+            <a href={getGoogleCalendarUrl(event)} target="_blank" rel="noopener noreferrer" className="flex-1 sm:min-w-[200px]">
+              <Button variant="outline" className="w-full font-bold border-accent/50 text-accent hover:bg-accent/10">
+                カレンダーに追加
+                <CalendarPlus className="w-4 h-4 ml-2" />
+              </Button>
+            </a>
+          )}
+
+          {/* GoogleマップのURLを修正 */}
           {event.lat && event.lng && (
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=$${event.lat},${event.lng}`}
+              href={`https://www.google.com/maps/search/?api=1&query=${event.lat},${event.lng}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto"
+              className="flex-1 sm:min-w-[200px]"
             >
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full font-bold">
                 Googleマップで開く
                 <MapPin className="w-4 h-4 ml-2" />
               </Button>
