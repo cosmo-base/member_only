@@ -165,7 +165,7 @@ export default function DiagnosePage() {
             <RocketIcon className="w-12 h-12 text-primary animate-pulse" />
           </div>
           <h2 className="text-3xl font-extrabold text-foreground mb-4 tracking-tight">
-            Cosmo Match - あなたの推しを探せ <br/>～ロケット編～
+            Cosmo Match - あなたの推し○○を探せ <br/>～ロケット編～
           </h2>
           <p className="text-muted-foreground text-base max-w-md mx-auto leading-relaxed mb-8">
             直感で答えるだけ。専門知識は一切不要！<br />
