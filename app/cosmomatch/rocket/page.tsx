@@ -58,6 +58,9 @@ export const QUESTIONS: Question[] = [
   }
 ]
 
+// エンコードの順番を固定するためのキー配列
+const STAT_KEYS = ['power', 'technology', 'history', 'ace', 'challenge', 'individuality', 'future', 'trust'] as const;
+
 export default function DiagnosePage() {
   const router = useRouter()
   const [started, setStarted] = useState(false)
@@ -67,23 +70,29 @@ export default function DiagnosePage() {
   const [userStats, setUserStats] = useState<RocketStats>({
     power: 0, technology: 0, history: 0, ace: 0, challenge: 0, individuality: 0, future: 0, trust: 0
   })
+  
+  // ユーザーの回答テキストを記録する
+  const [userAnswers, setUserAnswers] = useState<Record<number, string>>({})
 
-  const handleChoice = (score: Partial<RocketStats>) => {
+  const handleChoice = (score: Partial<RocketStats>, choiceText: string) => {
     const updatedStats = { ...userStats }
     Object.keys(score).forEach((key) => {
       const k = key as keyof RocketStats
       updatedStats[k] = (updatedStats[k] || 0) + (score[k] || 0)
     })
     setUserStats(updatedStats)
+    
+    const updatedAnswers = { ...userAnswers, [currentStep + 1]: choiceText }
+    setUserAnswers(updatedAnswers)
 
     if (currentStep < QUESTIONS.length - 1) {
       setCurrentStep(currentStep + 1)
     } else {
-      calculateResult(updatedStats)
+      calculateResult(updatedStats, updatedAnswers)
     }
   }
 
-  const calculateResult = (finalStats: RocketStats) => {
+  const calculateResult = (finalStats: RocketStats, finalAnswers: Record<number, string>) => {
     setIsLoading(true)
 
     setTimeout(() => {
@@ -105,20 +114,38 @@ export default function DiagnosePage() {
         }
       })
 
-      // ★ 修正: ユーザーのスコアもパラメータに含めて結果ページへ渡す
-      const queryParams = new URLSearchParams({
-        rocket: bestRocket.slug,
-        power: String(finalStats.power),
-        technology: String(finalStats.technology),
-        history: String(finalStats.history),
-        ace: String(finalStats.ace),
-        challenge: String(finalStats.challenge),
-        individuality: String(finalStats.individuality),
-        future: String(finalStats.future),
-        trust: String(finalStats.trust),
-      }).toString()
+      // 同調率の計算
+      const totalDiff = Object.keys(finalStats).reduce((acc, key) => {
+        const k = key as keyof RocketStats
+        return acc + Math.abs(finalStats[k] - bestRocket.stats[k])
+      }, 0)
+      const matchPercent = Math.max(78, Math.min(98, Math.round(100 - totalDiff * 2.5)));
 
-      router.push(`/cosmomatch/rocket/result?${queryParams}`)
+      // 1. GASへ裏側で送信（結果ページ遷移前に送ってしまう）
+      const GAS_URL = "https://script.google.com/macros/s/AKfycbxfhx-DlgYauECo0vPZ8TJNjs1pIL96GxhifeB4FTfxN__jIpYoz9JdNMnLub9euDtORQ/exec";
+      const payload = {
+        rocket: bestRocket.name,
+        matchPercent: matchPercent,
+        ...finalStats,
+        q1: finalAnswers[1] || "",
+        q2: finalAnswers[2] || "",
+        q3: finalAnswers[3] || "",
+        q4: finalAnswers[4] || "",
+        q5: finalAnswers[5] || "",
+      };
+      
+      fetch(GAS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      }).catch(err => console.error("GAS Error:", err));
+
+      // 2. パラメーターを「8桁の文字列(Base36)」に圧縮する
+      // 例: power=4, technology=10... なら "4a..." のように1文字ずつに圧縮
+      const encodedStats = STAT_KEYS.map(k => Math.min(35, finalStats[k] || 0).toString(36)).join('');
+
+      // 短縮URLで結果ページへ（r = ロケットslug, s = 8桁スコア）
+      router.push(`/cosmomatch/rocket/result?r=${bestRocket.slug}&s=${encodedStats}`)
     }, 2200)
   }
 
@@ -138,7 +165,7 @@ export default function DiagnosePage() {
             <RocketIcon className="w-12 h-12 text-primary animate-pulse" />
           </div>
           <h2 className="text-3xl font-extrabold text-foreground mb-4 tracking-tight">
-            Cosmo Match - あなたの推し○○を探せ <br/>～ロケット編～
+            Cosmo Match - あなたの推しを探せ <br/>～ロケット編～
           </h2>
           <p className="text-muted-foreground text-base max-w-md mx-auto leading-relaxed mb-8">
             直感で答えるだけ。専門知識は一切不要！<br />
@@ -157,7 +184,7 @@ export default function DiagnosePage() {
             </div>
           </GlassCard>
 
-          <Button id="CMrocket"
+          <Button id="btn-cosmomatch"
             onClick={() => setStarted(true)}
             className="bg-primary text-primary-foreground hover:bg-primary/90 glow h-14 px-12 rounded-full font-bold text-lg transition-transform active:scale-95"
           >
@@ -211,7 +238,7 @@ export default function DiagnosePage() {
             {currentQuestion.choices.map((choice, idx) => (
               <button
                 key={idx}
-                onClick={() => handleChoice(choice.score)}
+                onClick={() => handleChoice(choice.score, choice.text)}
                 className="w-full text-left p-5 rounded-2xl border border-border/60 bg-secondary/20 hover:bg-primary/10 hover:border-primary/50 text-foreground font-semibold text-base transition-all active:scale-[0.99] shadow-sm backdrop-blur-sm group"
               >
                 <div className="flex items-center justify-between">
