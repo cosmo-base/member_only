@@ -91,7 +91,7 @@ export default async function RocketDetailPage({ params }: PageProps) {
           </h3>
           <div className="bg-secondary/10 border border-border/40 p-4 rounded-2xl h-[320px] flex items-center justify-center">
             {/* ★ クライアントコンポーネントを呼び出す */}
-            <CMRadarChart rocketName={rocket.name} data={chartData} />
+            <CMRadarChart name={rocket.name} data={chartData} />
           </div>
         </div>
 
