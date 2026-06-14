@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { ROCKETS } from "@/data/CMrockets"
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Legend } from "recharts"
 import { Award, RefreshCw, BookOpen, Star, Sparkles, Loader2, ChevronRight } from "lucide-react"
-import { saveDiagnosisResult } from "@/app/actions/save-match-result"
 
 function ResultContent() {
   const searchParams = useSearchParams()
@@ -17,7 +16,6 @@ function ResultContent() {
 
   const rocket = ROCKETS.find(r => r.slug === rocketSlug) || ROCKETS[0]
 
-  // ★ パラメータからユーザーの各スコアをパース (無ければデフォルト値)
   const userScores = {
     power: Number(searchParams.get("power") || 3),
     technology: Number(searchParams.get("technology") || 3),
@@ -29,7 +27,6 @@ function ResultContent() {
     trust: Number(searchParams.get("trust") || 3),
   }
 
-  // ★ ユーザーとロケットのスコアを重ねたチャートデータ構造を作成
   const chartData = [
     { subject: "パワー", あなた: userScores.power, ロケット: rocket.stats.power },
     { subject: "技術", あなた: userScores.technology, ロケット: rocket.stats.technology },
@@ -41,16 +38,15 @@ function ResultContent() {
     { subject: "信頼", あなた: userScores.trust, ロケット: rocket.stats.trust },
   ]
 
-  // ★ 動的な相性同調率の計算 (絶対値の差分から高揚感のある数値を算出)
   const totalDiff = Object.keys(userScores).reduce((acc, key) => {
     const k = key as keyof typeof userScores
     return acc + Math.abs(userScores[k] - rocket.stats[k])
   }, 0)
-  const matchPercent = Math.max(78, AppLimits(98, Math.round(100 - totalDiff * 2.5)));
-
+  
   function AppLimits(max: number, val: number) {
     return val > max ? max : val;
   }
+  const matchPercent = Math.max(78, AppLimits(98, Math.round(100 - totalDiff * 2.5)));
 
   const hasSaved = useRef(false);
 
@@ -59,8 +55,8 @@ function ResultContent() {
     if (!hasSaved.current) {
       hasSaved.current = true;
       
-      // 非同期で裏側でこっそり送信
-      saveDiagnosisResult({
+      const GAS_URL = "https://script.google.com/macros/s/AKfycbxfhx-DlgYauECo0vPZ8TJNjs1pIL96GxhifeB4FTfxN__jIpYoz9JdNMnLub9euDtORQ/exec";
+      const payload = {
         rocket: rocket.name,
         matchPercent: matchPercent,
         power: userScores.power,
@@ -71,6 +67,15 @@ function ResultContent() {
         individuality: userScores.individuality,
         future: userScores.future,
         trust: userScores.trust,
+      };
+
+      // クライアント側から直接GASへ送信
+      fetch(GAS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      }).catch(error => {
+        console.error("データ送信エラー:", error);
       });
     }
   }, [rocket.name, matchPercent, userScores]);
@@ -99,14 +104,12 @@ function ResultContent() {
         <Sparkles className="absolute top-4 right-12 text-accent w-5 h-5 animate-pulse" />
       </div>
 
-      {/* チャート ＆ 納得感セクション */}
       <div className="grid md:grid-cols-5 gap-6 items-center mb-10">
         <div className="md:col-span-3 bg-secondary/10 border border-border/40 p-4 rounded-2xl h-[300px] flex items-center justify-center">
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
               <PolarGrid stroke="#38bdf8" opacity={0.2} />
               <PolarAngleAxis dataKey="subject" stroke="#94a3b8" fontSize={11} fontWeight="bold" />
-              {/* ★ 2つのデータを重ねて描画 */}
               <Radar name="あなた" dataKey="あなた" stroke="#ff007f" fill="#ff007f" fillOpacity={0.25} />
               <Radar name={rocket.name} dataKey="ロケット" stroke="#00f2fe" fill="#00f2fe" fillOpacity={0.2} />
               <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
