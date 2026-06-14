@@ -48,7 +48,7 @@ export default function CosmoMatchTopPage() {
           <div className="glass-card rounded-xl p-6 flex flex-col">
             <div className="flex items-center gap-3 mb-4">
               <Rocket className="w-5 h-5 text-accent" />
-              <h3 className="text-lg font-semibold text-foreground">~ロケット編~</h3>
+              <h3 className="text-lg font-semibold text-foreground">～ロケット編～</h3>
             </div>
             <p className="text-muted-foreground text-sm mb-6 flex-1 leading-relaxed">
               日本の宇宙輸送を担うエースから、独自路線を貫く個性派まで。あなたの「ワクワクの原動力」にシンクロする運命の1機をマッチングします。
@@ -65,11 +65,8 @@ export default function CosmoMatchTopPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <Stars className="w-5 h-5 text-muted-foreground" />
-                <h3 className="text-lg font-semibold text-foreground">~星座編~</h3>
+                <h3 className="text-lg font-semibold text-foreground">～星座編～</h3>
               </div>
-              <span className="px-2 py-1 text-[10px] font-bold bg-secondary text-muted-foreground border border-border/50 rounded-md">
-                Vol.2
-              </span>
             </div>
             <p className="text-muted-foreground text-sm mb-6 flex-1 leading-relaxed opacity-80">
               季節を彩る星々の並びや、裏側に隠された神話の物語。あなたの性格や情緒に最もフィットする「夜空の道標」を見つけ出します。
