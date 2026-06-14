@@ -1,6 +1,6 @@
 // app/cosmomatch/rocket/dictionary/[id]/layout.tsx
 import type { Metadata } from "next"
-import { ROCKETS } from "@/data/CMrockets" // ※ファイル名が異なる場合は適宜修正してください
+import { ROCKETS } from "@/data/CMrockets" 
 
 // ★ [id] を受け取って、動的にメタデータ（タブのタイトル）を生成する関数
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
