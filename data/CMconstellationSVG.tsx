@@ -6,7 +6,7 @@ import React from 'react';
 export const ConstellationSVGs: Record<string, React.ReactNode> = {
   "Ori": (
     <>
-      <svg id="Ori" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
         <circle cx="10" cy="20" r="0.3" fill="currentColor" opacity="0.3" />
         <circle cx="80" cy="15" r="0.4" fill="currentColor" opacity="0.4" />
         <circle cx="25" cy="85" r="0.3" fill="currentColor" opacity="0.3" />

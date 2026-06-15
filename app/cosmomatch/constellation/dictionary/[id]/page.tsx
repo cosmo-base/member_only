@@ -62,10 +62,11 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
               <span className="bg-accent/20 text-accent border border-accent/30 text-xs font-bold px-3 py-1 rounded-full">{constellation.visibility}</span>
             </div>
             {/* ★ 画像と星の並びの切り替えコンポーネント */}
-            <VisualToggle 
-              name={constellation.name} 
-              emoji={constellation.emoji} 
-              imageUrl={constellation.imageUrl} 
+            <VisualToggle
+              slug={constellation.slug}
+              name={constellation.name}
+              emoji={constellation.emoji}
+              imageUrl={constellation.imageUrl}
             />
           </div>
           <h2 className="text-3xl font-extrabold text-foreground mb-2 relative z-40">{constellation.name}</h2>
@@ -128,7 +129,7 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
               <h4 className="text-sm font-bold text-primary mb-1">▼ 名前の由来</h4>
               <p className="text-sm text-muted-foreground">{constellation.nameOrigin}</p>
             </div>
-            
+
             <div className="grid sm:grid-cols-2 gap-6 pt-2">
               {/* ★ ライバルへのリンク */}
               <div>
@@ -142,7 +143,7 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
                   <p className="text-sm text-muted-foreground">{constellation.rival || "特になし"}</p>
                 )}
               </div>
-              
+
               {/* ★ 似ている星座へのリンク */}
               <div>
                 <h4 className="text-sm font-bold text-foreground mb-2">▼ 似ている星座</h4>
