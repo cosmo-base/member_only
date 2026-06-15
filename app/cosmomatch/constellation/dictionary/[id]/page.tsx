@@ -1,10 +1,11 @@
-// app/cosmomatch/constellation/dictionary/[id]/page.tsx
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { getConstellations } from "@/data/CMconstellation"
-import { Globe, Eye, Languages, ExternalLink, ArrowLeft, Bookmark, Activity } from "lucide-react"
+import { Globe, Eye, Languages, ExternalLink, ArrowLeft, Bookmark, Activity, Star } from "lucide-react"
 import { CMRadarChart } from "@/components/ui/radar-chart"
+// ★ 先ほど作ったクライアントコンポーネントを読み込む
+import { VisualToggle } from "./visual-toggle"
 
 export const dynamic = 'force-static';
 
@@ -28,7 +29,10 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
 
   if (!constellation) notFound()
 
+  // 関連データやライバルデータの検索
   const relatedList = constellations.filter(r => constellation.relatedConstellations.includes(r.name))
+  const rivalObj = constellations.find(c => c.name === constellation.rival)
+  const similarObj = constellations.find(c => c.name === constellation.similar)
 
   const chartData = [
     { subject: "物語", A: constellation.stats.origin },
@@ -53,14 +57,19 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
         <div className="glass-card rounded-2xl p-6 md:p-8 mb-6 border border-border/50 relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 z-30 bg-primary" />
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 z-40">
               <span className="bg-primary/20 text-primary border border-primary/30 text-xs font-bold px-3 py-1 rounded-full">{constellation.season}</span>
               <span className="bg-accent/20 text-accent border border-accent/30 text-xs font-bold px-3 py-1 rounded-full">{constellation.visibility}</span>
             </div>
-            <div className="text-4xl filter drop-shadow-md">{constellation.emoji}</div>
+            {/* ★ 画像と星の並びの切り替えコンポーネント */}
+            <VisualToggle 
+              name={constellation.name} 
+              emoji={constellation.emoji} 
+              imageUrl={constellation.imageUrl} 
+            />
           </div>
-          <h2 className="text-3xl font-extrabold text-foreground mb-2">{constellation.name}</h2>
-          <p className="text-primary font-bold text-lg">「{constellation.catchCopy}」</p>
+          <h2 className="text-3xl font-extrabold text-foreground mb-2 relative z-40">{constellation.name}</h2>
+          <p className="text-primary font-bold text-lg relative z-40">「{constellation.catchCopy}」</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
@@ -77,6 +86,26 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
             <p className="text-sm font-bold text-foreground">{constellation.visibility}</p>
           </div>
         </div>
+
+        {/* ★ 推しポイントの追加 */}
+        {constellation.highlights.length > 0 && (
+          <div className="space-y-6 mb-10">
+            <h3 className="text-xl font-bold text-foreground border-b border-border pb-2 flex items-center gap-2">
+              <Star className="w-5 h-5 text-primary fill-primary" />
+              ここが推しポイント！
+            </h3>
+            <div className="grid gap-3">
+              {constellation.highlights.map((point, index) => (
+                <div key={index} className="bg-secondary/20 border border-border/50 rounded-xl p-4 flex items-start gap-3">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary text-xs font-bold mt-0.5 shrink-0">
+                    {index + 1}
+                  </span>
+                  <p className="text-sm text-foreground font-medium leading-relaxed">{point}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="space-y-6 mb-10">
           <h3 className="text-xl font-bold text-foreground border-b border-border pb-2 flex items-center gap-2">
@@ -99,12 +128,33 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
               <h4 className="text-sm font-bold text-primary mb-1">▼ 名前の由来</h4>
               <p className="text-sm text-muted-foreground">{constellation.nameOrigin}</p>
             </div>
-            <div>
-              <h4 className="text-sm font-bold text-foreground mb-1">▼ ライバル・似ている星座</h4>
-              <p className="text-sm text-muted-foreground">
-                【ライバル】 {constellation.rival || "特になし"}<br />
-                【似ている星座】 {constellation.similar || "特になし"}
-              </p>
+            
+            <div className="grid sm:grid-cols-2 gap-6 pt-2">
+              {/* ★ ライバルへのリンク */}
+              <div>
+                <h4 className="text-sm font-bold text-accent mb-2">▼ ライバル</h4>
+                {rivalObj ? (
+                  <Link href={`/cosmomatch/constellation/dictionary/${rivalObj.slug}`} className="inline-flex items-center gap-2 bg-background/50 hover:bg-accent/10 border border-border/50 rounded-lg p-2 pr-4 transition-colors group">
+                    <span className="text-xl">{rivalObj.emoji}</span>
+                    <span className="text-sm font-bold text-foreground group-hover:text-accent transition-colors">{rivalObj.name}</span>
+                  </Link>
+                ) : (
+                  <p className="text-sm text-muted-foreground">{constellation.rival || "特になし"}</p>
+                )}
+              </div>
+              
+              {/* ★ 似ている星座へのリンク */}
+              <div>
+                <h4 className="text-sm font-bold text-foreground mb-2">▼ 似ている星座</h4>
+                {similarObj ? (
+                  <Link href={`/cosmomatch/constellation/dictionary/${similarObj.slug}`} className="inline-flex items-center gap-2 bg-background/50 hover:bg-primary/10 border border-border/50 rounded-lg p-2 pr-4 transition-colors group">
+                    <span className="text-xl">{similarObj.emoji}</span>
+                    <span className="text-sm font-bold text-foreground group-hover:text-primary transition-colors">{similarObj.name}</span>
+                  </Link>
+                ) : (
+                  <p className="text-sm text-muted-foreground">{constellation.similar || "特になし"}</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -139,7 +189,7 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
                   <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0" />
                 </a>
               )) : (
-                <p className="text-sm text-muted-foreground">関連記事は準備中です</p>
+                <p className="text-sm text-muted-foreground text-center py-4 bg-secondary/10 rounded-xl border border-border/30">関連記事は準備中です</p>
               )}
             </div>
           </div>
