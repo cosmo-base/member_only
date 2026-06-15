@@ -4,6 +4,99 @@ import React from 'react';
 // 星座のslug（ID）をキーにして、SVGのパスデータを管理するオブジェクト
 // viewBoxは "0 0 100 100" を想定して描画（0〜100のパーセンテージ感覚で配置できます）
 export const ConstellationSVGs: Record<string, React.ReactNode> = {
+"And": (
+  <>
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
+  <circle cx="15" cy="15" r="0.4" fill="currentColor" opacity="0.3"/><circle cx="80" cy="80" r="0.3" fill="currentColor" opacity="0.4"/><circle cx="85" cy="20" r="0.5" fill="currentColor" opacity="0.3"/>
+  <ellipse cx="70" cy="35" rx="4" ry="1.5" fill="currentColor" opacity="0.4" transform="rotate(-45 70 35)"/>
+  <ellipse cx="70" cy="35" rx="2" ry="0.8" fill="currentColor" opacity="0.7" transform="rotate(-45 70 35)"/>
+  <polyline points="20,70 45,50 65,30 85,20" stroke="currentColor" strokeWidth="0.6" fill="none" opacity="0.8" />
+  <polyline points="45,50 30,30 25,15" stroke="currentColor" strokeWidth="0.6" fill="none" opacity="0.8" />
+  <line x1="65" y1="30" x2="60" y2="15" stroke="currentColor" strokeWidth="0.6" opacity="0.8" />
+  <polyline points="25,15 10,5" stroke="currentColor" strokeWidth="0.3" fill="none" opacity="0.5" strokeDasharray="1 1.5" />
+  <polyline points="85,20 95,10" stroke="currentColor" strokeWidth="0.3" fill="none" opacity="0.5" strokeDasharray="1 1.5" />
+  <circle cx="20" cy="70" r="1.4" fill="currentColor" /> <circle cx="45" cy="50" r="1.2" fill="currentColor" /> <circle cx="65" cy="30" r="1.2" fill="currentColor" /> <circle cx="85" cy="20" r="0.8" fill="currentColor" />
+  <circle cx="30" cy="30" r="0.9" fill="currentColor" />
+  <circle cx="25" cy="15" r="0.8" fill="currentColor" />
+  <circle cx="60" cy="15" r="0.8" fill="currentColor" />
+</svg>
+  </>
+),
+"Mon": (
+  <>
+  
+  </>
+),
+"Sgr": (
+  <>
+  
+  </>
+),
+"Del": (
+  <>
+  
+  </>
+),
+"Ind": (
+  <>
+  
+  </>
+),
+"Psc": (
+  <>
+  
+  </>
+),
+"Lep": (
+  <>
+  
+  </>
+),
+"Boo": (
+  <>
+  
+  </>
+),
+"Hya": (
+  <>
+  
+  </>
+),
+"Eri": (
+  <>
+  
+  </>
+),
+"Tau": (
+  <>
+  
+  </>
+),
+"CMa": (
+  <>
+  
+  </>
+),
+"Lup": (
+  <>
+  
+  </>
+),
+"UMa": (
+  <>
+  
+  </>
+),
+"Vir": (
+  <>
+  
+  </>
+),
+"Ari": (
+  <>
+  
+  </>
+),
   "Ori": (
     <>
       <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]">
@@ -40,5 +133,360 @@ export const ConstellationSVGs: Record<string, React.ReactNode> = {
 
       </svg>
     </>
-    )
+    ),
+    "Pic": (
+  <>
+  
+  </>
+),
+"Cas": (
+  <>
+  
+  </>
+),
+"Dor": (
+  <>
+  
+  </>
+),
+"Cnc": (
+  <>
+  
+  </>
+),
+"Com": (
+  <>
+  
+  </>
+),
+"Cha": (
+  <>
+  
+  </>
+),
+"Crv": (
+  <>
+  
+  </>
+),
+"CrB": (
+  <>
+  
+  </>
+),
+"Tuc": (
+  <>
+  
+  </>
+),
+"Aur": (
+  <>
+  
+  </>
+),
+"Cam": (
+  <>
+  
+  </>
+),
+"Pav": (
+  <>
+  
+  </>
+),
+"Cet": (
+  <>
+  
+  </>
+),
+"Cep": (
+  <>
+  
+  </>
+),
+"Cen": (
+  <>
+  
+  </>
+),
+"Mic": (
+  <>
+  
+  </>
+),
+"CMi": (
+  <>
+  
+  </>
+),
+"Equ": (
+  <>
+  
+  </>
+),
+"Vul": (
+  <>
+  
+  </>
+),
+"UMi": (
+  <>
+  
+  </>
+),
+"LMi": (
+  <>
+  
+  </>
+),
+"Crt": (
+  <>
+  
+  </>
+),
+"Lyr": (
+  <>
+  
+  </>
+),
+"Cir": (
+  <>
+  
+  </>
+),
+"Ara": (
+  <>
+  
+  </>
+),
+"Sco": (
+  <>
+  
+  </>
+),
+"Tri": (
+  <>
+  
+  </>
+),
+"Leo": (
+  <>
+  
+  </>
+),
+"Nor": (
+  <>
+  
+  </>
+),
+"Sct": (
+  <>
+  
+  </>
+),
+"Cae": (
+  <>
+  
+  </>
+),
+"Scl": (
+  <>
+  
+  </>
+),
+"Gru": (
+  <>
+  
+  </>
+),
+"Men": (
+  <>
+  
+  </>
+),
+"Lib": (
+  <>
+  
+  </>
+),
+"Lac": (
+  <>
+  
+  </>
+),
+"Hor": (
+  <>
+  
+  </>
+),
+"Vol": (
+  <>
+  
+  </>
+),
+"Pup": (
+  <>
+  
+  </>
+),
+"Mus": (
+  <>
+  
+  </>
+),
+"Cyg": (
+  <>
+  
+  </>
+),
+"Oct": (
+  <>
+  
+  </>
+),
+"Col": (
+  <>
+  
+  </>
+),
+"Aps": (
+  <>
+  
+  </>
+),
+"Gem": (
+  <>
+  
+  </>
+),
+"Peg": (
+  <>
+  
+  </>
+),
+"Oph": (
+  <>
+  
+  </>
+),
+"Ser": (
+  <>
+  
+  </>
+),
+"Her": (
+  <>
+  
+  </>
+),
+"Per": (
+  <>
+  
+  </>
+),
+"Tel": (
+  <>
+  
+  </>
+),
+"Phe": (
+  <>
+  
+  </>
+),
+"Ant": (
+  <>
+  
+  </>
+),
+"Vel": (
+  <>
+  
+  </>
+),
+"Aqr": (
+  <>
+  
+  </>
+),
+"Hyi": (
+  <>
+  
+  </>
+),
+"PsA": (
+  <>
+  
+  </>
+),
+"CrA": (
+  <>
+  
+  </>
+),
+"TrA": (
+  <>
+  
+  </>
+),
+"Cru": (
+  <>
+  
+  </>
+),
+"Cap": (
+  <>
+  
+  </>
+),
+"Lyn": (
+  <>
+  
+  </>
+),
+"Sge": (
+  <>
+  
+  </>
+),
+"Pyx": (
+  <>
+  
+  </>
+),
+"Car": (
+  <>
+  
+  </>
+),
+"Dra": (
+  <>
+  
+  </>
+),
+"CVn": (
+  <>
+  
+  </>
+),
+"Ret": (
+  <>
+  
+  </>
+),
+"Sex": (
+  <>
+  
+  </>
+),
+"For": (
+  <>
+  
+  </>
+),
+"Aql": (
+  <>
+  
+  </>
+)
 };
