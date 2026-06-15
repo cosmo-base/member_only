@@ -1,24 +1,24 @@
 // app/cosmomatch/constellation/dictionary/[id]/layout.tsx
 import type { Metadata } from "next"
-import { ROCKETS } from "@/data/CMrockets" 
+import { getConstellations } from "@/data/CMconstellation" 
 
-// ★ [id] を受け取って、動的にメタデータ（タブのタイトル）を生成する関数
+// [id] を受け取って、動的にメタデータ（タブのタイトル）を生成する関数
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
   const currentId = resolvedParams.id;
   
-  // URLのslugからロケットのデータを検索
-  const rocket = ROCKETS.find(r => r.slug === currentId);
+  const constellations = await getConstellations();
+  const constellation = constellations.find(c => c.slug === currentId);
   
-  if (!rocket) {
+  if (!constellation) {
     return {
-      title: "ロケットが見つかりません | ロケット図鑑 | Cosmo Match",
+      title: "星座が見つかりません | 星座図鑑 | Cosmo Match",
     }
   }
 
   return {
-    title: `${rocket.name} | 星座編 | Cosmo Match`,
-    description: `推し星座「${rocket.name}」の図鑑ページ。${rocket.catchCopy}`,
+    title: `${constellation.name} | 星座編 | Cosmo Match`,
+    description: `推し星座「${constellation.name}」の図鑑ページ。${constellation.catchCopy}`,
   }
 }
 

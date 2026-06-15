@@ -1,3 +1,4 @@
+// app/cosmomatch/constellation/result/page.tsx
 "use client"
 
 import { Suspense, useMemo, useState, useEffect } from "react"
@@ -56,11 +57,11 @@ function ResultContent() {
     { subject: "存在", あなた: userScores.presence, 星座: constellation.stats.presence },
   ]
 
-  const totalDiff = Object.keys(userScores).reduce((acc, key) => {
-    const k = key as keyof typeof userScores
-    return acc + Math.abs(userScores[k] - (constellation.stats[k] || 0))
+  // ★ 正規化されたスコア同士の比較になるため、係数を1.5に調整して適切な%が出るようにしました
+  const totalDiff = STAT_KEYS.reduce((acc, key) => {
+    return acc + Math.abs(userScores[key] - (constellation.stats[key] || 0))
   }, 0)
-  const matchPercent = Math.max(78, Math.min(98, Math.round(100 - totalDiff * 2.5)));
+  const matchPercent = Math.max(60, Math.min(99, Math.round(100 - totalDiff * 1.5)));
 
   const subcontractors = constellations.filter(r => r.slug !== constellation.slug).slice(0, 2)
 

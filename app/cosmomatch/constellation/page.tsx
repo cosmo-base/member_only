@@ -1,3 +1,4 @@
+// app/cosmomatch/constellation/page.tsx
 "use client"
 
 import { useState, useEffect } from "react"
@@ -10,24 +11,30 @@ import { Zap, Clock, Stars as ConstellationIcon, Loader2, ChevronLeft, ChevronRi
 
 const STAT_KEYS = ['origin', 'energy', 'role', 'bond', 'form', 'mood', 'presence'] as const;
 
+// ★ 修正：新しい配点に合わせた各軸の「最大獲得可能スコア」
+const MAX_SCORES: Record<keyof ConstellationStats, number> = {
+  origin: 5, energy: 7, role: 5, bond: 7, form: 6, mood: 7, presence: 7
+};
+
 export default function DiagnosePage() {
   const router = useRouter()
-  
-  // ★ データ取得用のステート
+
   const [constellations, setConstellations] = useState<Constellation[]>([])
   const [isDataLoaded, setIsDataLoaded] = useState(false)
 
   const [started, setStarted] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
-  
+
+  // 計算フェーズに入ったかどうかのフラグ
+  const [isCalculating, setIsCalculating] = useState(false)
+
   const [userStats, setUserStats] = useState<ConstellationStats>({
     origin: 0, energy: 0, role: 0, bond: 0, form: 0, mood: 0, presence: 0
   })
-  
+
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({})
 
-  // ★ マウント時にCSVデータを取得
+  // ★ ページを開いた瞬間から裏側でCSVを読み込み開始
   useEffect(() => {
     getConstellations().then((data) => {
       setConstellations(data);
@@ -42,71 +49,83 @@ export default function DiagnosePage() {
       updatedStats[k] = (updatedStats[k] || 0) + (score[k] || 0)
     })
     setUserStats(updatedStats)
-    
+
     const updatedAnswers = { ...userAnswers, [currentStep + 1]: choiceText }
     setUserAnswers(updatedAnswers)
 
     if (currentStep < QUESTIONS.length - 1) {
       setCurrentStep(currentStep + 1)
     } else {
-      calculateResult(updatedStats, updatedAnswers)
+      // 最後の質問に答えたら、計算モードに入る
+      setIsCalculating(true)
     }
   }
 
-  const calculateResult = (finalStats: ConstellationStats, finalAnswers: Record<number, string>) => {
-    setIsLoading(true)
+  // ★ 計算モードに入り、かつデータが読み込めている場合のみ実行される
+  useEffect(() => {
+    if (isCalculating && isDataLoaded) {
+      // 演出として少しだけローディングを見せる
+      setTimeout(() => {
+        executeMatching(userStats, userAnswers);
+      }, 1500);
+    }
+  }, [isCalculating, isDataLoaded]);
 
-    setTimeout(() => {
-      // データがない場合のフェイルセーフ
-      if (constellations.length === 0) return;
+  // 実際のマッチングと送信処理
+  const executeMatching = (finalStats: ConstellationStats, finalAnswers: Record<number, string>) => {
+    if (constellations.length === 0) return;
 
-      let bestConstellation = constellations[0]
-      let minDistance = Infinity
+    // ユーザーのスコアを0〜9に正規化
+    const normalizedStats = {} as ConstellationStats;
+    STAT_KEYS.forEach(key => {
+      const rawScore = finalStats[key] || 0;
+      const maxScore = MAX_SCORES[key] || 1;
+      normalizedStats[key] = Math.min(9, Math.round((rawScore / maxScore) * 9));
+    });
 
-      constellations.forEach((Constellation) => {
-        let distance = 0
-        Object.keys(Constellation.stats).forEach((key) => {
-          const k = key as keyof ConstellationStats
-          const userScore = finalStats[k] || 0
-          const ConstellationScore = Constellation.stats[k] || 0
-          distance += Math.pow(userScore - ConstellationScore, 2)
-        })
+    let bestConstellation = constellations[0]
+    let minDistance = Infinity
 
-        if (distance < minDistance) {
-          minDistance = distance
-          bestConstellation = Constellation
-        }
+    constellations.forEach((Constellation) => {
+      let distance = 0
+      STAT_KEYS.forEach((key) => {
+        const userScore = normalizedStats[key]
+        const ConstellationScore = Constellation.stats[key] || 0
+        distance += Math.pow(userScore - ConstellationScore, 2)
       })
 
-      const totalDiff = Object.keys(finalStats).reduce((acc, key) => {
-        const k = key as keyof ConstellationStats
-        return acc + Math.abs(finalStats[k] - (bestConstellation.stats[k] || 0))
-      }, 0)
-      const matchPercent = Math.max(78, Math.min(98, Math.round(100 - totalDiff * 2.5)));
+      if (distance < minDistance) {
+        minDistance = distance
+        bestConstellation = Constellation
+      }
+    })
 
-      // GAS送信（※URLはロケット編と同じになっていますが、星座用に分ける場合は変更してください）
-      const GAS_URL = "https://script.google.com/macros/s/AKfycbxfhx-DlgYauECo0vPZ8TJNjs1pIL96GxhifeB4FTfxN__jIpYoz9JdNMnLub9euDtORQ/exec";
-      const payload = {
-        rocket: bestConstellation.name, // ※GASの受け口がrocketとなっているためそのまま渡す
-        matchPercent: matchPercent,
-        ...finalStats,
-        q1: finalAnswers[1] || "",
-        q2: finalAnswers[2] || "",
-        q3: finalAnswers[3] || "",
-        q4: finalAnswers[4] || "",
-        q5: finalAnswers[5] || "",
-      };
-      
-      fetch(GAS_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(payload),
-      }).catch(err => console.error("GAS Error:", err));
+    const totalDiff = STAT_KEYS.reduce((acc, key) => {
+      return acc + Math.abs(normalizedStats[key] - (bestConstellation.stats[key] || 0))
+    }, 0)
+    const matchPercent = Math.max(60, Math.min(99, Math.round(100 - totalDiff * 1.5)));
 
-      const encodedStats = STAT_KEYS.map(k => Math.min(35, finalStats[k] || 0).toString(36)).join('');
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxfhx-DlgYauECo0vPZ8TJNjs1pIL96GxhifeB4FTfxN__jIpYoz9JdNMnLub9euDtORQ/exec";
+    const payload = {
+      rocket: bestConstellation.name,
+      matchPercent: matchPercent,
+      ...normalizedStats,
+      q1: finalAnswers[1] || "",
+      q2: finalAnswers[2] || "",
+      q3: finalAnswers[3] || "",
+      q4: finalAnswers[4] || "",
+      q5: finalAnswers[5] || "",
+    };
 
-      router.push(`/cosmomatch/constellation/result?c=${bestConstellation.slug}&s=${encodedStats}`)
-    }, 2200)
+    fetch(GAS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+    }).catch(err => console.error("GAS Error:", err));
+
+    const encodedStats = STAT_KEYS.map(k => Math.min(35, normalizedStats[k] || 0).toString(36)).join('');
+
+    router.push(`/cosmomatch/constellation/result?c=${bestConstellation.slug}&s=${encodedStats}`)
   }
 
   const handleBack = () => {
@@ -117,17 +136,7 @@ export default function DiagnosePage() {
     }
   }
 
-  if (!isDataLoaded) {
-    return (
-      <ContentPageLayout title="Cosmo Match～星座編～" level={1} levelTitle="" logo="CosmoMatch">
-        <div className="max-w-md mx-auto text-center py-24 flex flex-col items-center justify-center animate-in fade-in">
-          <Loader2 className="w-12 h-12 text-accent animate-spin mb-6" />
-          <p className="text-muted-foreground font-bold">星座データを読み込み中...</p>
-        </div>
-      </ContentPageLayout>
-    )
-  }
-
+  // ★ 最初の画面。ボタンは無条件で押せるように修正
   if (!started) {
     return (
       <ContentPageLayout title="Cosmo Match～星座編～" level={1} levelTitle="" logo="CosmoMatch">
@@ -136,7 +145,7 @@ export default function DiagnosePage() {
             <ConstellationIcon className="w-12 h-12 text-primary animate-pulse" />
           </div>
           <h2 className="text-3xl font-extrabold text-foreground mb-4 tracking-tight">
-            Cosmo Match - あなたの推しを探せ <br/>～星座編～
+            Cosmo Match - あなたの推しを探せ <br />～星座編～
           </h2>
           <p className="text-muted-foreground text-base max-w-md mx-auto leading-relaxed mb-8">
             直感で答えるだけ。専門知識は一切不要！<br />
@@ -166,14 +175,15 @@ export default function DiagnosePage() {
     )
   }
 
-  if (isLoading) {
+  // ★ 計算フェーズのローディング
+  if (isCalculating) {
     return (
       <ContentPageLayout title="Cosmo Match～星座編～" level={1} levelTitle="" logo="CosmoMatch">
         <div className="max-w-md mx-auto text-center py-24 flex flex-col items-center justify-center animate-in fade-in duration-300">
           <Loader2 className="w-12 h-12 text-accent animate-spin mb-6" />
           <h3 className="text-2xl font-bold text-foreground mb-2">推し星座を分析中...</h3>
           <p className="text-sm text-muted-foreground tracking-wide">
-            あなたのワクワクの原動力にシンクロする星々を探しています
+            {isDataLoaded ? "あなたのワクワクの原動力にシンクロする星々を探しています" : "最新の星座データを読み込んでいます..."}
           </p>
         </div>
       </ContentPageLayout>
