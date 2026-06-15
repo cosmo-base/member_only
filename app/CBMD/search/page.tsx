@@ -10,7 +10,7 @@ import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { fetchFacilitiesData, spacecraftTags, categoryTags, regions, facilityTypes, Facility } from "@/lib/CBMD"
+import { fetchFacilitiesData, spacecraftTags, categoryTags, regions, facilityTypes, Facility } from "@/data/CBMD"
 import { FacilityImage } from "@/components/facility-image"
 
 function SearchContent() {

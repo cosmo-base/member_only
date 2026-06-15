@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { navItems } from "@/lib/voyagerdata";
+import { navItems } from "@/data/voyagerdata";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 

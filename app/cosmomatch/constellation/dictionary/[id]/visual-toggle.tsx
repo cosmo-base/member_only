@@ -16,14 +16,14 @@ export function VisualToggle({ name, emoji, imageUrl }: VisualToggleProps) {
     <div className="flex flex-col items-center sm:items-end gap-3 z-40">
       {/* 切り替えボタン */}
       <div className="flex bg-background/80 backdrop-blur-sm rounded-full p-1 border border-border/50 shadow-sm">
-        <button 
-          onClick={() => setView('image')} 
+        <button
+          onClick={() => setView('image')}
           className={`px-3 py-1 text-[11px] font-bold rounded-full transition-all flex items-center gap-1 ${view === 'image' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
         >
           <ImageIcon className="w-3 h-3" /> 画像
         </button>
-        <button 
-          onClick={() => setView('svg')} 
+        <button
+          onClick={() => setView('svg')}
           className={`px-3 py-1 text-[11px] font-bold rounded-full transition-all flex items-center gap-1 ${view === 'svg' ? 'bg-accent text-accent-foreground shadow-md' : 'text-muted-foreground hover:text-foreground'}`}
         >
           <Sparkles className="w-3 h-3" /> 星の並び

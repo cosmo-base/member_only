@@ -12,7 +12,7 @@ import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { fetchFacilitiesData, regions, facilityTypes, Facility } from "@/lib/CBMD"
+import { fetchFacilitiesData, regions, facilityTypes, Facility } from "@/data/CBMD"
 
 const IMPERIAL_PALACE_LATLNG: [number, number] = [35.6852, 139.7528]
 

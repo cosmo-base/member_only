@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { examLevels, navigatorLevel } from "@/lib/voyagerdata";
+import { examLevels, navigatorLevel } from "@/data/voyagerdata";
 import { Rocket, Users, ChevronRight, Star, Shield } from "lucide-react";
 
 export function LevelsSection() {

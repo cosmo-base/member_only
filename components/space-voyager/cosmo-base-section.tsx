@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { cosmoBaseFeatures } from "@/lib/voyagerdata";
+import { cosmoBaseFeatures } from "@/data/voyagerdata";
 import { HelpCircle, Newspaper, Lightbulb, Calendar, Library, GraduationCap, ArrowRight, Sparkles } from "lucide-react";
 
 const iconMap: Record<string, React.ElementType> = {

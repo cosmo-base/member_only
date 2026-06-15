@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image"; // ← Imageコンポーネントのインポートを追加
-import { footerLinks } from "@/lib/voyagerdata";
+import { footerLinks } from "@/data/voyagerdata";
 import { Twitter, MessageCircle } from "lucide-react";
 
 // ★ Imageタグを正常に動かすための直接インポートを追加

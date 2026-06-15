@@ -10,7 +10,7 @@ import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { fetchFacilitiesData, regions, facilityTypes, Facility } from "@/lib/CBMD"
+import { fetchFacilitiesData, regions, facilityTypes, Facility } from "@/data/CBMD"
 import { FacilityImage } from "@/components/facility-image"
 
 type SortType = "name" | "region" | "updated"

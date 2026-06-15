@@ -8,7 +8,7 @@ import { ContentPageLayout } from "@/components/content-page-layout"
 import { GlassCard } from "@/components/glass-card"
 import { TagBadge } from "@/components/tag-badge"
 import { Button } from "@/components/ui/button"
-import { fetchFacilitiesData, spacecraftTags, Facility } from "@/lib/CBMD"
+import { fetchFacilitiesData, spacecraftTags, Facility } from "@/data/CBMD"
 import { fetchEventsData, SpaceEvent } from "@/data/CBED"
 import { FacilityImage } from "@/components/facility-image"
 

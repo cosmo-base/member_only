@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { quizQuestion } from "@/lib/voyagerdata";
+import { quizQuestion } from "@/data/voyagerdata";
 import { HelpCircle, CheckCircle, XCircle, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 

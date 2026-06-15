@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { faqItems } from "@/lib/voyagerdata";
+import { faqItems } from "@/data/voyagerdata";
 import {
   Accordion,
   AccordionContent,

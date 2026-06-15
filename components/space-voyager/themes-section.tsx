@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { examThemes, examOverview } from "@/lib/voyagerdata";
+import { examThemes, examOverview } from "@/data/voyagerdata";
 import { Star, Rocket, Briefcase, History, Scale, Compass, BookOpen, Clock, FileText, CheckCircle, Calendar } from "lucide-react";
 
 const iconMap: Record<string, React.ElementType> = {

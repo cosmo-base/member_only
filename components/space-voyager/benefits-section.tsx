@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { benefits } from "@/lib/voyagerdata";
+import { benefits } from "@/data/voyagerdata";
 import { Award, BarChart, UserCheck, MessageCircle, Target, Users } from "lucide-react";
 
 const iconMap: Record<string, React.ElementType> = {

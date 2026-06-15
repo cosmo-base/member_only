@@ -1,6 +1,6 @@
 // app/CBMD/facility/[id]/layout.tsx
 import type { Metadata } from "next"
-import { fetchFacilitiesData } from "@/lib/CBMD"
+import { fetchFacilitiesData } from "@/data/CBMD"
 
 // ★追加: レイアウト側にも静的指定を行う
 export const dynamic = 'force-static';
