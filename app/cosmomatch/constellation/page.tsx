@@ -3,11 +3,12 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/glass-card"
 import { Constellation, ConstellationStats, QUESTIONS, getConstellations } from "@/data/CMconstellation"
-import { Zap, Clock, Stars as ConstellationIcon, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
+import { Zap, Clock, Stars as ConstellationIcon, Loader2, ChevronLeft, ChevronRight, BookOpen } from "lucide-react"
 
 const STAT_KEYS = ['origin', 'energy', 'role', 'bond', 'form', 'mood', 'presence'] as const;
 
@@ -23,7 +24,7 @@ export default function DiagnosePage() {
   // 計算フェーズに入ったかどうかのフラグ
   const [isCalculating, setIsCalculating] = useState(false)
   
-  // ★ 変更：ユーザーが「どの問題で何を選んだか」のスコアオブジェクトそのものを履歴として保存する
+  // ユーザーが「どの問題で何を選んだか」のスコアオブジェクトそのものを履歴として保存する
   const [userChoices, setUserChoices] = useState<Record<number, Partial<ConstellationStats>>>({})
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({})
 
@@ -57,7 +58,7 @@ export default function DiagnosePage() {
   const executeMatching = () => {
     if (constellations.length === 0) return;
 
-    // ★ 平均値算出アルゴリズムの実行
+    // 平均値算出アルゴリズムの実行
     const finalStats = {} as ConstellationStats;
 
     STAT_KEYS.forEach(key => {
@@ -80,7 +81,7 @@ export default function DiagnosePage() {
     let bestConstellation = constellations[0]
     let minDistance = Infinity
 
-    // ★ マッチング計算（ユークリッド距離の二乗）
+    // マッチング計算（ユークリッド距離の二乗）
     constellations.forEach((Constellation) => {
       let distance = 0
       STAT_KEYS.forEach((key) => {
@@ -162,12 +163,23 @@ export default function DiagnosePage() {
             </div>
           </GlassCard>
 
-          <Button id="btn-cosmomatch-constellation"
-            onClick={() => setStarted(true)}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 glow h-14 px-12 rounded-full font-bold text-lg transition-transform active:scale-95"
-          >
-            マッチングを始める
-          </Button>
+          <div className="flex flex-col items-center gap-6">
+            <Button id="btn-cosmomatch-constellation"
+              onClick={() => setStarted(true)}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 glow h-14 px-12 rounded-full font-bold text-lg transition-transform active:scale-95"
+            >
+              マッチングを始める
+            </Button>
+
+            {/* ★ ここに追加：目立たない図鑑へのリンク */}
+            <Link 
+              href="/cosmomatch/constellation/dictionary" 
+              className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 opacity-70 hover:opacity-100"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>図鑑（星空マップ）だけを見る</span>
+            </Link>
+          </div>
         </div>
       </ContentPageLayout>
     )
