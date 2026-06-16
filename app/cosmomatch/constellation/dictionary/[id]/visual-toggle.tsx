@@ -1,3 +1,4 @@
+// app/cosmomatch/constellation/dictionary/[id]/visual-toggle.tsx
 "use client"
 
 import { useState } from "react"
@@ -9,7 +10,7 @@ interface VisualToggleProps {
   name: string;
   emoji: string;
   imageUrl: string;
-  size?: 'default' | 'large'; // ★ サイズ指定を追加
+  size?: 'default' | 'large';
 }
 
 export function VisualToggle({ slug, name, emoji, imageUrl, size = 'default' }: VisualToggleProps) {
@@ -17,12 +18,16 @@ export function VisualToggle({ slug, name, emoji, imageUrl, size = 'default' }: 
 
   const svgContent = ConstellationSVGs[slug] || ConstellationSVGs["default"];
 
-  // ★ サイズごとのCSSクラスを定義
+  // ★ 画像をさらに大きく表示するためのサイズ調整
+  // default: 図鑑画面用（スマホで224px、PCで288px〜320px）
+  // large: 診断結果画面用（スマホで320px、PCで420px）
   const containerClasses = size === 'large' 
-    ? "w-full max-w-[280px] aspect-square rounded-[2rem]" 
-    : "w-40 h-40 sm:w-48 sm:h-48 rounded-2xl";
+    ? "w-full max-w-[320px] sm:max-w-[420px] aspect-square rounded-[2rem] sm:rounded-[3rem]" 
+    : "w-56 h-56 sm:w-72 sm:h-72 lg:w-80 lg:h-80 rounded-3xl sm:rounded-[2rem]";
     
-  const emojiClasses = size === 'large' ? "text-8xl sm:text-9xl" : "text-6xl sm:text-7xl";
+  const emojiClasses = size === 'large' 
+    ? "text-[8rem] sm:text-[11rem]" 
+    : "text-7xl sm:text-8xl lg:text-9xl";
 
   return (
     <div className={`flex flex-col items-center gap-3 z-40 ${size === 'large' ? 'mx-auto' : 'sm:items-end'}`}>
@@ -44,25 +49,25 @@ export function VisualToggle({ slug, name, emoji, imageUrl, size = 'default' }: 
       </div>
 
       {/* 表示エリア */}
-      <div className={`${containerClasses} bg-secondary/30 border border-border/50 flex items-center justify-center overflow-hidden relative shadow-inner`}>
+      <div className={`${containerClasses} bg-secondary/30 border border-border/50 flex items-center justify-center overflow-hidden relative shadow-2xl transition-all duration-300 group`}>
         {view === 'image' ? (
           imageUrl ? (
-            <img src={imageUrl} alt={name} className="w-full h-full object-cover animate-in fade-in duration-300" />
+            <img src={imageUrl} alt={name} className="w-full h-full object-cover animate-in fade-in duration-500 group-hover:scale-105 transition-transform" />
           ) : (
             <div className="text-muted-foreground text-sm flex flex-col items-center gap-2">
-              <ImageIcon className="w-8 h-8 opacity-50" />
+              <ImageIcon className="w-10 h-10 opacity-50" />
               <span>No Image</span>
             </div>
           )
         ) : (
           // SVG表示モード
-          <div className="absolute inset-0 flex items-center justify-center bg-[#000022] animate-in fade-in duration-300 overflow-hidden">
-            <svg viewBox="0 0 100 100" className="w-full h-full p-4 drop-shadow-[0_0_12px_rgba(255,255,255,0.9)]">
+          <div className="absolute inset-0 flex items-center justify-center bg-[#000022] animate-in fade-in duration-500 overflow-hidden">
+            <svg viewBox="0 0 100 100" className="w-full h-full p-4 drop-shadow-[0_0_15px_rgba(255,255,255,0.9)] relative z-20">
               {svgContent}
             </svg>
-            <div className={`${emojiClasses} absolute opacity-10 filter blur-sm pointer-events-none`}>{emoji}</div>
-            <Sparkles className="absolute top-4 right-4 text-accent w-6 h-6 opacity-40 animate-pulse" />
-            <Sparkles className="absolute bottom-6 left-6 text-primary w-4 h-4 opacity-30 animate-pulse delay-300" />
+            <div className={`${emojiClasses} absolute opacity-10 filter blur-md pointer-events-none z-10`}>{emoji}</div>
+            <Sparkles className="absolute top-6 right-6 text-accent w-6 h-6 opacity-40 animate-pulse z-10" />
+            <Sparkles className="absolute bottom-8 left-8 text-primary w-5 h-5 opacity-30 animate-pulse delay-300 z-10" />
           </div>
         )}
       </div>
