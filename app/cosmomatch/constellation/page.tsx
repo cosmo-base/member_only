@@ -11,30 +11,22 @@ import { Zap, Clock, Stars as ConstellationIcon, Loader2, ChevronLeft, ChevronRi
 
 const STAT_KEYS = ['origin', 'energy', 'role', 'bond', 'form', 'mood', 'presence'] as const;
 
-// ★ 修正：新しい配点に合わせた各軸の「最大獲得可能スコア」
-const MAX_SCORES: Record<keyof ConstellationStats, number> = {
-  origin: 5, energy: 7, role: 5, bond: 7, form: 6, mood: 7, presence: 7
-};
-
 export default function DiagnosePage() {
   const router = useRouter()
-
+  
   const [constellations, setConstellations] = useState<Constellation[]>([])
   const [isDataLoaded, setIsDataLoaded] = useState(false)
 
   const [started, setStarted] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
-
+  
   // 計算フェーズに入ったかどうかのフラグ
   const [isCalculating, setIsCalculating] = useState(false)
-
-  const [userStats, setUserStats] = useState<ConstellationStats>({
-    origin: 0, energy: 0, role: 0, bond: 0, form: 0, mood: 0, presence: 0
-  })
-
+  
+  // ★ 変更：ユーザーが「どの問題で何を選んだか」のスコアオブジェクトそのものを履歴として保存する
+  const [userChoices, setUserChoices] = useState<Record<number, Partial<ConstellationStats>>>({})
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({})
 
-  // ★ ページを開いた瞬間から裏側でCSVを読み込み開始
   useEffect(() => {
     getConstellations().then((data) => {
       setConstellations(data);
@@ -43,55 +35,58 @@ export default function DiagnosePage() {
   }, []);
 
   const handleChoice = (score: Partial<ConstellationStats>, choiceText: string) => {
-    const updatedStats = { ...userStats }
-    Object.keys(score).forEach((key) => {
-      const k = key as keyof ConstellationStats
-      updatedStats[k] = (updatedStats[k] || 0) + (score[k] || 0)
-    })
-    setUserStats(updatedStats)
-
-    const updatedAnswers = { ...userAnswers, [currentStep + 1]: choiceText }
-    setUserAnswers(updatedAnswers)
+    // 現在のステップ（Q1なら0）の回答スコアとテキストを保存
+    setUserChoices(prev => ({ ...prev, [currentStep]: score }))
+    setUserAnswers(prev => ({ ...prev, [currentStep + 1]: choiceText }))
 
     if (currentStep < QUESTIONS.length - 1) {
       setCurrentStep(currentStep + 1)
     } else {
-      // 最後の質問に答えたら、計算モードに入る
       setIsCalculating(true)
     }
   }
 
-  // ★ 計算モードに入り、かつデータが読み込めている場合のみ実行される
   useEffect(() => {
     if (isCalculating && isDataLoaded) {
-      // 演出として少しだけローディングを見せる
       setTimeout(() => {
-        executeMatching(userStats, userAnswers);
+        executeMatching();
       }, 1500);
     }
   }, [isCalculating, isDataLoaded]);
 
-  // 実際のマッチングと送信処理
-  const executeMatching = (finalStats: ConstellationStats, finalAnswers: Record<number, string>) => {
+  const executeMatching = () => {
     if (constellations.length === 0) return;
 
-    // ユーザーのスコアを0〜9に正規化
-    const normalizedStats = {} as ConstellationStats;
+    // ★ 平均値算出アルゴリズムの実行
+    const finalStats = {} as ConstellationStats;
+
     STAT_KEYS.forEach(key => {
-      const rawScore = finalStats[key] || 0;
-      const maxScore = MAX_SCORES[key] || 1;
-      normalizedStats[key] = Math.min(9, Math.round((rawScore / maxScore) * 9));
+      // 1. 初期値として「5」を配列に入れておく
+      const values: number[] = [5];
+      
+      // 2. ユーザーが選んだ5つの選択肢の中に、該当する軸のスコアがあれば配列に追加
+      Object.values(userChoices).forEach(choiceScore => {
+        if (choiceScore[key] !== undefined) {
+          values.push(choiceScore[key] as number);
+        }
+      });
+      
+      // 3. 平均値を算出し、四捨五入して1〜9の間に収める
+      const sum = values.reduce((a, b) => a + b, 0);
+      const avg = sum / values.length;
+      finalStats[key] = Math.max(1, Math.min(9, Math.round(avg)));
     });
 
     let bestConstellation = constellations[0]
     let minDistance = Infinity
 
+    // ★ マッチング計算（ユークリッド距離の二乗）
     constellations.forEach((Constellation) => {
       let distance = 0
       STAT_KEYS.forEach((key) => {
-        const userScore = normalizedStats[key]
-        const ConstellationScore = Constellation.stats[key] || 0
-        distance += Math.pow(userScore - ConstellationScore, 2)
+        const userScore = finalStats[key]
+        const constellationScore = Constellation.stats[key] || 5 // CSVが空なら5とみなす
+        distance += Math.pow(userScore - constellationScore, 2)
       })
 
       if (distance < minDistance) {
@@ -100,30 +95,33 @@ export default function DiagnosePage() {
       }
     })
 
+    // 同調率の計算（絶対値の差分の合計から算出。最大56差）
     const totalDiff = STAT_KEYS.reduce((acc, key) => {
-      return acc + Math.abs(normalizedStats[key] - (bestConstellation.stats[key] || 0))
+      return acc + Math.abs(finalStats[key] - (bestConstellation.stats[key] || 5))
     }, 0)
     const matchPercent = Math.max(60, Math.min(99, Math.round(100 - totalDiff * 1.5)));
 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbzKpF42RXOL2ttx6JYu7OfKWeceTlLmOTNjKZFbYQFGU9Zr9B9dNbwJBfdpObPXIJ15pg/exec";
+    // GASへの送信
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxfhx-DlgYauECo0vPZ8TJNjs1pIL96GxhifeB4FTfxN__jIpYoz9JdNMnLub9euDtORQ/exec";
     const payload = {
       rocket: bestConstellation.name,
       matchPercent: matchPercent,
-      ...normalizedStats,
-      q1: finalAnswers[1] || "",
-      q2: finalAnswers[2] || "",
-      q3: finalAnswers[3] || "",
-      q4: finalAnswers[4] || "",
-      q5: finalAnswers[5] || "",
+      ...finalStats, // 1〜9の綺麗なデータ
+      q1: userAnswers[1] || "",
+      q2: userAnswers[2] || "",
+      q3: userAnswers[3] || "",
+      q4: userAnswers[4] || "",
+      q5: userAnswers[5] || "",
     };
-
+    
     fetch(GAS_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload),
     }).catch(err => console.error("GAS Error:", err));
 
-    const encodedStats = STAT_KEYS.map(k => Math.min(35, normalizedStats[k] || 0).toString(36)).join('');
+    // URL用パラメータのエンコード (1〜9の数値なのでそのまま36進数にしても1文字に収まる)
+    const encodedStats = STAT_KEYS.map(k => Math.min(35, finalStats[k] || 5).toString(36)).join('');
 
     router.push(`/cosmomatch/constellation/result?c=${bestConstellation.slug}&s=${encodedStats}`)
   }
@@ -131,12 +129,12 @@ export default function DiagnosePage() {
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1)
+      setIsCalculating(false)
     } else {
       setStarted(false)
     }
   }
 
-  // ★ 最初の画面。ボタンは無条件で押せるように修正
   if (!started) {
     return (
       <ContentPageLayout title="Cosmo Match～星座編～" level={1} levelTitle="" logo="CosmoMatch">
@@ -145,7 +143,7 @@ export default function DiagnosePage() {
             <ConstellationIcon className="w-12 h-12 text-primary animate-pulse" />
           </div>
           <h2 className="text-3xl font-extrabold text-foreground mb-4 tracking-tight">
-            Cosmo Match - あなたの推しを探せ <br />～星座編～
+            Cosmo Match - あなたの推しを探せ <br/>～星座編～
           </h2>
           <p className="text-muted-foreground text-base max-w-md mx-auto leading-relaxed mb-8">
             直感で答えるだけ。専門知識は一切不要！<br />
@@ -175,7 +173,6 @@ export default function DiagnosePage() {
     )
   }
 
-  // ★ 計算フェーズのローディング
   if (isCalculating) {
     return (
       <ContentPageLayout title="Cosmo Match～星座編～" level={1} levelTitle="" logo="CosmoMatch">

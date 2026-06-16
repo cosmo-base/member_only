@@ -42,50 +42,91 @@ export interface Question {
   choices: Choice[];
 }
 
-// ★ 修正：各軸が5〜7段階でバラけるように隠し味パラメーターを追加
 export const QUESTIONS: Question[] = [
   {
     id: 1,
     title: "星空を見上げたとき、一番「心惹かれる」のはどんな要素？",
     choices: [
-      { text: "星座にまつわる神話や、語り継がれる伝説", score: { origin: 2, bond: 1 } },
-      { text: "星々が光る物理的な仕組みや、科学的な発見", score: { origin: 1, form: 2 } },
-      { text: "誰にも気づかれないような、奥深い星のディテール", score: { presence: 2, mood: 1 } },
-      { text: "誰もが知っている王道の輝きや、伝説的な英雄の物語", score: { presence: 1, energy: 2 } }
+      { 
+        text: "星座にまつわる神話や、語り継がれる伝説", 
+        score: { origin: 1, presence: 2, mood: 2 } 
+      },
+      { 
+        text: "星々が光る物理的な仕組みや、科学的な発見", 
+        score: { origin: 9, energy: 8, mood: 8 } 
+      },
+      { 
+        text: "誰にも気づかれないような、奥深い星のディテール", 
+        score: { presence: 9, role: 8, energy: 8 } 
+      },
+      { 
+        text: "誰もが知っている王道の輝きや、伝説的な英雄の物語", 
+        score: { presence: 1, role: 1, origin: 1 } 
+      }
     ]
   },
   {
     id: 2,
     title: "もし未知の惑星を探査するチームの一員になったら、どんな役割がしっくりくる？",
     choices: [
-      { text: "最前線で困難に立ち向かい、道を切り拓くリーダー", score: { energy: 2, role: 2 } },
-      { text: "確実な技術で仲間を支え、ミッションを完遂させる職人", score: { role: 2, bond: 2 } },
-      { text: "誰も知らない現象をじっくり観察し、真理を解き明かす研究者", score: { energy: 1, form: 1, mood: 2 } },
+      { 
+        text: "最前線で困難に立ち向かい、道を切り拓くリーダー", 
+        score: { energy: 1, role: 1, bond: 3 } 
+      },
+      { 
+        text: "確実な技術で仲間を支え、ミッションを完遂させる職人", 
+        score: { role: 9, bond: 9, form: 8 } 
+      },
+      { 
+        text: "誰も知らない現象をじっくり観察し、真理を解き明かす研究者", 
+        score: { energy: 9, bond: 1, origin: 8 } 
+      }
     ]
   },
   {
     id: 3,
     title: "あなたの「相棒」にするなら、どんな存在がいい？",
     choices: [
-      { text: "言葉を交わせるような、頼もしい仲間や生き物", score: { form: 1, bond: 2, origin: 1 } },
-      { text: "高機能で頼りになる、最新鋭の探査ツールや機械", score: { form: 2, presence: 1, energy: 1 } },
+      { 
+        text: "言葉を交わせるような、頼もしい仲間や生き物", 
+        score: { form: 1, bond: 8, mood: 2 } 
+      },
+      { 
+        text: "高機能で頼りになる、最新鋭の探査ツールや機械", 
+        score: { form: 9, origin: 8, mood: 8 } 
+      }
     ]
   },
   {
     id: 4,
     title: "あなたの情熱のタイプはどっち？",
     choices: [
-      { text: "熱血！どんな困難も情熱で突き進む", score: { mood: 1, energy: 2, role: 1 } },
-      { text: "クール！静かに分析し、美学を貫く", score: { mood: 2, presence: 2, form: 1 } }
+      { 
+        text: "熱血！どんな困難も情熱で突き進む", 
+        score: { mood: 1, energy: 1, role: 2 } 
+      },
+      { 
+        text: "クール！静かに分析し、美学を貫く", 
+        score: { mood: 9, energy: 8, presence: 8 } 
+      }
     ]
   },
   {
     id: 5,
     title: "これまでの人生で、つい惹かれてしまうのはどんな瞬間？",
     choices: [
-      { text: "多くの人を熱狂させる、華やかな成功や偉業の物語", score: { origin: 2, presence: 1, role: 1 } },
-      { text: "誰かの支えになった瞬間の温もりや、調和のとれた空気感", score: { role: 2, bond: 2 } },
-      { text: "あまり理解されないけれど、自分だけが「最高に美しい」と感じる瞬間", score: { presence: 2, mood: 2 } }
+      { 
+        text: "多くの人を熱狂させる、華やかな成功や偉業の物語", 
+        score: { presence: 1, role: 1, origin: 2 } 
+      },
+      { 
+        text: "誰かの支えになった瞬間の温もりや、調和のとれた空気感", 
+        score: { role: 9, bond: 9, mood: 2 } 
+      },
+      { 
+        text: "あまり理解されないけれど、自分だけが「最高に美しい」と感じる瞬間", 
+        score: { presence: 9, bond: 1, form: 8 } 
+      }
     ]
   }
 ];
