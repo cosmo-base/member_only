@@ -105,8 +105,9 @@ export async function getConstellations(): Promise<Constellation[]> {
         transformHeader: (header) => header.trim(),
         complete: (results) => {
           const data = results.data.map((row: any) => {
+            const slug = row['ID'] || '';
             return {
-              slug: row['ID'] || '',
+              slug: slug,
               name: row['星座名'] || '',
               englishName: row['英語名'] || '',
               emoji: row['アイコン'] || '✨',
@@ -118,8 +119,7 @@ export async function getConstellations(): Promise<Constellation[]> {
               rival: row['ライバル'] || '',
               similar: row['似ている星座'] || '',
               relatedConstellations: row['一緒に好きになりそうな星座'] ? row['一緒に好きになりそうな星座'].split(',').map((s: string) => s.trim()) : [],
-              imageUrl: row['画像URL'] || '',
-              appearance: Number(row['出現係数']) || 1,
+              imageUrl: row['画像URL'] || `/constellation/${slug}.jpeg`, appearance: Number(row['出現係数']) || 1,
               story: "",
               stats: {
                 origin: parseInt(row['物語'], 10) || 0,

@@ -10,6 +10,9 @@ import { Constellation, ConstellationStats, getConstellations } from "@/data/CMc
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Legend } from "recharts"
 import { Award, RefreshCw, BookOpen, Star, Sparkles, Loader2, ChevronRight } from "lucide-react"
 
+// ★ VisualToggle をインポート
+import { VisualToggle } from "../dictionary/[id]/visual-toggle"
+
 const STAT_KEYS = ['origin', 'energy', 'role', 'bond', 'form', 'mood', 'presence'] as const;
 
 function ResultContent() {
@@ -57,7 +60,6 @@ function ResultContent() {
     { subject: "存在", あなた: userScores.presence, 星座: constellation.stats.presence },
   ]
 
-  // ★ 正規化されたスコア同士の比較になるため、係数を1.5に調整して適切な%が出るようにしました
   const totalDiff = STAT_KEYS.reduce((acc, key) => {
     return acc + Math.abs(userScores[key] - (constellation.stats[key] || 0))
   }, 0)
@@ -79,12 +81,15 @@ function ResultContent() {
         </p>
       </div>
 
-      <div className="w-full relative aspect-[21/9] bg-gradient-to-b from-secondary/30 to-background rounded-2xl border border-border/40 overflow-hidden flex items-center justify-center mb-8 shadow-inner">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5" />
-        <div className="text-7xl filter drop-shadow-[0_0_20px_rgba(0,242,254,0.5)] transform -rotate-12 animate-bounce duration-1000">
-          {constellation.emoji}
-        </div>
-        <Sparkles className="absolute top-4 right-12 text-accent w-5 h-5 animate-pulse" />
+      {/* ★ ここをVisualToggleに差し替え！ size="large" を指定 */}
+      <div className="mb-10 w-full flex justify-center">
+        <VisualToggle 
+          slug={constellation.slug}
+          name={constellation.name}
+          emoji={constellation.emoji}
+          imageUrl={constellation.imageUrl}
+          size="large"
+        />
       </div>
 
       <div className="grid md:grid-cols-5 gap-6 items-center mb-10">
