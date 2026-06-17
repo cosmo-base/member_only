@@ -5,7 +5,7 @@ import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Constellation, getConstellations } from "@/data/CMconstellation"
 import { ConstellationSVGs } from "@/data/CMconstellationSVG"
-import { Loader2, ArrowLeft, Telescope, X, ChevronRight, Info, ChevronLeft, Globe } from "lucide-react"
+import { Loader2, ArrowLeft, Telescope, X, ChevronRight, Info, ChevronLeft, Globe, List } from "lucide-react"
 
 // ★ ユーザー指定の88星座IDで完全に管理された座標データ
 const REAL_COORDS: Record<string, {ra: number, dec: number}> = {
@@ -194,15 +194,21 @@ export default function DictionaryIndexPage() {
       <div className="max-w-[1400px] mx-auto pb-24 animate-in fade-in duration-700 relative">
         
         <div className="mb-6 pt-4 px-4 sm:px-8">
-          <Link href="/cosmomatch/constellation" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" /> 診断トップに戻る
-          </Link>
+          <div className="flex flex-wrap items-center gap-4 mb-4">
+            <Link href="/cosmomatch/constellation" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="w-4 h-4" /> 診断トップに戻る
+            </Link>
+            <span className="text-muted-foreground/30 hidden sm:inline">|</span>
+            <Link href="/cosmomatch/constellation/dictionary/list" className="inline-flex items-center gap-1 text-sm text-primary hover:text-accent transition-colors font-bold">
+              <List className="w-4 h-4" /> 詳細検索を開く
+            </Link>
+          </div>
           
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-6">
             <div>
               <h2 className="text-3xl font-extrabold text-foreground mb-2 flex items-center gap-3">
                 <Telescope className="w-7 h-7 text-primary" />
-                プラネタリウム図鑑
+                星空マップ
               </h2>
               <p className="text-muted-foreground text-sm max-w-lg">
                 実際の天球座標（赤経・赤緯）を再現した星空マップです。文字や光る星をタップして詳細を覗いてみましょう。

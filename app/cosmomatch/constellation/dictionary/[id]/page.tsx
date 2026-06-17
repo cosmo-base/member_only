@@ -3,7 +3,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { getConstellations, Constellation } from "@/data/CMconstellation"
-import { Globe, Eye, Languages, ExternalLink, ArrowLeft, Bookmark, Activity, Star } from "lucide-react"
+import { Globe, Eye, Languages, ExternalLink, ArrowLeft, Bookmark, Activity, Star, Telescope, List } from "lucide-react"
 import { CMRadarChart } from "@/components/ui/radar-chart"
 import { VisualToggle } from "./visual-toggle"
 
@@ -90,15 +90,25 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
       <div className="max-w-4xl mx-auto pb-16 animate-in fade-in duration-500">
 
         <div className="mb-6">
-          <Link href="/cosmomatch/constellation" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-4 h-4" /> 診断トップに戻る
-          </Link>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mb-6 bg-secondary/20 p-3 rounded-2xl border border-border/40 inline-flex">
+            <Link href="/cosmomatch/constellation" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">
+              <ArrowLeft className="w-4 h-4" /> 診断へ
+            </Link>
+            <div className="w-px h-4 bg-border hidden sm:block" />
+            <Link href="/cosmomatch/constellation/dictionary" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors font-medium">
+              <Telescope className="w-4 h-4" /> 星空マップへ
+            </Link>
+            <div className="w-px h-4 bg-border hidden sm:block" />
+            <Link href="/cosmomatch/constellation/dictionary/list" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors font-medium">
+              <List className="w-4 h-4" /> 詳細検索へ
+            </Link>
+          </div>
         </div>
 
         {/* ★ 画像が大きくなったため、テキストと画像を横並び（スマホでは縦積み）のレイアウトに改善 */}
         <div className="glass-card rounded-2xl p-6 md:p-8 mb-6 border border-border/50 relative overflow-hidden flex flex-col sm:flex-row gap-8 items-center sm:items-stretch">
           <div className="absolute top-0 left-0 right-0 h-1.5 z-30 bg-primary" />
-          
+
           <div className="flex-1 flex flex-col justify-center text-center sm:text-left z-40 order-2 sm:order-1 w-full">
             <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-4">
               <span className="bg-primary/20 text-primary border border-primary/30 text-xs font-bold px-3 py-1 rounded-full">{constellation.season}</span>
@@ -109,7 +119,7 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
           </div>
 
           <div className="z-40 order-1 sm:order-2 shrink-0">
-            <VisualToggle 
+            <VisualToggle
               slug={constellation.slug}
               name={constellation.name}
               emoji={constellation.emoji}
@@ -173,11 +183,11 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
               <h4 className="text-sm font-bold text-primary mb-2">▼ 名前の由来</h4>
               <p className="text-sm text-muted-foreground">{constellation.nameOrigin}</p>
             </div>
-            
+
             <div className="grid sm:grid-cols-2 gap-x-8 gap-y-6 pt-6 border-t border-border/40">
               {/* ★ 自動パースコンポーネントでライバルを描画 */}
               <RelationLinks text={constellation.rival} allData={constellations} type="rival" />
-              
+
               {/* ★ 自動パースコンポーネントで似ている星座を描画 */}
               <RelationLinks text={constellation.similar} allData={constellations} type="similar" />
             </div>
