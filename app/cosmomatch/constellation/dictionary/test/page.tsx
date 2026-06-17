@@ -39,7 +39,6 @@ const REAL_COORDS: Record<string, {ra: number, dec: number}> = {
   "ちょうこくぐ座": { ra: 4.5, dec: -40 }, "りょうけん座": { ra: 13.0, dec: 40 }, "みなみのかんむり座": { ra: 19.0, dec: -40 },
 };
 
-// 該当しない星座用のフォールバック乱数生成
 function hashCode(str: string) {
   let hash = 0; for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
   return Math.abs(hash);
@@ -48,14 +47,11 @@ function hashCode(str: string) {
 export default function DictionaryIndexPage() {
   const [constellations, setConstellations] = useState<Constellation[]>([])
   const [isLoaded, setIsLoaded] = useState(false)
-  
-  // ★ ここを修正: Constellation型に isSouthern と originalSeason を拡張してあげる
   const [selectedConstellation, setSelectedConstellation] = useState<(Constellation & { isSouthern?: boolean, originalSeason?: string }) | null>(null)
 
   const initialMonth = useMemo(() => new Date().getMonth() + 1, []);
   const [monthOffset, setMonthOffset] = useState(0);
 
-  // 現在表示している月
   const selectedMonth = ((initialMonth - 1 + monthOffset) % 12 + 12) % 12 + 1;
 
   useEffect(() => {
@@ -78,7 +74,6 @@ export default function DictionaryIndexPage() {
     setSelectedConstellation(null);
   }
 
-  // 1. 全星座の座標を計算（衝突回避込み）
   const celestialMap = useMemo(() => {
     const placedMain: { ra: number, y: number, name: string }[] = [];
     const placedSouth: { ra: number, y: number, name: string }[] = [];
@@ -87,15 +82,12 @@ export default function DictionaryIndexPage() {
       const coords = REAL_COORDS[c.name] || { ra: (hashCode(c.slug) % 240) / 10, dec: (hashCode(c.slug + "y") % 140) - 50 };
       const { ra, dec } = coords;
       
-      // 日本(北緯35度)から見た視界: 赤緯-55度未満は南天(見えない)
       const isSouthern = dec < -55;
 
-      // Y座標の計算（上端0% 〜 下端100%）
       let baseY = isSouthern 
-        ? (( -55 - dec ) / 35) * 100  // 南天マップ: -55度(0%) 〜 -90度(100%)
-        : (( 90 - dec ) / 145) * 100; // メイン空: +90度(0%) 〜 -55度(100%)
+        ? (( -55 - dec ) / 35) * 100
+        : (( 90 - dec ) / 145) * 100;
       
-      // 衝突回避（ラベルも含めた広めの距離をとる）
       let finalRA = ra;
       let finalY = baseY;
       let angle = 0;
@@ -109,9 +101,9 @@ export default function DictionaryIndexPage() {
 
         const collision = targetList.find(p => {
           let dra = Math.abs(p.ra - finalRA);
-          if (dra > 12) dra = 24 - dra; // 球面の最短距離
+          if (dra > 12) dra = 24 - dra;
           const dy = Math.abs(p.y - finalY);
-          return dra < 0.6 && dy < 6; // X軸約0.6h, Y軸6%以内に他の星があれば衝突
+          return dra < 0.6 && dy < 6;
         });
 
         if (!collision) break;
@@ -121,37 +113,53 @@ export default function DictionaryIndexPage() {
       }
       targetList.push({ ra: finalRA, y: finalY, name: c.name });
 
-      return { ...c, ra: finalRA, y: finalY, isSouthern, originalSeason: c.season || '' };
+      const lines = [];
+      const numStars = 3 + (hashCode(c.slug) % 3);
+      for (let i = 0; i < numStars; i++) {
+        lines.push({
+          dx: (hashCode(c.slug + i) % 20 - 10) * 0.4,
+          dy: (hashCode(c.slug + i + "y") % 20 - 10) * 0.4,
+        });
+      }
+
+      return { ...c, absoluteX: finalRA, y: finalY, lines, type: 'seasonal', isSouthern, originalSeason: c.season || '' };
     });
   }, [constellations]);
 
-  // 2. カメラ位置に基づき画面内の座標(X)を計算
   const displayStars = useMemo(() => {
-    // 夜20時に南中するRAの概算。1月=4h、1ヶ月で2h進む
     const cameraRA = (4 + (selectedMonth - 1) * 2) % 24;
 
     return celestialMap.map(c => {
-      let dx = c.ra - cameraRA;
-      // -12h 〜 +12h に丸める
+      let dx = c.absoluteX - cameraRA;
       dx = ((dx + 12) % 24 + 24) % 24 - 12;
       
-      // 画面の横幅(100%)を 8h分(約120度)の視野として計算。東(左)から西(右)へ。
-      const screenX = 50 - (dx / 8) * 100; 
+      // ★ 修正ポイント1：UIの期待に合わせるため、右をEAST・左をWESTとし「＋」に変更（天球儀モデル）
+      // 月が進む（右矢印を押す）と、星空全体が左へスライドし、右から新しい星が来るようになります。
+      const screenX = 50 + (dx / 8) * 100; 
       
       let status: 'current' | 'adjacent' | 'background' = 'background';
       const absDx = Math.abs(dx);
       
-      // カメラ中央から ±1h(今月), ±3h(前後1ヶ月)
       if (absDx <= 1.5) status = 'current';
       else if (absDx <= 3.5) status = 'adjacent';
 
       if (c.y < 30 || c.isSouthern) {
-        if (absDx <= 5) status = 'adjacent'; // 北天や南天は広めにうっすら表示
+        if (absDx <= 5) status = 'adjacent';
       }
 
       return { ...c, screenX, status };
     });
   }, [celestialMap, selectedMonth]);
+
+  const staticStars = useMemo(() => {
+    return Array.from({ length: 150 }).map((_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 2 + 0.5,
+      opacity: Math.random() * 0.6 + 0.1
+    }));
+  }, []);
 
   const mainSkyStars = displayStars.filter(c => !c.isSouthern);
   const southernSkyStars = displayStars.filter(c => c.isSouthern);
@@ -169,7 +177,7 @@ export default function DictionaryIndexPage() {
 
   return (
     <ContentPageLayout title="星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
-      <div className="max-w-[1400px] mx-auto pb-10 animate-in fade-in duration-700">
+      <div className="max-w-[1400px] mx-auto pb-24 animate-in fade-in duration-700 relative">
         
         <div className="mb-6 pt-4 px-4 sm:px-8">
           <Link href="/cosmomatch/constellation" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
@@ -187,7 +195,6 @@ export default function DictionaryIndexPage() {
               </p>
             </div>
 
-            {/* 月切り替えボタン（6列×2行） */}
             <div className="bg-secondary/30 p-3 rounded-2xl border border-border/50 shadow-inner w-full lg:w-auto">
               <div className="grid grid-cols-6 sm:grid-cols-12 gap-2">
                 {Array.from({length: 12}, (_, i) => i + 1).map(m => (
@@ -213,7 +220,6 @@ export default function DictionaryIndexPage() {
         ========================================= */}
         <div className="relative w-full h-[600px] md:h-[700px] bg-[#02020a] rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden mb-6 flex items-center group/sky">
           
-          {/* 左右の月移動ボタン（空の中のサイドにフロート） */}
           <button onClick={() => shiftSky(-1)} className="absolute left-4 z-40 p-4 rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-black/60 hover:scale-110 transition-all backdrop-blur-md opacity-0 group-hover/sky:opacity-100 hidden sm:block">
             <ChevronLeft className="w-8 h-8" />
           </button>
@@ -221,20 +227,25 @@ export default function DictionaryIndexPage() {
             <ChevronRight className="w-8 h-8" />
           </button>
 
-          {/* 背景演出 */}
           <div className="absolute inset-0 pointer-events-none opacity-40">
             <div className="absolute top-[20%] left-[30%] w-[300px] h-[300px] bg-primary/20 rounded-full blur-[100px]" />
             <div className="absolute bottom-[20%] right-[20%] w-[400px] h-[200px] bg-accent/20 rounded-full blur-[120px]" />
           </div>
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 text-[10px] text-white/20 tracking-[1em] font-bold z-0 pointer-events-none">NORTH (ZENITH)</div>
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-white/20 tracking-[1em] font-bold z-0 pointer-events-none">SOUTH (HORIZON)</div>
-          <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[10px] text-white/20 tracking-[1em] font-bold -rotate-90 z-0 pointer-events-none">EAST</div>
-          <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] text-white/20 tracking-[1em] font-bold rotate-90 z-0 pointer-events-none">WEST</div>
+          
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 text-[10px] text-white/20 tracking-[1em] font-bold z-0 pointer-events-none">NORTH</div>
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-white/20 tracking-[1em] font-bold z-0 pointer-events-none">SOUTH</div>
+          {/* ★ 修正ポイント1の連動：EASTとWESTのラベルを天球儀モデルに合わせて反転 */}
+          <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[10px] text-white/20 tracking-[1em] font-bold -rotate-90 z-0 pointer-events-none">WEST</div>
+          <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] text-white/20 tracking-[1em] font-bold rotate-90 z-0 pointer-events-none">EAST</div>
+          
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#000005] to-transparent pointer-events-none opacity-90 z-0" />
 
-          {/* メイン星座の描画 */}
+          {staticStars.map(s => (
+            <div key={s.id} className="absolute rounded-full bg-white z-0 pointer-events-none" style={{ left: `${s.x}%`, top: `${s.y}%`, width: `${s.size}px`, height: `${s.size}px`, opacity: s.opacity }} />
+          ))}
+
           {mainSkyStars.map((c) => {
-            if (c.screenX < -15 || c.screenX > 115) return null; // 画面外はレンダリング省略
+            if (c.screenX < -20 || c.screenX > 120) return null;
             const isCurrent = c.status === 'current';
             const isAdjacent = c.status === 'adjacent';
             const isSelected = selectedConstellation?.slug === c.slug;
@@ -246,19 +257,15 @@ export default function DictionaryIndexPage() {
                 className="absolute flex flex-col items-center justify-center -translate-x-1/2 -translate-y-1/2 transition-all duration-[1500ms] ease-in-out group outline-none"
                 style={{ left: `${c.screenX}%`, top: `${c.y}%`, zIndex: isCurrent ? 30 : isAdjacent ? 20 : 10 }}
               >
-                {/* タップ範囲を広げるラッパー ＆ 骨組み */}
                 <div className={`p-4 rounded-full flex flex-col items-center justify-center transition-all duration-700 ${isCurrent ? 'opacity-100 scale-110' : isAdjacent ? 'opacity-60 scale-90 hover:opacity-100 hover:scale-100' : 'opacity-20 scale-75 hover:opacity-100 hover:scale-90'}`}>
-                  
-                  {/* 星ドット */}
                   <div className={`rounded-full transition-all duration-300 flex items-center justify-center ${
                     isSelected ? 'w-5 h-5 bg-accent shadow-[0_0_25px_#00f2fe]' : 
-                    isCurrent ? 'w-4 h-4 bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 
+                    isCurrent ? 'w-4 h-4 bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)] hover:bg-primary' : 
                     'w-3 h-3 bg-white/70'
                   }`}>
                     <div className="w-1 h-1 bg-black/30 rounded-full" />
                   </div>
                   
-                  {/* 星座ラベル */}
                   <span className={`mt-2 whitespace-nowrap text-[11px] font-bold px-3 py-1 rounded-md backdrop-blur-md border transition-all duration-300 ${
                     isSelected ? 'bg-black/90 text-accent border-accent/50 scale-110 shadow-lg shadow-accent/20' : 
                     isCurrent ? 'bg-black/60 text-white border-white/20' : 
@@ -282,7 +289,7 @@ export default function DictionaryIndexPage() {
           <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-[#000005] to-transparent pointer-events-none opacity-90 z-0" />
 
           {southernSkyStars.map((c) => {
-            if (c.screenX < -15 || c.screenX > 115) return null;
+            if (c.screenX < -20 || c.screenX > 120) return null;
             const isSelected = selectedConstellation?.slug === c.slug;
             return (
               <button
@@ -306,7 +313,8 @@ export default function DictionaryIndexPage() {
             詳細ポップアップ（共通）
         ========================================= */}
         {selectedConstellation && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-[420px] bg-background/95 backdrop-blur-3xl border border-border/50 rounded-3xl p-5 shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in fade-in slide-in-from-bottom-8 z-50">
+          <div className="fixed bottom-16 sm:bottom-12 left-1/2 -translate-x-1/2 w-[95%] max-w-[420px] bg-background/95 backdrop-blur-3xl border border-border/50 rounded-3xl p-5 shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in fade-in slide-in-from-bottom-8 z-[100]">
+            {/* ★ スマホ下部のバー被りを防止 */}
             <button onClick={() => setSelectedConstellation(null)} className="absolute top-4 right-4 p-2 bg-secondary/50 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"><X className="w-4 h-4" /></button>
             <div className="flex gap-4 items-center mb-5 pr-8">
               <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#000015] border border-white/10 shrink-0 flex items-center justify-center relative shadow-inner">
