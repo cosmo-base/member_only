@@ -4,32 +4,58 @@ import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Constellation, getConstellations } from "@/data/CMconstellation"
-import { Loader2, ArrowLeft, Telescope, X, ChevronRight, Info, ChevronLeft } from "lucide-react"
+import { Loader2, ArrowLeft, Telescope, X, ChevronRight, Info, ChevronLeft, Globe } from "lucide-react"
 
-// 全天の幅と、1ヶ月あたりの移動幅の定数
-const TOTAL_SKY_WIDTH = 300; 
-const MONTH_WIDTH = 25; 
+// ★ 88星座の実際の概算座標（RA: 赤経 0-24h, Dec: 赤緯 -90〜+90度）
+const REAL_COORDS: Record<string, {ra: number, dec: number}> = {
+  "アンドロメダ座": { ra: 1.0, dec: 40 }, "ポンプ座": { ra: 10.5, dec: -35 }, "ふうちょう座": { ra: 16.0, dec: -75 },
+  "みずがめ座": { ra: 22.5, dec: -10 }, "わし座": { ra: 19.5, dec: 3 }, "さいだん座": { ra: 17.5, dec: -55 },
+  "おひつじ座": { ra: 2.5, dec: 20 }, "ぎょしゃ座": { ra: 6.0, dec: 42 }, "うしかい座": { ra: 14.5, dec: 30 },
+  "かに座": { ra: 8.5, dec: 20 }, "おおいぬ座": { ra: 6.8, dec: -22 }, "こいぬ座": { ra: 7.6, dec: 5 },
+  "やぎ座": { ra: 21.0, dec: -20 }, "りゅうこつ座": { ra: 9.0, dec: -60 }, "カシオペヤ座": { ra: 1.0, dec: 60 },
+  "ケンタウルス座": { ra: 13.0, dec: -50 }, "ケフェウス座": { ra: 22.0, dec: 70 }, "くじら座": { ra: 1.5, dec: -10 },
+  "カメレオン座": { ra: 11.0, dec: -80 }, "コンパス座": { ra: 15.0, dec: -60 }, "はと座": { ra: 5.5, dec: -35 },
+  "かみのけ座": { ra: 13.0, dec: 20 }, "かんむり座": { ra: 15.5, dec: 30 }, "からす座": { ra: 12.5, dec: -20 },
+  "コップ座": { ra: 11.0, dec: -15 }, "みなみじゅうじ座": { ra: 12.5, dec: -60 }, "はくちょう座": { ra: 20.5, dec: 40 },
+  "いるか座": { ra: 20.5, dec: 15 }, "かじき座": { ra: 5.0, dec: -65 }, "りゅう座": { ra: 17.0, dec: 65 },
+  "こうま座": { ra: 21.0, dec: 5 }, "エリダヌス座": { ra: 3.5, dec: -30 }, "ろ座": { ra: 2.5, dec: -30 },
+  "ふたご座": { ra: 7.0, dec: 20 }, "つる座": { ra: 22.0, dec: -45 }, "ヘルクレス座": { ra: 17.0, dec: 30 },
+  "とけい座": { ra: 3.0, dec: -50 }, "うみへび座": { ra: 10.0, dec: -20 }, "みずへび座": { ra: 2.0, dec: -75 },
+  "インディアン座": { ra: 21.0, dec: -55 }, "とかげ座": { ra: 22.5, dec: 45 }, "しし座": { ra: 10.5, dec: 15 },
+  "こじし座": { ra: 10.0, dec: 35 }, "うさぎ座": { ra: 5.5, dec: -20 }, "てんびん座": { ra: 15.0, dec: -15 },
+  "おおかみ座": { ra: 15.0, dec: -45 }, "やまねこ座": { ra: 8.0, dec: 45 }, "こと座": { ra: 18.5, dec: 35 },
+  "テーブルさん座": { ra: 5.0, dec: -75 }, "けんびきょう座": { ra: 21.0, dec: -35 }, "いっかくじゅう座": { ra: 7.0, dec: -5 },
+  "はえ座": { ra: 12.0, dec: -70 }, "じょうぎ座": { ra: 16.0, dec: -50 }, "はちぶんぎ座": { ra: 21.0, dec: -85 },
+  "へびつかい座": { ra: 17.0, dec: 0 }, "オリオン座": { ra: 5.5, dec: 5 }, "くじゃく座": { ra: 19.0, dec: -65 },
+  "ペガスス座": { ra: 22.5, dec: 20 }, "ペルセウス座": { ra: 3.0, dec: 45 }, "ほうおう座": { ra: 0.5, dec: -50 },
+  "がか座": { ra: 5.0, dec: -50 }, "うお座": { ra: 1.0, dec: 15 }, "みなみのうお座": { ra: 22.5, dec: -30 },
+  "とも座": { ra: 7.5, dec: -30 }, "らしんばん座": { ra: 9.0, dec: -30 }, "レチクル座": { ra: 4.0, dec: -60 },
+  "や座": { ra: 19.5, dec: 20 }, "いて座": { ra: 19.0, dec: -25 }, "さそり座": { ra: 16.5, dec: -30 },
+  "ちょうこくしつ座": { ra: 0.0, dec: -30 }, "たて座": { ra: 18.5, dec: -10 }, "へび座": { ra: 16.0, dec: 5 },
+  "ろくぶんぎ座": { ra: 10.0, dec: 0 }, "おうし座": { ra: 4.5, dec: 15 }, "ぼうえんきょう座": { ra: 19.0, dec: -50 },
+  "さんかく座": { ra: 2.0, dec: 30 }, "みなみのさんかく座": { ra: 16.0, dec: -65 }, "きょしちょう座": { ra: 22.0, dec: -60 },
+  "おおぐま座": { ra: 11.0, dec: 50 }, "こぐま座": { ra: 15.0, dec: 75 }, "ほ座": { ra: 9.0, dec: -45 },
+  "おとめ座": { ra: 13.0, dec: -5 }, "とびうお座": { ra: 8.0, dec: -70 }, "こぎつね座": { ra: 20.0, dec: 25 },
+  "ちょうこくぐ座": { ra: 4.5, dec: -40 }, "りょうけん座": { ra: 13.0, dec: 40 }, "みなみのかんむり座": { ra: 19.0, dec: -40 },
+};
 
-// slugから一定の数値を出すためのヘルパー
+// 該当しない星座用のフォールバック乱数生成
 function hashCode(str: string) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
+  let hash = 0; for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
   return Math.abs(hash);
 }
 
 export default function DictionaryIndexPage() {
   const [constellations, setConstellations] = useState<Constellation[]>([])
   const [isLoaded, setIsLoaded] = useState(false)
-  const [selectedConstellation, setSelectedConstellation] = useState<Constellation | null>(null)
+  
+  // ★ ここを修正: Constellation型に isSouthern と originalSeason を拡張してあげる
+  const [selectedConstellation, setSelectedConstellation] = useState<(Constellation & { isSouthern?: boolean, originalSeason?: string }) | null>(null)
 
-  // 初期ロード時の月を基準として記憶
   const initialMonth = useMemo(() => new Date().getMonth() + 1, []);
-  // 「初期月から何ヶ月分移動したか」を管理することで、無限回転を実現
   const [monthOffset, setMonthOffset] = useState(0);
 
-  // 現在画面の中央にある月
+  // 現在表示している月
   const selectedMonth = ((initialMonth - 1 + monthOffset) % 12 + 12) % 12 + 1;
 
   useEffect(() => {
@@ -39,7 +65,6 @@ export default function DictionaryIndexPage() {
     });
   }, []);
 
-  // 特定の月に最短距離で回転移動する関数
   const goToMonth = (targetMonth: number) => {
     let diff = targetMonth - selectedMonth;
     if (diff > 6) diff -= 12;
@@ -48,123 +73,88 @@ export default function DictionaryIndexPage() {
     setSelectedConstellation(null);
   }
 
-  // 背景の「名もなき星」を生成
-  const staticStars = useMemo(() => {
-    return Array.from({ length: 150 }).map((_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 2 + 0.5,
-      opacity: Math.random() * 0.6 + 0.1
-    }));
-  }, []);
+  const shiftSky = (dir: 1 | -1) => {
+    setMonthOffset(prev => prev + dir);
+    setSelectedConstellation(null);
+  }
 
-  // 【ステップ1】全星座の「絶対座標」を計算し、衝突を回避して配置する
+  // 1. 全星座の座標を計算（衝突回避込み）
   const celestialMap = useMemo(() => {
-    const placed: { x: number, y: number, slug: string }[] = [];
+    const placedMain: { ra: number, y: number, name: string }[] = [];
+    const placedSouth: { ra: number, y: number, name: string }[] = [];
     
     return constellations.map(c => {
-      const s = c.season || '';
-      let baseY = 50;
-      let type: 'seasonal' | 'circumpolar' | 'southern' = 'seasonal';
+      const coords = REAL_COORDS[c.name] || { ra: (hashCode(c.slug) % 240) / 10, dec: (hashCode(c.slug + "y") % 140) - 50 };
+      const { ra, dec } = coords;
       
-      // Y座標（高さ）のベース決定
-      if (s.includes('北') || s.includes('通年')) {
-        baseY = 15 + (hashCode(c.slug) % 20); // 15-35%
-        type = 'circumpolar';
-      } else if (s.includes('南') || s.includes('見えな')) {
-        baseY = 75 + (hashCode(c.slug) % 15); // 75-90%
-        type = 'southern';
-      } else {
-        baseY = 40 + (hashCode(c.slug) % 30); // 40-70%
-      }
+      // 日本(北緯35度)から見た視界: 赤緯-55度未満は南天(見えない)
+      const isSouthern = dec < -55;
 
-      // X座標（東西）のベース決定
-      let baseX = 0;
-      const monthMatch = s.match(/(\d+)月/);
-      if (monthMatch && type === 'seasonal') {
-        const peakMonth = parseInt(monthMatch[1], 10);
-        // 月ごとの基本位置にランダムノイズを足す
-        baseX = (peakMonth - 1) * MONTH_WIDTH + (hashCode(c.slug + "x") % 15 - 7.5);
-      } else {
-        baseX = hashCode(c.slug + "x") % TOTAL_SKY_WIDTH;
-      }
-
-      // 衝突回避アルゴリズム（スパイラルサーチ）
-      let finalX = baseX;
+      // Y座標の計算（上端0% 〜 下端100%）
+      let baseY = isSouthern 
+        ? (( -55 - dec ) / 35) * 100  // 南天マップ: -55度(0%) 〜 -90度(100%)
+        : (( 90 - dec ) / 145) * 100; // メイン空: +90度(0%) 〜 -55度(100%)
+      
+      // 衝突回避（ラベルも含めた広めの距離をとる）
+      let finalRA = ra;
       let finalY = baseY;
       let angle = 0;
       let radius = 0;
-      const MIN_DIST = 6.5; // 星同士が重ならない最低距離（%）
+      const targetList = isSouthern ? placedSouth : placedMain;
       
       while(true) {
-        finalY = Math.max(10, Math.min(90, baseY + radius * Math.sin(angle)));
-        finalX = (baseX + radius * Math.cos(angle) * 1.5) % TOTAL_SKY_WIDTH; 
-        if (finalX < 0) finalX += TOTAL_SKY_WIDTH;
+        finalY = Math.max(5, Math.min(95, baseY + radius * Math.sin(angle)));
+        finalRA = (ra + radius * Math.cos(angle) * 0.1) % 24; 
+        if (finalRA < 0) finalRA += 24;
 
-        const collision = placed.find(p => {
-          let dx = Math.abs(p.x - finalX);
-          if (dx > TOTAL_SKY_WIDTH / 2) dx = TOTAL_SKY_WIDTH - dx; // ループ空間の距離計算
-          const dy = p.y - finalY;
-          return Math.sqrt(dx * dx + dy * dy) < MIN_DIST;
+        const collision = targetList.find(p => {
+          let dra = Math.abs(p.ra - finalRA);
+          if (dra > 12) dra = 24 - dra; // 球面の最短距離
+          const dy = Math.abs(p.y - finalY);
+          return dra < 0.6 && dy < 6; // X軸約0.6h, Y軸6%以内に他の星があれば衝突
         });
 
-        if (!collision) break; // 衝突がなければ配置確定
-        
+        if (!collision) break;
         angle += Math.PI / 4;
-        radius += 0.5;
-        if (radius > 30) break; // 安全装置
+        radius += 1;
+        if (radius > 50) break;
       }
-      
-      placed.push({ x: finalX, y: finalY, slug: c.slug });
+      targetList.push({ ra: finalRA, y: finalY, name: c.name });
 
-      // 星座の骨組み（線）
-      const lines = [];
-      const numStars = 3 + (hashCode(c.slug) % 3);
-      for (let i = 0; i < numStars; i++) {
-        lines.push({
-          dx: (hashCode(c.slug + i) % 20 - 10) * 0.4,
-          dy: (hashCode(c.slug + i + "y") % 20 - 10) * 0.4,
-        });
-      }
-
-      return { ...c, absoluteX: finalX, y: finalY, lines, type };
+      return { ...c, ra: finalRA, y: finalY, isSouthern, originalSeason: c.season || '' };
     });
   }, [constellations]);
 
-  // 【ステップ2】現在のカメラ位置に基づいて、画面上の座標(screenX)を計算する
+  // 2. カメラ位置に基づき画面内の座標(X)を計算
   const displayStars = useMemo(() => {
-    // カメラの現在地（月を進めるごとに右へ移動する）
-    const cameraX = (initialMonth - 1 + monthOffset) * MONTH_WIDTH;
+    // 夜20時に南中するRAの概算。1月=4h、1ヶ月で2h進む
+    const cameraRA = (4 + (selectedMonth - 1) * 2) % 24;
 
     return celestialMap.map(c => {
-      // カメラからの相対距離
-      let dx = c.absoluteX - cameraX;
-      // -150 〜 +150 の範囲に正規化（最短距離）
-      dx = ((dx + TOTAL_SKY_WIDTH/2) % TOTAL_SKY_WIDTH + TOTAL_SKY_WIDTH) % TOTAL_SKY_WIDTH - TOTAL_SKY_WIDTH/2;
+      let dx = c.ra - cameraRA;
+      // -12h 〜 +12h に丸める
+      dx = ((dx + 12) % 24 + 24) % 24 - 12;
       
-      // 星空は東(左)から昇り、西(右)へ沈むため、カメラが進むと星は左へズレる
-      const screenX = 50 - dx; 
-
+      // 画面の横幅(100%)を 8h分(約120度)の視野として計算。東(左)から西(右)へ。
+      const screenX = 50 - (dx / 8) * 100; 
+      
       let status: 'current' | 'adjacent' | 'background' = 'background';
       const absDx = Math.abs(dx);
       
-      // 画面中央付近の判定
-      if (absDx <= MONTH_WIDTH * 0.8) {
-        status = 'current'; // 主役（今月）
-      } else if (absDx <= MONTH_WIDTH * 1.8) {
-        status = 'adjacent'; // 脇役（前後1ヶ月）
-      }
+      // カメラ中央から ±1h(今月), ±3h(前後1ヶ月)
+      if (absDx <= 1.5) status = 'current';
+      else if (absDx <= 3.5) status = 'adjacent';
 
-      // 通年・南天は常にうっすら表示
-      if (c.type === 'circumpolar' || c.type === 'southern') {
-         if (absDx <= MONTH_WIDTH * 2.5) status = 'adjacent';
+      if (c.y < 30 || c.isSouthern) {
+        if (absDx <= 5) status = 'adjacent'; // 北天や南天は広めにうっすら表示
       }
 
       return { ...c, screenX, status };
     });
-  }, [celestialMap, initialMonth, monthOffset]);
+  }, [celestialMap, selectedMonth]);
 
+  const mainSkyStars = displayStars.filter(c => !c.isSouthern);
+  const southernSkyStars = displayStars.filter(c => c.isSouthern);
 
   if (!isLoaded) {
     return (
@@ -179,157 +169,164 @@ export default function DictionaryIndexPage() {
 
   return (
     <ContentPageLayout title="星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
-      <div className="max-w-6xl mx-auto pb-10 animate-in fade-in duration-700">
+      <div className="max-w-[1400px] mx-auto pb-10 animate-in fade-in duration-700">
         
-        <div className="mb-6 pt-4 px-2 sm:px-0">
+        <div className="mb-6 pt-4 px-4 sm:px-8">
           <Link href="/cosmomatch/constellation" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
             <ArrowLeft className="w-4 h-4" /> 診断トップに戻る
           </Link>
           
-          <div className="mb-4">
-            <h2 className="text-3xl font-extrabold text-foreground mb-2 flex items-center gap-3">
-              <Telescope className="w-7 h-7 text-primary" />
-              プラネタリウム図鑑
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              操作パネルで月を進めると、星空が東から西へ巡ります。光る星座をタップしてください。
-            </p>
-          </div>
-
-          {/* ★ 常時表示される月切り替えナビゲーション */}
-          <div className="flex flex-col md:flex-row gap-3 md:items-center justify-between bg-secondary/30 p-2 sm:p-3 rounded-2xl border border-border/50 shadow-inner">
-            <button 
-              onClick={() => goToMonth(selectedMonth - 1)} 
-              className="flex items-center justify-center gap-1 px-3 py-2 bg-background hover:bg-secondary rounded-xl text-sm font-bold text-foreground transition-colors shrink-0"
-            >
-              <ChevronLeft className="w-4 h-4" /> 前の月
-            </button>
-            
-            <div className="flex flex-wrap justify-center gap-1.5 flex-1 px-2">
-              {Array.from({length: 12}, (_, i) => i + 1).map(m => (
-                <button
-                  key={m}
-                  onClick={() => goToMonth(m)}
-                  className={`px-3 py-1.5 text-xs sm:text-sm font-bold rounded-lg transition-all ${
-                    selectedMonth === m 
-                    ? 'bg-primary text-primary-foreground shadow-md scale-105' 
-                    : 'bg-background hover:bg-secondary text-muted-foreground hover:text-foreground border border-border/40'
-                  }`}
-                >
-                  {m}月
-                </button>
-              ))}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-6">
+            <div>
+              <h2 className="text-3xl font-extrabold text-foreground mb-2 flex items-center gap-3">
+                <Telescope className="w-7 h-7 text-primary" />
+                プラネタリウム図鑑
+              </h2>
+              <p className="text-muted-foreground text-sm max-w-lg">
+                実際の天球座標（赤経・赤緯）を再現した星空マップです。文字や光る星をタップして詳細を覗いてみましょう。
+              </p>
             </div>
 
-            <button 
-              onClick={() => goToMonth(selectedMonth + 1)} 
-              className="flex items-center justify-center gap-1 px-3 py-2 bg-background hover:bg-secondary rounded-xl text-sm font-bold text-foreground transition-colors shrink-0"
-            >
-              次の月 <ChevronRight className="w-4 h-4" />
-            </button>
+            {/* 月切り替えボタン（6列×2行） */}
+            <div className="bg-secondary/30 p-3 rounded-2xl border border-border/50 shadow-inner w-full lg:w-auto">
+              <div className="grid grid-cols-6 sm:grid-cols-12 gap-2">
+                {Array.from({length: 12}, (_, i) => i + 1).map(m => (
+                  <button
+                    key={m}
+                    onClick={() => goToMonth(m)}
+                    className={`py-2 text-xs sm:text-sm font-bold rounded-xl transition-all ${
+                      selectedMonth === m 
+                      ? 'bg-primary text-primary-foreground shadow-md scale-105' 
+                      : 'bg-background hover:bg-secondary text-muted-foreground hover:text-foreground border border-border/40'
+                    }`}
+                  >
+                    {m}月
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* --- プラネタリウム本体 --- */}
-        <div className="relative w-full h-[650px] md:h-[750px] bg-[#02020a] rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden">
+        {/* =========================================
+            メイン空（日本から見える星空）
+        ========================================= */}
+        <div className="relative w-full h-[600px] md:h-[700px] bg-[#02020a] rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden mb-6 flex items-center group/sky">
           
-          {/* 背景の天の川グラデーション */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-40">
+          {/* 左右の月移動ボタン（空の中のサイドにフロート） */}
+          <button onClick={() => shiftSky(-1)} className="absolute left-4 z-40 p-4 rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-black/60 hover:scale-110 transition-all backdrop-blur-md opacity-0 group-hover/sky:opacity-100 hidden sm:block">
+            <ChevronLeft className="w-8 h-8" />
+          </button>
+          <button onClick={() => shiftSky(1)} className="absolute right-4 z-40 p-4 rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-black/60 hover:scale-110 transition-all backdrop-blur-md opacity-0 group-hover/sky:opacity-100 hidden sm:block">
+            <ChevronRight className="w-8 h-8" />
+          </button>
+
+          {/* 背景演出 */}
+          <div className="absolute inset-0 pointer-events-none opacity-40">
             <div className="absolute top-[20%] left-[30%] w-[300px] h-[300px] bg-primary/20 rounded-full blur-[100px]" />
             <div className="absolute bottom-[20%] right-[20%] w-[400px] h-[200px] bg-accent/20 rounded-full blur-[120px]" />
           </div>
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 text-[10px] text-white/20 tracking-[1em] font-bold z-0 pointer-events-none">NORTH (ZENITH)</div>
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-white/20 tracking-[1em] font-bold z-0 pointer-events-none">SOUTH (HORIZON)</div>
+          <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[10px] text-white/20 tracking-[1em] font-bold -rotate-90 z-0 pointer-events-none">EAST</div>
+          <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] text-white/20 tracking-[1em] font-bold rotate-90 z-0 pointer-events-none">WEST</div>
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#000005] to-transparent pointer-events-none opacity-90 z-0" />
 
-          {/* 方角ラベル */}
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 text-[10px] text-white/20 tracking-[1em] font-bold z-0">NORTH</div>
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-white/20 tracking-[1em] font-bold z-0">SOUTH</div>
-          <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[10px] text-white/20 tracking-[1em] font-bold -rotate-90 z-0">EAST</div>
-          <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] text-white/20 tracking-[1em] font-bold rotate-90 z-0">WEST</div>
-          
-          {/* 南天エリアの地平線演出 */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none opacity-80 z-0" />
-
-          {/* 1. 静止した星々 */}
-          {staticStars.map(s => (
-            <div key={s.id} className="absolute rounded-full bg-white z-0" style={{ left: `${s.x}%`, top: `${s.y}%`, width: `${s.size}px`, height: `${s.size}px`, opacity: s.opacity }} />
-          ))}
-
-          {/* 2. 星座の描画 */}
-          {displayStars.map((c) => {
-            // 画面の少し外まではレンダリングしておく（スライド時のため）
-            if (c.screenX < -20 || c.screenX > 120) return null;
-
+          {/* メイン星座の描画 */}
+          {mainSkyStars.map((c) => {
+            if (c.screenX < -15 || c.screenX > 115) return null; // 画面外はレンダリング省略
             const isCurrent = c.status === 'current';
             const isAdjacent = c.status === 'adjacent';
             const isSelected = selectedConstellation?.slug === c.slug;
 
             return (
-              <div 
-                key={c.slug} 
-                className="absolute transition-all duration-1000 ease-in-out"
-                style={{ left: `${c.screenX}%`, top: `${c.y}%` }}
+              <button
+                key={c.slug}
+                onClick={() => setSelectedConstellation(c)}
+                className="absolute flex flex-col items-center justify-center -translate-x-1/2 -translate-y-1/2 transition-all duration-[1500ms] ease-in-out group outline-none"
+                style={{ left: `${c.screenX}%`, top: `${c.y}%`, zIndex: isCurrent ? 30 : isAdjacent ? 20 : 10 }}
               >
-                {/* 星座線 (SVG) */}
-                <svg className="absolute overflow-visible pointer-events-none" style={{ transform: 'translate(-50%, -50%)' }}>
-                  {c.lines.map((l, i) => (
-                    <line key={i} x1="0" y1="0" x2={`${l.dx * 10}`} y2={`${l.dy * 10}`} 
-                          stroke={isCurrent ? "rgba(0,242,254,0.3)" : isAdjacent ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.05)"} 
-                          strokeWidth={isCurrent ? "1.5" : "1"} />
-                  ))}
-                </svg>
-
-                {/* メインの星ボタン */}
-                <button
-                  onClick={() => setSelectedConstellation(c)}
-                  className={`group relative flex items-center justify-center -translate-x-1/2 -translate-y-1/2 transition-all duration-700 ${
-                    isCurrent ? 'scale-110 opacity-100 z-30' : 
-                    isAdjacent ? 'scale-90 opacity-70 hover:opacity-100 z-20' : 
-                    'scale-50 opacity-20 hover:opacity-100 z-10'
-                  }`}
-                >
-                  <div className={`rounded-full transition-all duration-500 flex items-center justify-center ${
-                    isSelected ? 'w-5 h-5 bg-accent shadow-[0_0_20px_#00f2fe]' : 
-                    isCurrent ? 'w-4 h-4 bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)] hover:bg-primary' : 
-                    isAdjacent ? 'w-3 h-3 bg-white/80 hover:bg-white' : 
-                    'w-2 h-2 bg-white/50 hover:bg-white'
+                {/* タップ範囲を広げるラッパー ＆ 骨組み */}
+                <div className={`p-4 rounded-full flex flex-col items-center justify-center transition-all duration-700 ${isCurrent ? 'opacity-100 scale-110' : isAdjacent ? 'opacity-60 scale-90 hover:opacity-100 hover:scale-100' : 'opacity-20 scale-75 hover:opacity-100 hover:scale-90'}`}>
+                  
+                  {/* 星ドット */}
+                  <div className={`rounded-full transition-all duration-300 flex items-center justify-center ${
+                    isSelected ? 'w-5 h-5 bg-accent shadow-[0_0_25px_#00f2fe]' : 
+                    isCurrent ? 'w-4 h-4 bg-white shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 
+                    'w-3 h-3 bg-white/70'
                   }`}>
-                    {/* 中心点 */}
-                    <div className="w-1 h-1 bg-black/20 rounded-full" />
+                    <div className="w-1 h-1 bg-black/30 rounded-full" />
                   </div>
                   
-                  {/* 星座名 */}
-                  <span className={`absolute top-6 whitespace-nowrap text-[10px] font-bold px-2.5 py-1 rounded-md bg-black/70 backdrop-blur-md border border-white/20 transition-all duration-300 pointer-events-none ${
-                    isSelected ? 'opacity-100 text-accent border-accent/50 scale-110 z-50' : 
-                    isCurrent ? 'opacity-100 text-white z-40' : 
-                    'opacity-0 group-hover:opacity-100 text-white/80 z-30'
+                  {/* 星座ラベル */}
+                  <span className={`mt-2 whitespace-nowrap text-[11px] font-bold px-3 py-1 rounded-md backdrop-blur-md border transition-all duration-300 ${
+                    isSelected ? 'bg-black/90 text-accent border-accent/50 scale-110 shadow-lg shadow-accent/20' : 
+                    isCurrent ? 'bg-black/60 text-white border-white/20' : 
+                    'bg-black/40 text-white/70 border-transparent group-hover:border-white/20 group-hover:text-white group-hover:bg-black/60'
                   }`}>
                     {c.name}
                   </span>
-                </button>
-              </div>
+                </div>
+              </button>
             );
           })}
-
-          {/* 3. 詳細ポップアップ */}
-          {selectedConstellation && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-[420px] bg-background/95 backdrop-blur-2xl border border-border/50 rounded-3xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.6)] animate-in fade-in slide-in-from-bottom-8 z-50">
-              <button onClick={() => setSelectedConstellation(null)} className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
-              <div className="flex gap-5 items-center mb-5">
-                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#000015] border border-white/10 shrink-0 flex items-center justify-center relative shadow-inner">
-                  {selectedConstellation.imageUrl ? <img src={selectedConstellation.imageUrl} alt="" className="w-full h-full object-cover" /> : null}
-                  <span className="absolute text-4xl opacity-30 -z-10">{selectedConstellation.emoji}</span>
-                </div>
-                <div>
-                  <div className="text-[10px] font-bold text-primary px-2 py-0.5 bg-primary/10 border border-primary/20 rounded-full inline-block mb-1.5 uppercase tracking-wider">{selectedConstellation.season} 見頃</div>
-                  <h3 className="text-2xl font-bold text-foreground">{selectedConstellation.name}</h3>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground mb-5 leading-relaxed italic">「{selectedConstellation.catchCopy}」</p>
-              <Link href={`/cosmomatch/constellation/dictionary/${selectedConstellation.slug}`} className="flex items-center justify-center w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all gap-2 shadow-lg shadow-primary/20">
-                <Info className="w-4 h-4" /> 星座図鑑を見る <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-          )}
         </div>
+
+        {/* =========================================
+            南天エリア（日本から見えない空）
+        ========================================= */}
+        <div className="relative w-full h-[250px] bg-[#05050f] rounded-3xl border border-white/5 shadow-inner overflow-hidden flex items-center mb-10">
+          <div className="absolute top-4 left-6 flex items-center gap-2 text-white/40 font-bold text-sm tracking-wider pointer-events-none z-10">
+            <Globe className="w-5 h-5" /> SOUTHERN SKY <span className="text-xs font-normal opacity-70 ml-2">地平線の下（南半球の空）</span>
+          </div>
+          <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-[#000005] to-transparent pointer-events-none opacity-90 z-0" />
+
+          {southernSkyStars.map((c) => {
+            if (c.screenX < -15 || c.screenX > 115) return null;
+            const isSelected = selectedConstellation?.slug === c.slug;
+            return (
+              <button
+                key={c.slug}
+                onClick={() => setSelectedConstellation(c)}
+                className="absolute flex flex-col items-center justify-center -translate-x-1/2 -translate-y-1/2 transition-all duration-[1500ms] ease-in-out group outline-none z-20"
+                style={{ left: `${c.screenX}%`, top: `${c.y}%` }}
+              >
+                <div className="p-3 flex flex-col items-center opacity-40 hover:opacity-100 transition-opacity duration-300">
+                  <div className={`rounded-full transition-all duration-300 ${isSelected ? 'w-4 h-4 bg-emerald-400 shadow-[0_0_15px_#34d399]' : 'w-2 h-2 bg-white/70'}`} />
+                  <span className={`mt-1.5 whitespace-nowrap text-[10px] font-bold px-2 py-0.5 rounded bg-black/50 border transition-all ${isSelected ? 'text-emerald-400 border-emerald-400/50' : 'text-white/50 border-transparent group-hover:border-white/20'}`}>
+                    {c.name}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* =========================================
+            詳細ポップアップ（共通）
+        ========================================= */}
+        {selectedConstellation && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-[420px] bg-background/95 backdrop-blur-3xl border border-border/50 rounded-3xl p-5 shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in fade-in slide-in-from-bottom-8 z-50">
+            <button onClick={() => setSelectedConstellation(null)} className="absolute top-4 right-4 p-2 bg-secondary/50 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"><X className="w-4 h-4" /></button>
+            <div className="flex gap-4 items-center mb-5 pr-8">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#000015] border border-white/10 shrink-0 flex items-center justify-center relative shadow-inner">
+                {selectedConstellation.imageUrl ? <img src={selectedConstellation.imageUrl} alt="" className="w-full h-full object-cover" /> : null}
+                <span className="absolute text-4xl opacity-30 -z-10">{selectedConstellation.emoji}</span>
+              </div>
+              <div>
+                <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full inline-block mb-1.5 uppercase tracking-wider ${selectedConstellation.isSouthern ? 'text-emerald-400 bg-emerald-400/10 border border-emerald-400/20' : 'text-primary bg-primary/10 border border-primary/20'}`}>
+                  {selectedConstellation.isSouthern ? "南半球の星座" : `${selectedConstellation.originalSeason} 見頃`}
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground">{selectedConstellation.name}</h3>
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground mb-5 leading-relaxed italic">「{selectedConstellation.catchCopy}」</p>
+            <Link href={`/cosmomatch/constellation/dictionary/${selectedConstellation.slug}`} className="flex items-center justify-center w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all gap-2 shadow-lg shadow-primary/20">
+              <Info className="w-4 h-4" /> 星座図鑑のデータを見る <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+        )}
+
       </div>
     </ContentPageLayout>
   )
