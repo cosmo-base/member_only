@@ -6,39 +6,41 @@ import { ContentPageLayout } from "@/components/content-page-layout"
 import { Constellation, getConstellations } from "@/data/CMconstellation"
 import { Loader2, ArrowLeft, Telescope, X, ChevronRight, Info, ChevronLeft, Globe } from "lucide-react"
 
-// ★ 88星座の実際の概算座標（RA: 赤経 0-24h, Dec: 赤緯 -90〜+90度）
+// ★ Pudno a koordenada dagiti 88 a konstelasion (RA: 0-24h, Dec: -90 aginggana +90 grado)
 const REAL_COORDS: Record<string, {ra: number, dec: number}> = {
-  "アンドロメダ座": { ra: 1.0, dec: 40 }, "ポンプ座": { ra: 10.5, dec: -35 }, "ふうちょう座": { ra: 16.0, dec: -75 },
-  "みずがめ座": { ra: 22.5, dec: -10 }, "わし座": { ra: 19.5, dec: 3 }, "さいだん座": { ra: 17.5, dec: -55 },
-  "おひつじ座": { ra: 2.5, dec: 20 }, "ぎょしゃ座": { ra: 6.0, dec: 42 }, "うしかい座": { ra: 14.5, dec: 30 },
-  "かに座": { ra: 8.5, dec: 20 }, "おおいぬ座": { ra: 6.8, dec: -22 }, "こいぬ座": { ra: 7.6, dec: 5 },
-  "やぎ座": { ra: 21.0, dec: -20 }, "りゅうこつ座": { ra: 9.0, dec: -60 }, "カシオペヤ座": { ra: 1.0, dec: 60 },
-  "ケンタウルス座": { ra: 13.0, dec: -50 }, "ケフェウス座": { ra: 22.0, dec: 70 }, "くじら座": { ra: 1.5, dec: -10 },
-  "カメレオン座": { ra: 11.0, dec: -80 }, "コンパス座": { ra: 15.0, dec: -60 }, "はと座": { ra: 5.5, dec: -35 },
-  "かみのけ座": { ra: 13.0, dec: 20 }, "かんむり座": { ra: 15.5, dec: 30 }, "からす座": { ra: 12.5, dec: -20 },
-  "コップ座": { ra: 11.0, dec: -15 }, "みなみじゅうじ座": { ra: 12.5, dec: -60 }, "はくちょう座": { ra: 20.5, dec: 40 },
-  "いるか座": { ra: 20.5, dec: 15 }, "かじき座": { ra: 5.0, dec: -65 }, "りゅう座": { ra: 17.0, dec: 65 },
-  "こうま座": { ra: 21.0, dec: 5 }, "エリダヌス座": { ra: 3.5, dec: -30 }, "ろ座": { ra: 2.5, dec: -30 },
-  "ふたご座": { ra: 7.0, dec: 20 }, "つる座": { ra: 22.0, dec: -45 }, "ヘルクレス座": { ra: 17.0, dec: 30 },
-  "とけい座": { ra: 3.0, dec: -50 }, "うみへび座": { ra: 10.0, dec: -20 }, "みずへび座": { ra: 2.0, dec: -75 },
-  "インディアン座": { ra: 21.0, dec: -55 }, "とかげ座": { ra: 22.5, dec: 45 }, "しし座": { ra: 10.5, dec: 15 },
-  "こじし座": { ra: 10.0, dec: 35 }, "うさぎ座": { ra: 5.5, dec: -20 }, "てんびん座": { ra: 15.0, dec: -15 },
-  "おおかみ座": { ra: 15.0, dec: -45 }, "やまねこ座": { ra: 8.0, dec: 45 }, "こと座": { ra: 18.5, dec: 35 },
-  "テーブルさん座": { ra: 5.0, dec: -75 }, "けんびきょう座": { ra: 21.0, dec: -35 }, "いっかくじゅう座": { ra: 7.0, dec: -5 },
-  "はえ座": { ra: 12.0, dec: -70 }, "じょうぎ座": { ra: 16.0, dec: -50 }, "はちぶんぎ座": { ra: 21.0, dec: -85 },
-  "へびつかい座": { ra: 17.0, dec: 0 }, "オリオン座": { ra: 5.5, dec: 5 }, "くじゃく座": { ra: 19.0, dec: -65 },
-  "ペガスス座": { ra: 22.5, dec: 20 }, "ペルセウス座": { ra: 3.0, dec: 45 }, "ほうおう座": { ra: 0.5, dec: -50 },
-  "がか座": { ra: 5.0, dec: -50 }, "うお座": { ra: 1.0, dec: 15 }, "みなみのうお座": { ra: 22.5, dec: -30 },
-  "とも座": { ra: 7.5, dec: -30 }, "らしんばん座": { ra: 9.0, dec: -30 }, "レチクル座": { ra: 4.0, dec: -60 },
-  "や座": { ra: 19.5, dec: 20 }, "いて座": { ra: 19.0, dec: -25 }, "さそり座": { ra: 16.5, dec: -30 },
-  "ちょうこくしつ座": { ra: 0.0, dec: -30 }, "たて座": { ra: 18.5, dec: -10 }, "へび座": { ra: 16.0, dec: 5 },
-  "ろくぶんぎ座": { ra: 10.0, dec: 0 }, "おうし座": { ra: 4.5, dec: 15 }, "ぼうえんきょう座": { ra: 19.0, dec: -50 },
-  "さんかく座": { ra: 2.0, dec: 30 }, "みなみのさんかく座": { ra: 16.0, dec: -65 }, "きょしちょう座": { ra: 22.0, dec: -60 },
-  "おおぐま座": { ra: 11.0, dec: 50 }, "こぐま座": { ra: 15.0, dec: 75 }, "ほ座": { ra: 9.0, dec: -45 },
-  "おとめ座": { ra: 13.0, dec: -5 }, "とびうお座": { ra: 8.0, dec: -70 }, "こぎつね座": { ra: 20.0, dec: 25 },
-  "ちょうこくぐ座": { ra: 4.5, dec: -40 }, "りょうけん座": { ra: 13.0, dec: 40 }, "みなみのかんむり座": { ra: 19.0, dec: -40 },
+  And: { ra: 1.0, dec: 40 }, Ant: { ra: 10.5, dec: -35 }, Aps: { ra: 16.0, dec: -75 },
+  Aqr: { ra: 22.5, dec: -10 }, Aql: { ra: 19.5, dec: 3 }, Ara: { ra: 17.5, dec: -55 },
+  Ari: { ra: 2.5, dec: 20 }, Aur: { ra: 6.0, dec: 42 }, Boo: { ra: 14.5, dec: 30 },
+  Cae: { ra: 4.5, dec: -40 }, Cam: { ra: 6.0, dec: 70 }, Cnc: { ra: 8.5, dec: 20 },
+  CVn: { ra: 13.0, dec: 40 }, CMa: { ra: 6.8, dec: -22 }, CMi: { ra: 7.6, dec: 5 },
+  Cap: { ra: 21.0, dec: -20 }, Car: { ra: 9.0, dec: -60 }, Cas: { ra: 1.0, dec: 60 },
+  Cen: { ra: 13.0, dec: -50 }, Cep: { ra: 22.0, dec: 70 }, Cet: { ra: 1.5, dec: -10 },
+  Cha: { ra: 11.0, dec: -80 }, Cir: { ra: 15.0, dec: -60 }, Col: { ra: 5.5, dec: -35 },
+  Com: { ra: 13.0, dec: 20 }, CrA: { ra: 19.0, dec: -40 }, CrB: { ra: 15.5, dec: 30 },
+  Crv: { ra: 12.5, dec: -20 }, Crt: { ra: 11.0, dec: -15 }, Cru: { ra: 12.5, dec: -60 },
+  Cyg: { ra: 20.5, dec: 40 }, Del: { ra: 20.5, dec: 15 }, Dor: { ra: 5.0, dec: -65 },
+  Dra: { ra: 17.0, dec: 65 }, Equ: { ra: 21.0, dec: 5 }, Eri: { ra: 3.5, dec: -30 },
+  For: { ra: 2.5, dec: -30 }, Gem: { ra: 7.0, dec: 20 }, Gru: { ra: 22.0, dec: -45 },
+  Her: { ra: 17.0, dec: 30 }, Hor: { ra: 3.0, dec: -50 }, Hya: { ra: 10.0, dec: -20 },
+  Hyi: { ra: 2.0, dec: -75 }, Ind: { ra: 21.0, dec: -55 }, Lac: { ra: 22.5, dec: 45 },
+  Leo: { ra: 10.5, dec: 15 }, LMi: { ra: 10.0, dec: 35 }, Lep: { ra: 5.5, dec: -20 },
+  Lib: { ra: 15.0, dec: -15 }, Lup: { ra: 15.0, dec: -45 }, Lyn: { ra: 8.0, dec: 45 },
+  Lyr: { ra: 18.5, dec: 35 }, Men: { ra: 5.0, dec: -75 }, Mic: { ra: 21.0, dec: -35 },
+  Mon: { ra: 7.0, dec: -5 }, Mus: { ra: 12.0, dec: -70 }, Nor: { ra: 16.0, dec: -50 },
+  Oct: { ra: 21.0, dec: -85 }, Oph: { ra: 17.0, dec: 0 }, Ori: { ra: 5.5, dec: 5 },
+  Pav: { ra: 19.0, dec: -65 }, Peg: { ra: 22.5, dec: 20 }, Per: { ra: 3.0, dec: 45 },
+  Phe: { ra: 0.5, dec: -50 }, Pic: { ra: 5.0, dec: -50 }, Psc: { ra: 1.0, dec: 15 },
+  PsA: { ra: 22.5, dec: -30 }, Pup: { ra: 7.5, dec: -30 }, Pyx: { ra: 9.0, dec: -30 },
+  Ret: { ra: 4.0, dec: -60 }, Sge: { ra: 19.5, dec: 20 }, Sgr: { ra: 19.0, dec: -25 },
+  Sco: { ra: 16.5, dec: -30 }, Scl: { ra: 0.0, dec: -30 }, Sct: { ra: 18.5, dec: -10 },
+  Ser: { ra: 16.0, dec: 5 }, Sex: { ra: 10.0, dec: 0 }, Tau: { ra: 4.5, dec: 15 },
+  Tel: { ra: 19.0, dec: -50 }, Tri: { ra: 2.0, dec: 30 }, TrA: { ra: 16.0, dec: -65 },
+  Tuc: { ra: 22.0, dec: -60 }, UMa: { ra: 11.0, dec: 50 }, UMi: { ra: 15.0, dec: 75 },
+  Vel: { ra: 9.0, dec: -45 }, Vir: { ra: 13.0, dec: -5 }, Vol: { ra: 8.0, dec: -70 },
+  Vul: { ra: 20.0, dec: 25 },
 };
 
+// Paamo a mapataud ti random para kadagiti saan nga agpadis a konstelasion
 function hashCode(str: string) {
   let hash = 0; for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
   return Math.abs(hash);
@@ -52,6 +54,7 @@ export default function DictionaryIndexPage() {
   const initialMonth = useMemo(() => new Date().getMonth() + 1, []);
   const [monthOffset, setMonthOffset] = useState(0);
 
+  // Agdama a maipakita a bulan
   const selectedMonth = ((initialMonth - 1 + monthOffset) % 12 + 12) % 12 + 1;
 
   useEffect(() => {
@@ -74,22 +77,49 @@ export default function DictionaryIndexPage() {
     setSelectedConstellation(null);
   }
 
+  // 1. Karkuluen ti koordenada ti amin a konstelasion (pakairamanan panangliklik iti panagdinnungpar)
   const celestialMap = useMemo(() => {
     const placedMain: { ra: number, y: number, name: string }[] = [];
     const placedSouth: { ra: number, y: number, name: string }[] = [];
     
     return constellations.map(c => {
-      const coords = REAL_COORDS[c.name] || { ra: (hashCode(c.slug) % 240) / 10, dec: (hashCode(c.slug + "y") % 140) - 50 };
-      const { ra, dec } = coords;
+      const s = c.season || '';
       
-      const isSouthern = dec < -55;
+      // Usaren ti ID (slug) tapno mabirokan ti koordenada
+      const slugKey = c.slug.charAt(0).toUpperCase() + c.slug.slice(1).toLowerCase();
+      const coords = REAL_COORDS[c.slug] || REAL_COORDS[slugKey];
+      
+      let ra = 0;
+      let dec = 0;
+
+      if (coords) {
+        ra = coords.ra;
+        dec = coords.dec;
+      } else {
+        const monthMatch = s.match(/(\d+)月/);
+        if (monthMatch) {
+          const m = parseInt(monthMatch[1], 10);
+          ra = (4 + (m - 1) * 2) % 24; 
+        } else if (s.includes('春')) ra = 12;
+        else if (s.includes('夏')) ra = 18;
+        else if (s.includes('秋')) ra = 22;
+        else if (s.includes('冬')) ra = 6;
+        else ra = (hashCode(c.slug) % 240) / 10;
+
+        if (s.includes('北') || s.includes('通年')) dec = 60 + (hashCode(c.slug) % 30);
+        else if (s.includes('南') || s.includes('見えな')) dec = -60 - (hashCode(c.slug) % 30);
+        else dec = (hashCode(c.slug + "y") % 100) - 40;
+      }
+      
+      // Paka-imatan manipud Hapon (35 degrees latitude amianan): Ti kina-baba ngem -55 degrees ket langit iti abagatan (saan a makita)
+      const isSouthern = dec < -55 || s.includes('南') || s.includes('見えな');
 
       let baseY = isSouthern 
         ? (( -55 - dec ) / 35) * 100
         : (( 90 - dec ) / 145) * 100;
       
       let finalRA = ra;
-      let finalY = baseY;
+      let finalY = Math.max(5, Math.min(95, baseY));
       let angle = 0;
       let radius = 0;
       const targetList = isSouthern ? placedSouth : placedMain;
@@ -126,6 +156,7 @@ export default function DictionaryIndexPage() {
     });
   }, [constellations]);
 
+  // 2. Karkuluen ti koordenada iti uneg ti iskrin (X) a nakabasar iti posision ti kamera
   const displayStars = useMemo(() => {
     const cameraRA = (4 + (selectedMonth - 1) * 2) % 24;
 
@@ -133,8 +164,7 @@ export default function DictionaryIndexPage() {
       let dx = c.absoluteX - cameraRA;
       dx = ((dx + 12) % 24 + 24) % 24 - 12;
       
-      // ★ 修正ポイント1：UIの期待に合わせるため、右をEAST・左をWESTとし「＋」に変更（天球儀モデル）
-      // 月が進む（右矢印を押す）と、星空全体が左へスライドし、右から新しい星が来るようになります。
+      // No umabante ti bulan (pinduten ti makannawan a pana), ag-slide pa-kannigid ti intero a langit ti bituen, ken umay dagiti baro a bituen manipud kannawan.
       const screenX = 50 + (dx / 8) * 100; 
       
       let status: 'current' | 'adjacent' | 'background' = 'background';
@@ -166,32 +196,32 @@ export default function DictionaryIndexPage() {
 
   if (!isLoaded) {
     return (
-      <ContentPageLayout title="星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
+      <ContentPageLayout title="Diksionario ti Konstelasion" level={1} levelTitle="" logo="CosmoMatch">
         <div className="max-w-md mx-auto py-32 flex flex-col items-center justify-center animate-in fade-in">
           <Loader2 className="w-12 h-12 text-accent animate-spin mb-6" />
-          <p className="text-muted-foreground font-bold">天球の座標を計算中...</p>
+          <p className="text-muted-foreground font-bold">Karkuluen ti koordenada ti law-ang...</p>
         </div>
       </ContentPageLayout>
     )
   }
 
   return (
-    <ContentPageLayout title="星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
+    <ContentPageLayout title="Diksionario ti Konstelasion" level={1} levelTitle="" logo="CosmoMatch">
       <div className="max-w-[1400px] mx-auto pb-24 animate-in fade-in duration-700 relative">
         
         <div className="mb-6 pt-4 px-4 sm:px-8">
           <Link href="/cosmomatch/constellation" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
-            <ArrowLeft className="w-4 h-4" /> 診断トップに戻る
+            <ArrowLeft className="w-4 h-4" /> Agsubli iti Top ti Diagnotiko
           </Link>
           
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-6">
             <div>
               <h2 className="text-3xl font-extrabold text-foreground mb-2 flex items-center gap-3">
                 <Telescope className="w-7 h-7 text-primary" />
-                プラネタリウム図鑑
+                Planetarium a Diksionario
               </h2>
               <p className="text-muted-foreground text-sm max-w-lg">
-                実際の天球座標（赤経・赤緯）を再現した星空マップです。文字や光る星をタップして詳細を覗いてみましょう。
+                Pudno a koordenada ti law-ang (RA/Dec) a mapa ti bituen. Tappem dagiti teksto wenno bituen tapno makita ti detalye.
               </p>
             </div>
 
@@ -207,7 +237,7 @@ export default function DictionaryIndexPage() {
                       : 'bg-background hover:bg-secondary text-muted-foreground hover:text-foreground border border-border/40'
                     }`}
                   >
-                    {m}月
+                    {m} Bulan
                   </button>
                 ))}
               </div>
@@ -215,9 +245,6 @@ export default function DictionaryIndexPage() {
           </div>
         </div>
 
-        {/* =========================================
-            メイン空（日本から見える星空）
-        ========================================= */}
         <div className="relative w-full h-[600px] md:h-[700px] bg-[#02020a] rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden mb-6 flex items-center group/sky">
           
           <button onClick={() => shiftSky(-1)} className="absolute left-4 z-40 p-4 rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-black/60 hover:scale-110 transition-all backdrop-blur-md opacity-0 group-hover/sky:opacity-100 hidden sm:block">
@@ -232,11 +259,10 @@ export default function DictionaryIndexPage() {
             <div className="absolute bottom-[20%] right-[20%] w-[400px] h-[200px] bg-accent/20 rounded-full blur-[120px]" />
           </div>
           
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 text-[10px] text-white/20 tracking-[1em] font-bold z-0 pointer-events-none">NORTH</div>
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-white/20 tracking-[1em] font-bold z-0 pointer-events-none">SOUTH</div>
-          {/* ★ 修正ポイント1の連動：EASTとWESTのラベルを天球儀モデルに合わせて反転 */}
-          <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[10px] text-white/20 tracking-[1em] font-bold -rotate-90 z-0 pointer-events-none">WEST</div>
-          <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] text-white/20 tracking-[1em] font-bold rotate-90 z-0 pointer-events-none">EAST</div>
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 text-[10px] text-white/20 tracking-[1em] font-bold z-0 pointer-events-none">AMIANAN</div>
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-white/20 tracking-[1em] font-bold z-0 pointer-events-none">ABAGATAN</div>
+          <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[10px] text-white/20 tracking-[1em] font-bold -rotate-90 z-0 pointer-events-none">LAUD</div>
+          <div className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] text-white/20 tracking-[1em] font-bold rotate-90 z-0 pointer-events-none">DAYA</div>
           
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#000005] to-transparent pointer-events-none opacity-90 z-0" />
 
@@ -279,12 +305,9 @@ export default function DictionaryIndexPage() {
           })}
         </div>
 
-        {/* =========================================
-            南天エリア（日本から見えない空）
-        ========================================= */}
         <div className="relative w-full h-[250px] bg-[#05050f] rounded-3xl border border-white/5 shadow-inner overflow-hidden flex items-center mb-10">
           <div className="absolute top-4 left-6 flex items-center gap-2 text-white/40 font-bold text-sm tracking-wider pointer-events-none z-10">
-            <Globe className="w-5 h-5" /> SOUTHERN SKY <span className="text-xs font-normal opacity-70 ml-2">地平線の下（南半球の空）</span>
+            <Globe className="w-5 h-5" /> LANGIT ITI ABAGATAN <span className="text-xs font-normal opacity-70 ml-2">Baba ti horisonte (Langit iti Abagatan a Hemisperio)</span>
           </div>
           <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-[#000005] to-transparent pointer-events-none opacity-90 z-0" />
 
@@ -309,12 +332,8 @@ export default function DictionaryIndexPage() {
           })}
         </div>
 
-        {/* =========================================
-            詳細ポップアップ（共通）
-        ========================================= */}
         {selectedConstellation && (
           <div className="fixed bottom-16 sm:bottom-12 left-1/2 -translate-x-1/2 w-[95%] max-w-[420px] bg-background/95 backdrop-blur-3xl border border-border/50 rounded-3xl p-5 shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in fade-in slide-in-from-bottom-8 z-[100]">
-            {/* ★ スマホ下部のバー被りを防止 */}
             <button onClick={() => setSelectedConstellation(null)} className="absolute top-4 right-4 p-2 bg-secondary/50 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"><X className="w-4 h-4" /></button>
             <div className="flex gap-4 items-center mb-5 pr-8">
               <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#000015] border border-white/10 shrink-0 flex items-center justify-center relative shadow-inner">
@@ -323,14 +342,14 @@ export default function DictionaryIndexPage() {
               </div>
               <div>
                 <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full inline-block mb-1.5 uppercase tracking-wider ${selectedConstellation.isSouthern ? 'text-emerald-400 bg-emerald-400/10 border border-emerald-400/20' : 'text-primary bg-primary/10 border border-primary/20'}`}>
-                  {selectedConstellation.isSouthern ? "南半球の星座" : `${selectedConstellation.originalSeason} 見頃`}
+                  {selectedConstellation.isSouthern ? "Konstelasion iti Abagatan" : `${selectedConstellation.originalSeason} Kaimbagan a buyaen`}
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-foreground">{selectedConstellation.name}</h3>
               </div>
             </div>
             <p className="text-sm text-muted-foreground mb-5 leading-relaxed italic">「{selectedConstellation.catchCopy}」</p>
             <Link href={`/cosmomatch/constellation/dictionary/${selectedConstellation.slug}`} className="flex items-center justify-center w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all gap-2 shadow-lg shadow-primary/20">
-              <Info className="w-4 h-4" /> 星座図鑑のデータを見る <ChevronRight className="w-4 h-4" />
+              <Info className="w-4 h-4" /> Kitaen ti datos ti diksionario <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
         )}
