@@ -71,7 +71,6 @@ export default function DictionaryIndexPage() {
     setSelectedConstellation(null);
   }
 
-  // ★ 修正ポイント1: 矢印の操作感を反転（左でカメラを左(東/次の月)へ、右で右(西/前の月)へ）
   const shiftSky = (dir: 1 | -1) => {
     setMonthOffset(prev => prev + dir);
     setSelectedConstellation(null);
@@ -84,7 +83,6 @@ export default function DictionaryIndexPage() {
     return constellations.map(c => {
       const s = c.season || '';
       
-      // ★ 修正ポイント2: 完全にID（slug）ベースでの座標検索
       const coordsKey = Object.keys(REAL_COORDS).find(k => k.toLowerCase() === c.slug.toLowerCase());
       
       let ra = 0, dec = 0;
@@ -93,7 +91,6 @@ export default function DictionaryIndexPage() {
         ra = REAL_COORDS[coordsKey].ra;
         dec = REAL_COORDS[coordsKey].dec;
       } else {
-        // 万が一IDが存在しない場合のフェイルセーフ
         const monthMatch = s.match(/(\d+)月/);
         if (monthMatch) {
           const m = parseInt(monthMatch[1], 10);
@@ -117,7 +114,6 @@ export default function DictionaryIndexPage() {
       let angle = 0, radius = 0;
       const targetList = isSouthern ? placedSouth : placedMain;
       
-      // SVGとラベルが綺麗に収まるように衝突回避の余白を最適化
       while(true) {
         finalY = Math.max(8, Math.min(92, baseY + radius * Math.sin(angle)));
         finalRA = (ra + radius * Math.cos(angle) * 0.1) % 24; 
@@ -148,7 +144,6 @@ export default function DictionaryIndexPage() {
       let dx = c.absoluteX - cameraRA;
       dx = ((dx + 12) % 24 + 24) % 24 - 12;
       
-      // 天球儀モデル: 左が東(これから)、右が西(過ぎた)
       const screenX = 50 - (dx / 8) * 100; 
       
       let status: 'current' | 'adjacent' | 'background' = 'background';
@@ -200,7 +195,7 @@ export default function DictionaryIndexPage() {
             </Link>
             <span className="text-muted-foreground/30 hidden sm:inline">|</span>
             <Link href="/cosmomatch/constellation/dictionary/list" className="inline-flex items-center gap-1 text-sm text-primary hover:text-accent transition-colors font-bold">
-              <List className="w-4 h-4" /> 詳細検索を開く
+              <List className="w-4 h-4" /> 詳細検索（88星座一覧）を開く
             </Link>
           </div>
           
@@ -240,7 +235,6 @@ export default function DictionaryIndexPage() {
         ========================================= */}
         <div className="relative w-full h-[600px] md:h-[700px] bg-[#02020a] rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden mb-6 flex items-center group/sky">
           
-          {/* ★ 矢印機能の反転適用: 左(東)を押すと未来の月(+1)へ、右(西)を押すと過去の月(-1)へ */}
           <button onClick={() => shiftSky(1)} className="absolute left-4 z-40 p-4 rounded-full bg-black/40 border border-white/10 text-white/50 hover:text-white hover:bg-black/60 hover:scale-110 transition-all backdrop-blur-md opacity-0 group-hover/sky:opacity-100 hidden sm:block">
             <ChevronLeft className="w-8 h-8" />
           </button>
@@ -289,14 +283,12 @@ export default function DictionaryIndexPage() {
                     </div>
                   )}
 
-                  {/* ★ 大きな白丸を廃止し、上品な「恒星の点」に変更 */}
                   <div className={`rounded-full transition-all duration-300 flex items-center justify-center relative z-10 ${
                     isSelected ? 'w-2 h-2 bg-accent shadow-[0_0_12px_#00f2fe] scale-150' : 
                     isCurrent ? 'w-1.5 h-1.5 bg-white shadow-[0_0_6px_rgba(255,255,255,0.9)] group-hover:scale-150 group-hover:bg-primary' : 
                     'w-1 h-1 bg-white/60 group-hover:bg-white group-hover:scale-125'
                   }`} />
                   
-                  {/* ★ ラベルのカプセル感を軽減し、星空に馴染むデザインに */}
                   <span className={`mt-2 whitespace-nowrap text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full backdrop-blur-sm transition-all duration-300 relative z-20 ${
                     isSelected ? 'bg-accent/20 text-accent border border-accent/50 scale-110 shadow-lg' : 
                     isCurrent ? 'bg-black/30 text-white/90 border border-white/10' : 
@@ -308,14 +300,37 @@ export default function DictionaryIndexPage() {
               </button>
             );
           })}
+
+          {/* ★ 星空の中に直接表示されるポップアップ（メイン空用） */}
+          {selectedConstellation && !selectedConstellation.isSouthern && (
+            <div className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 w-[95%] max-w-[420px] bg-background/95 backdrop-blur-3xl border border-border/50 rounded-3xl p-5 shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in fade-in slide-in-from-bottom-8 z-[100]">
+              <button onClick={(e) => { e.stopPropagation(); setSelectedConstellation(null); }} className="absolute top-4 right-4 p-2 bg-secondary/50 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"><X className="w-4 h-4" /></button>
+              <div className="flex gap-4 items-center mb-5 pr-8">
+                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#000015] border border-white/10 shrink-0 flex items-center justify-center relative shadow-inner">
+                  {selectedConstellation.imageUrl ? <img src={selectedConstellation.imageUrl} alt="" className="w-full h-full object-cover" /> : null}
+                  <span className="absolute text-4xl opacity-30 -z-10">{selectedConstellation.emoji}</span>
+                </div>
+                <div>
+                  <div className="text-[10px] font-bold px-2 py-0.5 rounded-full inline-block mb-1.5 uppercase tracking-wider text-primary bg-primary/10 border border-primary/20">
+                    {selectedConstellation.originalSeason} 見頃
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-foreground">{selectedConstellation.name}</h3>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mb-5 leading-relaxed italic">「{selectedConstellation.catchCopy}」</p>
+              <Link href={`/cosmomatch/constellation/dictionary/${selectedConstellation.slug}`} className="flex items-center justify-center w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all gap-2 shadow-lg shadow-primary/20">
+                <Info className="w-4 h-4" /> 星座図鑑のデータを見る <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* =========================================
             南天エリア（日本から見えない空）
         ========================================= */}
-        <div className="relative w-full h-[250px] bg-[#05050f] rounded-3xl border border-white/5 shadow-inner overflow-hidden flex items-center mb-10">
+        <div className="relative w-full h-[250px] sm:h-[300px] bg-[#05050f] rounded-3xl border border-white/5 shadow-inner overflow-hidden flex items-center mb-10">
           <div className="absolute top-4 left-6 flex items-center gap-2 text-white/40 font-bold text-sm tracking-wider pointer-events-none z-10">
-            <Globe className="w-5 h-5" /> SOUTHERN SKY <span className="text-xs font-normal opacity-70 ml-2">地平線の下（南半球の空）</span>
+            <Globe className="w-5 h-5" /> SOUTHERN SKY <span className="text-xs font-normal opacity-70 ml-2 hidden sm:inline">地平線の下（南半球の空）</span>
           </div>
           <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-[#000005] to-transparent pointer-events-none opacity-90 z-0" />
 
@@ -349,32 +364,30 @@ export default function DictionaryIndexPage() {
               </button>
             );
           })}
-        </div>
 
-        {/* =========================================
-            詳細ポップアップ（共通）
-        ========================================= */}
-        {selectedConstellation && (
-          <div className="fixed bottom-16 sm:bottom-12 left-1/2 -translate-x-1/2 w-[95%] max-w-[420px] bg-background/95 backdrop-blur-3xl border border-border/50 rounded-3xl p-5 shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in fade-in slide-in-from-bottom-8 z-[100]">
-            <button onClick={() => setSelectedConstellation(null)} className="absolute top-4 right-4 p-2 bg-secondary/50 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"><X className="w-4 h-4" /></button>
-            <div className="flex gap-4 items-center mb-5 pr-8">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#000015] border border-white/10 shrink-0 flex items-center justify-center relative shadow-inner">
-                {selectedConstellation.imageUrl ? <img src={selectedConstellation.imageUrl} alt="" className="w-full h-full object-cover" /> : null}
-                <span className="absolute text-4xl opacity-30 -z-10">{selectedConstellation.emoji}</span>
-              </div>
-              <div>
-                <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full inline-block mb-1.5 uppercase tracking-wider ${selectedConstellation.isSouthern ? 'text-emerald-400 bg-emerald-400/10 border border-emerald-400/20' : 'text-primary bg-primary/10 border border-primary/20'}`}>
-                  {selectedConstellation.isSouthern ? "南半球の星座" : `${selectedConstellation.originalSeason} 見頃`}
+          {/* ★ 星空の中に直接表示されるポップアップ（南天用） */}
+          {selectedConstellation && selectedConstellation.isSouthern && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-[420px] bg-background/95 backdrop-blur-3xl border border-border/50 rounded-3xl p-5 shadow-[0_30px_60px_rgba(0,0,0,0.8)] animate-in fade-in zoom-in-95 z-[100]">
+              <button onClick={(e) => { e.stopPropagation(); setSelectedConstellation(null); }} className="absolute top-4 right-4 p-2 bg-secondary/50 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"><X className="w-4 h-4" /></button>
+              <div className="flex gap-4 items-center mb-5 pr-8">
+                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-[#000015] border border-white/10 shrink-0 flex items-center justify-center relative shadow-inner">
+                  {selectedConstellation.imageUrl ? <img src={selectedConstellation.imageUrl} alt="" className="w-full h-full object-cover" /> : null}
+                  <span className="absolute text-4xl opacity-30 -z-10">{selectedConstellation.emoji}</span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-foreground">{selectedConstellation.name}</h3>
+                <div>
+                  <div className="text-[10px] font-bold px-2 py-0.5 rounded-full inline-block mb-1.5 uppercase tracking-wider text-emerald-400 bg-emerald-400/10 border border-emerald-400/20">
+                    南半球の星座
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-foreground">{selectedConstellation.name}</h3>
+                </div>
               </div>
+              <p className="text-sm text-muted-foreground mb-5 leading-relaxed italic">「{selectedConstellation.catchCopy}」</p>
+              <Link href={`/cosmomatch/constellation/dictionary/${selectedConstellation.slug}`} className="flex items-center justify-center w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all gap-2 shadow-lg shadow-primary/20">
+                <Info className="w-4 h-4" /> 星座図鑑のデータを見る <ChevronRight className="w-4 h-4" />
+              </Link>
             </div>
-            <p className="text-sm text-muted-foreground mb-5 leading-relaxed italic">「{selectedConstellation.catchCopy}」</p>
-            <Link href={`/cosmomatch/constellation/dictionary/${selectedConstellation.slug}`} className="flex items-center justify-center w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-all gap-2 shadow-lg shadow-primary/20">
-              <Info className="w-4 h-4" /> 星座図鑑のデータを見る <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-        )}
+          )}
+        </div>
 
       </div>
     </ContentPageLayout>
