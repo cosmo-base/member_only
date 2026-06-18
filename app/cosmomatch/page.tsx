@@ -71,9 +71,11 @@ export default function CosmoMatchTopPage() {
             <p className="text-muted-foreground text-sm mb-6 flex-1 leading-relaxed opacity-80">
               季節を彩る星々の並びや、裏側に隠された神話の物語。あなたの性格や情緒に最もフィットする「夜空の道標」を見つけ出します。
             </p>
-            <Button variant="outline" className="w-full text-muted-foreground opacity-60 cursor-not-allowed" disabled>
-              近日公開
-            </Button>
+            <Link href="/cosmomatch/constellation">
+              <Button variant="outline" className="w-full text-muted-foreground opacity-60 cursor-not-allowed">
+                マッチングを始める
+              </Button>
+            </Link>
           </div>
 
         </div>
