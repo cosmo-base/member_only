@@ -51,30 +51,27 @@ export default function DiagnosePage() {
     }
   }, [isCalculating, isDataLoaded]);
 
-  const executeMatching = () => {
+  // ★ 関数に async を追加
+  const executeMatching = async () => {
     if (constellations.length === 0) return;
 
-    // ★ 1. スコア加減算モデルの実行（初期値5からスタート）
+    // 1. スコア加減算モデルの実行（初期値5からスタート）
     const finalStats = {} as ConstellationStats;
 
     STAT_KEYS.forEach(key => {
-      let currentScore = 5; // ベースライン 5
-      
-      // ユーザーが選択した全回答の補正値をそのまま足し引き
+      let currentScore = 5;
       Object.values(userChoices).forEach(choiceScore => {
         if (choiceScore[key] !== undefined) {
           currentScore += choiceScore[key] as number;
         }
       });
-      
-      // 理論上1〜9にピタリと着地するが、念のため安全装置としてクランプ
       finalStats[key] = Math.max(1, Math.min(9, currentScore));
     });
 
     let bestConstellation = constellations[0]
     let minDistance = Infinity
 
-    // ★ 2. マッチング計算（ユークリッド距離）
+    // 2. マッチング計算（ユークリッド距離）
     constellations.forEach((constellation) => {
       let distanceSum = 0
       STAT_KEYS.forEach((key) => {
@@ -82,8 +79,6 @@ export default function DiagnosePage() {
         const constellationScore = constellation.stats[key] || 5
         distanceSum += Math.pow(userScore - constellationScore, 2)
       })
-      
-      // 数学的な直線距離（ルート計算）
       const actualDistance = Math.sqrt(distanceSum);
 
       if (actualDistance < minDistance) {
@@ -92,7 +87,6 @@ export default function DiagnosePage() {
       }
     })
 
-    // 同調率の計算（最大合計差分56をベースに最適化）
     const totalDiff = STAT_KEYS.reduce((acc, key) => {
       return acc + Math.abs(finalStats[key] - (bestConstellation.stats[key] || 5))
     }, 0)
@@ -102,28 +96,33 @@ export default function DiagnosePage() {
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxfhx-DlgYauECo0vPZ8TJNjs1pIL96GxhifeB4FTfxN__jIpYoz9JdNMnLub9euDtORQ/exec";
     
     const payload: Record<string, any> = {
-      rocket: bestConstellation.name,
+      rocket: bestConstellation.name, // ※スプシ側の列名が「rocket」のままならこのままでOKです
       matchPercent: matchPercent,
       ...finalStats,
     };
     
-    // q1 から q12 までの回答内容をループで格納
     for (let i = 1; i <= QUESTIONS.length; i++) {
       payload[`q${i}`] = userAnswers[i] || "";
     }
     
-    fetch(GAS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload),
-    }).catch(err => console.error("GAS Error:", err));
+    // ★ 修正：await を付与して送信完了を確実に待つ。さらに mode: "no-cors" でCORS遮断を防ぐ
+    try {
+      await fetch(GAS_URL, {
+        method: "POST",
+        mode: "no-cors", 
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      });
+      console.log("GASへのデータ送信に成功しました");
+    } catch (err) {
+      console.error("GAS送信エラー:", err);
+    }
 
-    // URL用パラメータのエンコード
+    // ★ 修正：データが送信されたのを確認してから、結果画面へ遷移させる
     const encodedStats = STAT_KEYS.map(k => Math.min(35, finalStats[k] || 5).toString(36)).join('');
-
     router.push(`/cosmomatch/constellation/result?c=${bestConstellation.slug}&s=${encodedStats}`)
   }
-
+  
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1)
