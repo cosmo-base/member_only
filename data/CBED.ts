@@ -1,5 +1,3 @@
-// data/CBED.ts
-
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 1. イベントデータの型定義
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -26,11 +24,8 @@ export interface SpaceEvent {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 2. データの取得先URLの設定
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ベースURLとビルドタイムスタンプに分ける
 const CBED_SPREADSHEET_BASE_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTJU_Qq6TICMIAhDidiH2BYlBcZBvS_Uwy4wth9tT-02RYWkVP_AufdGo0PMAbAyrHKeZrE1x0laETY/pub?gid=0&single=true&output=csv";
 
-// ★関数の「外側」でタイムスタンプを1回だけ取得して固定
-const BUILD_TIMESTAMP = Date.now();
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 3. 最強のCSVパーサー（空行スキップ・セル内改行対応）
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -124,24 +119,23 @@ function parseCSV(csvText: string): SpaceEvent[] {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export async function fetchEventsData(): Promise<SpaceEvent[]> {
   try {
-    const cacheBusterUrl = `${CBED_SPREADSHEET_BASE_URL}&_t=${BUILD_TIMESTAMP}`;
+    // ★ 改善1: タイムスタンプを関数内に移動し、アクセスするたびに新しい値を生成（キャッシュ対策）
+    const currentTimestamp = Date.now();
+    const cacheBusterUrl = `${CBED_SPREADSHEET_BASE_URL}&_t=${currentTimestamp}`;
     
-    const res = await fetch(cacheBusterUrl);
+    // ★ 改善2: Next.jsのエッジ環境やVercelデプロイ時を考慮し、明示的にno-store（キャッシュしない）を設定
+    const res = await fetch(cacheBusterUrl, {
+      cache: 'no-store'
+    });
     
     if (!res.ok) {
       throw new Error(`CBEDデータの取得に失敗: HTTP ${res.status}`);
     }
 
     const text = await res.text();
-    let parsedEvents: SpaceEvent[] = [];
     
-    try {
-      // JSON形式の可能性も考慮（念のため）
-      parsedEvents = JSON.parse(text) as SpaceEvent[];
-    } catch (e) {
-      // JSONじゃなければ最強CSVパーサーへ
-      parsedEvents = parseCSV(text);
-    }
+    // ★ 改善3: エンドポイントがCSV固定のため、無駄なJSON.parseのtry-catchを廃止して直接パース
+    const parsedEvents = parseCSV(text);
 
     // ターミナルで無事に読み込めたか確認するための安心ログ
     console.log(`✅ CBED.ts: スプレッドシートから ${parsedEvents.length} 件のイベントを読み込みました！`);
