@@ -20,11 +20,8 @@ export default function DiagnosePage() {
 
   const [started, setStarted] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
-  
-  // 計算フェーズに入ったかどうかのフラグ
   const [isCalculating, setIsCalculating] = useState(false)
   
-  // ユーザーが「どの問題で何を選んだか」のスコアオブジェクトそのものを履歴として保存する
   const [userChoices, setUserChoices] = useState<Record<number, Partial<ConstellationStats>>>({})
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({})
 
@@ -36,7 +33,6 @@ export default function DiagnosePage() {
   }, []);
 
   const handleChoice = (score: Partial<ConstellationStats>, choiceText: string) => {
-    // 現在のステップ（Q1なら0）の回答スコアとテキストを保存
     setUserChoices(prev => ({ ...prev, [currentStep]: score }))
     setUserAnswers(prev => ({ ...prev, [currentStep + 1]: choiceText }))
 
@@ -58,62 +54,63 @@ export default function DiagnosePage() {
   const executeMatching = () => {
     if (constellations.length === 0) return;
 
-    // 平均値算出アルゴリズムの実行
+    // ★ 1. スコア加減算モデルの実行（初期値5からスタート）
     const finalStats = {} as ConstellationStats;
 
     STAT_KEYS.forEach(key => {
-      // 1. 初期値として「5」を配列に入れておく
-      const values: number[] = [5];
+      let currentScore = 5; // ベースライン 5
       
-      // 2. ユーザーが選んだ5つの選択肢の中に、該当する軸のスコアがあれば配列に追加
+      // ユーザーが選択した全回答の補正値をそのまま足し引き
       Object.values(userChoices).forEach(choiceScore => {
         if (choiceScore[key] !== undefined) {
-          values.push(choiceScore[key] as number);
+          currentScore += choiceScore[key] as number;
         }
       });
       
-      // 3. 平均値を算出し、四捨五入して1〜9の間に収める
-      const sum = values.reduce((a, b) => a + b, 0);
-      const avg = sum / values.length;
-      finalStats[key] = Math.max(1, Math.min(9, Math.round(avg)));
+      // 理論上1〜9にピタリと着地するが、念のため安全装置としてクランプ
+      finalStats[key] = Math.max(1, Math.min(9, currentScore));
     });
 
     let bestConstellation = constellations[0]
     let minDistance = Infinity
 
-    // マッチング計算（ユークリッド距離の二乗）
-    constellations.forEach((Constellation) => {
-      let distance = 0
+    // ★ 2. マッチング計算（ユークリッド距離）
+    constellations.forEach((constellation) => {
+      let distanceSum = 0
       STAT_KEYS.forEach((key) => {
         const userScore = finalStats[key]
-        const constellationScore = Constellation.stats[key] || 5 // CSVが空なら5とみなす
-        distance += Math.pow(userScore - constellationScore, 2)
+        const constellationScore = constellation.stats[key] || 5
+        distanceSum += Math.pow(userScore - constellationScore, 2)
       })
+      
+      // 数学的な直線距離（ルート計算）
+      const actualDistance = Math.sqrt(distanceSum);
 
-      if (distance < minDistance) {
-        minDistance = distance
-        bestConstellation = Constellation
+      if (actualDistance < minDistance) {
+        minDistance = actualDistance
+        bestConstellation = constellation
       }
     })
 
-    // 同調率の計算（絶対値の差分の合計から算出。最大56差）
+    // 同調率の計算（最大合計差分56をベースに最適化）
     const totalDiff = STAT_KEYS.reduce((acc, key) => {
       return acc + Math.abs(finalStats[key] - (bestConstellation.stats[key] || 5))
     }, 0)
-    const matchPercent = Math.max(60, Math.min(99, Math.round(100 - totalDiff * 1.5)));
+    const matchPercent = Math.max(60, Math.min(99, Math.round(100 - totalDiff * 1.2)));
 
-    // GASへの送信
+    // GASへのデータ送信ペイロードの動的組み立て
     const GAS_URL = "https://script.google.com/macros/s/AKfycbxfhx-DlgYauECo0vPZ8TJNjs1pIL96GxhifeB4FTfxN__jIpYoz9JdNMnLub9euDtORQ/exec";
-    const payload = {
+    
+    const payload: Record<string, any> = {
       rocket: bestConstellation.name,
       matchPercent: matchPercent,
-      ...finalStats, // 1〜9の綺麗なデータ
-      q1: userAnswers[1] || "",
-      q2: userAnswers[2] || "",
-      q3: userAnswers[3] || "",
-      q4: userAnswers[4] || "",
-      q5: userAnswers[5] || "",
+      ...finalStats,
     };
+    
+    // q1 から q12 までの回答内容をループで格納
+    for (let i = 1; i <= QUESTIONS.length; i++) {
+      payload[`q${i}`] = userAnswers[i] || "";
+    }
     
     fetch(GAS_URL, {
       method: "POST",
@@ -121,7 +118,7 @@ export default function DiagnosePage() {
       body: JSON.stringify(payload),
     }).catch(err => console.error("GAS Error:", err));
 
-    // URL用パラメータのエンコード (1〜9の数値なのでそのまま36進数にしても1文字に収まる)
+    // URL用パラメータのエンコード
     const encodedStats = STAT_KEYS.map(k => Math.min(35, finalStats[k] || 5).toString(36)).join('');
 
     router.push(`/cosmomatch/constellation/result?c=${bestConstellation.slug}&s=${encodedStats}`)
@@ -154,11 +151,11 @@ export default function DiagnosePage() {
           <GlassCard className="p-6 mb-8 max-w-sm mx-auto bg-secondary/10 border-border/40">
             <div className="flex items-center justify-around text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5 font-medium text-foreground">
-                <Clock className="w-4 h-4 text-accent" /> 約1分
+                <Clock className="w-4 h-4 text-accent" /> 約2分
               </span>
               <span className="w-px h-4 bg-border" />
               <span className="flex items-center gap-1.5 font-medium text-foreground">
-                <Zap className="w-4 h-4 text-primary" /> 全5問
+                <Zap className="w-4 h-4 text-primary" /> 全12問
               </span>
             </div>
           </GlassCard>
@@ -171,7 +168,6 @@ export default function DiagnosePage() {
               マッチングを始める
             </Button>
 
-            {/* ★ ここに追加：目立たない図鑑へのリンク */}
             <Link 
               href="/cosmomatch/constellation/dictionary" 
               className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 opacity-70 hover:opacity-100"
