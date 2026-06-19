@@ -93,7 +93,7 @@ export default function DiagnosePage() {
     const matchPercent = Math.max(60, Math.min(99, Math.round(100 - totalDiff * 1.2)));
 
     // GASへのデータ送信ペイロードの動的組み立て
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxfhx-DlgYauECo0vPZ8TJNjs1pIL96GxhifeB4FTfxN__jIpYoz9JdNMnLub9euDtORQ/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbzKpF42RXOL2ttx6JYu7OfKWeceTlLmOTNjKZFbYQFGU9Zr9B9dNbwJBfdpObPXIJ15pg/exec";
     
     const payload: Record<string, any> = {
       rocket: bestConstellation.name, // ※スプシ側の列名が「rocket」のままならこのままでOKです
