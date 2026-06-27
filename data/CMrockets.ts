@@ -20,8 +20,31 @@ export interface Rocket {
   catchCopy: string;
   intro: string;
   country: string;
+  operator: string;
+  manufacturer: string;
   status: "active" | "retired" | "development";
   category: string;
+  type: string;
+  lineage: string;
+  firstFlight: string;
+  lastFlight: string;
+  stages: string;
+  propulsion: string;
+  propellant: string;
+  launchSite: string;
+  height: string;
+  diameter: string;
+  mass: string;
+  payload: string;
+  missions: string;
+  launchRecord: string;
+  successFailure: string;
+  techFeatures: string;
+  keyPerson: string;
+  rivals: string;
+  diagTags: string;
+  dataReliability: string;
+  notes: string;
   appearance: number;
   stats: RocketStats;
   highlights: string[];
@@ -31,6 +54,8 @@ export interface Rocket {
     today: string;
   };
   relatedRockets: string[];
+  predecessors: string;
+  successors: string;
   articleLinks: { title: string; url: string }[];
 }
 
@@ -92,8 +117,31 @@ export async function getRockets(): Promise<Rocket[]> {
                 catchCopy: row['キャッチコピー']?.trim() || '',
                 intro: row['一言紹介']?.trim() || '',
                 country: row['国']?.trim() || '',
+                operator: row['開発・運用主体']?.trim() || '',
+                manufacturer: row['主な製造/主契約']?.trim() || '',
                 status: parseStatus(row['現役/退役'] || ''),
                 category: row['分類']?.trim() || '',
+                type: row['種別']?.trim() || '',
+                lineage: row['系列/位置づけ']?.trim() || '',
+                firstFlight: row['初飛行年']?.trim() || '',
+                lastFlight: row['最終飛行年']?.trim() || '',
+                stages: row['段数']?.trim() || '',
+                propulsion: row['推進方式']?.trim() || '',
+                propellant: row['主な推進剤']?.trim() || '',
+                launchSite: row['主な打上げ場所']?.trim() || '',
+                height: row['高さ/全長(m)']?.trim() || '',
+                diameter: row['直径(m)']?.trim() || '',
+                mass: row['重量(t)']?.trim() || '',
+                payload: row['打上げ能力・到達高度（代表値）']?.trim() || '',
+                missions: row['代表ミッション/搭載衛星']?.trim() || '',
+                launchRecord: row['打上げ実績（概略）']?.trim() || '',
+                successFailure: row['成功/失敗の要点']?.trim() || '',
+                techFeatures: row['技術的特徴']?.trim() || '',
+                keyPerson: row['関連人物']?.trim() || '',
+                rivals: row['ライバル/類似']?.trim() || '',
+                diagTags: row['診断タグ']?.trim() || '',
+                dataReliability: row['データ信頼度']?.trim() || '',
+                notes: row['注記']?.trim() || '',
                 appearance: parseFloat(row['出現係数'] || '1') || 1,
                 stats: {
                   power:         parseInt(row['パワー']       || '0', 10) || 0,
@@ -116,6 +164,8 @@ export async function getRockets(): Promise<Rocket[]> {
                   today:    row['象徴するエピソード']?.trim() || row['一言紹介']?.trim() || '',
                 },
                 relatedRockets: [],
+                predecessors: row['前世代ロケット']?.trim() || '',
+                successors: row['後継ロケット']?.trim() || '',
                 articleLinks: links,
               } as Rocket;
             });
