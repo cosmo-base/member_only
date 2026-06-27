@@ -58,6 +58,7 @@ export default function CosmoMatchTopPage() {
                 マッチングを始める
               </Button>
             </Link>
+            <div className="flex flex-col items-center gap-6">
             <Link
               href="/cosmomatch/rocket/dictionary"
               className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 opacity-70 hover:opacity-100"
@@ -65,6 +66,7 @@ export default function CosmoMatchTopPage() {
               <BookOpen className="w-4 h-4" />
               <span>図鑑だけを見る</span>
             </Link>
+            </div>
           </div>
 
           {/* 第2弾：88星座編 */}
@@ -83,6 +85,7 @@ export default function CosmoMatchTopPage() {
                 マッチングを始める
               </Button>
             </Link>
+            <div className="flex flex-col items-center gap-6">
             <Link
               href="/cosmomatch/constellation/dictionary"
               className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 opacity-70 hover:opacity-100"
@@ -90,6 +93,7 @@ export default function CosmoMatchTopPage() {
               <BookOpen className="w-4 h-4" />
               <span>図鑑だけを見る</span>
             </Link>
+            </div>
           </div>
 
         </div>
