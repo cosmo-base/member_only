@@ -72,7 +72,7 @@ export async function getRockets(): Promise<Rocket[]> {
             .filter((row) => row['ロケット名']?.trim())
             .map((row) => {
               const reading = row['読み方']?.trim() || '';
-              const slug = reading || row['ロケット名']?.trim() || '';
+              const slug = row['id']?.trim() || reading || row['ロケット名']?.trim() || '';
 
               const links: { title: string; url: string }[] = [];
               if (row['公式ページ']?.trim())
