@@ -134,13 +134,13 @@ export default function DiagnosePage() {
 
   if (!started) {
     return (
-      <ContentPageLayout title="Cosmo Match～星座編～" level={1} levelTitle="" logo="CosmoMatch">
+      <ContentPageLayout title="Cosmo Match～88星座編～" level={1} levelTitle="" logo="CosmoMatch">
         <div className="max-w-2xl mx-auto text-center py-12 animate-in fade-in duration-500">
           <div className="inline-flex items-center justify-center p-5 bg-primary/20 rounded-full mb-6 border border-primary/30 shadow-[0_0_20px_rgba(0,242,254,0.2)]">
             <ConstellationIcon className="w-12 h-12 text-primary animate-pulse" />
           </div>
           <h2 className="text-3xl font-extrabold text-foreground mb-4 tracking-tight">
-            Cosmo Match - あなたの推しを探せ <br/>～星座編～
+            Cosmo Match - あなたの推しを探せ <br/>～88星座編～
           </h2>
           <p className="text-muted-foreground text-base max-w-md mx-auto leading-relaxed mb-8">
             直感で答えるだけ。専門知識は一切不要！<br />
@@ -182,7 +182,7 @@ export default function DiagnosePage() {
 
   if (isCalculating) {
     return (
-      <ContentPageLayout title="Cosmo Match～星座編～" level={1} levelTitle="" logo="CosmoMatch">
+      <ContentPageLayout title="Cosmo Match～88星座編～" level={1} levelTitle="" logo="CosmoMatch">
         <div className="max-w-md mx-auto text-center py-24 flex flex-col items-center justify-center animate-in fade-in duration-300">
           <Loader2 className="w-12 h-12 text-accent animate-spin mb-6" />
           <h3 className="text-2xl font-bold text-foreground mb-2">推し星座を分析中...</h3>
@@ -198,7 +198,7 @@ export default function DiagnosePage() {
   const progressPercent = ((currentStep + 1) / QUESTIONS.length) * 100
 
   return (
-    <ContentPageLayout title="Cosmo Match～星座編～" level={1} levelTitle="" logo="CosmoMatch">
+    <ContentPageLayout title="Cosmo Match～88星座編～" level={1} levelTitle="" logo="CosmoMatch">
       <div className="max-w-xl mx-auto py-6">
         <div className="flex items-center justify-between mb-8">
           <button onClick={handleBack} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors group">
