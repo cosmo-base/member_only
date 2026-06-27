@@ -84,7 +84,7 @@ export default function DictionaryListPage() {
 
   if (!isLoaded) {
     return (
-      <ContentPageLayout title="星座データベース" level={1} levelTitle="" logo="CosmoMatch">
+      <ContentPageLayout title="88星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
         <div className="max-w-md mx-auto py-32 flex flex-col items-center justify-center animate-in fade-in">
           <Loader2 className="w-12 h-12 text-accent animate-spin mb-6" />
           <p className="text-muted-foreground font-bold">データベースに接続中...</p>
@@ -94,7 +94,7 @@ export default function DictionaryListPage() {
   }
 
   return (
-    <ContentPageLayout title="星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
+    <ContentPageLayout title="88星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
       <div className="max-w-5xl mx-auto pb-24 animate-in fade-in duration-500 relative">
         
         <div className="mb-8 pt-4 px-4 sm:px-0">
