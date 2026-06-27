@@ -12,13 +12,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   
   if (!constellation) {
     return {
-      title: "星座が見つかりません | 星座図鑑 | Cosmo Match",
+      title: "星座が見つかりません | 88星座図鑑 | Cosmo Match",
     }
   }
 
   return {
-    title: `${constellation.name} | 星座編 | Cosmo Match`,
-    description: `推し星座「${constellation.name}」の図鑑ページ。${constellation.catchCopy}`,
+    title: `${constellation.name} | 88星座編 | Cosmo Match`,
+    description: `88星座「${constellation.name}」の図鑑ページ。${constellation.catchCopy}`,
   }
 }
 
