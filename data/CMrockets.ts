@@ -1,4 +1,5 @@
-// src/data/rocket.ts
+// data/CMrockets.ts
+import Papa from 'papaparse';
 
 export interface RocketStats {
   power: number;
@@ -14,11 +15,14 @@ export interface RocketStats {
 export interface Rocket {
   slug: string;
   name: string;
+  reading: string;
   emoji: string;
   catchCopy: string;
+  intro: string;
   country: string;
-  status: "active" | "retired";
+  status: "active" | "retired" | "development";
   category: string;
+  appearance: number;
   stats: RocketStats;
   highlights: string[];
   story: {
@@ -26,8 +30,8 @@ export interface Rocket {
     struggle: string;
     today: string;
   };
-  relatedRockets: string[]; // 関連ロケットのslug配列
-  articleLinks: { title: string; url: string }[]; // CBL記事リンク
+  relatedRockets: string[];
+  articleLinks: { title: string; url: string }[];
 }
 
 export interface Choice {
@@ -41,74 +45,113 @@ export interface Question {
   choices: Choice[];
 }
 
-export const ROCKETS: Rocket[] = [
-  {
-    slug: "h3",
-    name: "H3ロケット",
-    emoji: "🚀",
-    catchCopy: "日本の宇宙輸送を担う新世代の王道エース",
-    country: "日本",
-    status: "active",
-    category: "大型液体ロケット",
-    stats: { power: 5, technology: 4, history: 1, ace: 5, challenge: 4, individuality: 2, future: 5, trust: 3 },
-    highlights: [
-      "日本の新しい大型主力（基幹）ロケット",
-      "コストを従来の半分に抑え、ビジネスとしての宇宙を目指す",
-      "これからの日本の宇宙開発の中心を担う絶対的存在"
-    ],
-    story: {
-      origin: "長年活躍したH-IIAロケットの後継機として、日本の宇宙輸送の自立性を維持しつつ、世界の商業衛星ビジネスで勝ち残るために開発がスタートしました。",
-      struggle: "主エンジン「LE-9」の開発で未知の技術的困難に直面。設計変更を余儀なくされ、打上げ延期を繰り返した末の初号機での苦い経験など、数々の試練を乗り越えてきました。",
-      today: "試験機2号機の打上げ成功以降、日本の次世代のエースとして、民間衛星の打ち上げから月探査プロジェクトへの物資輸送まで、日本の未来を背負って稼働しています。"
-    },
-    relatedRockets: ["h2a", "epsilon"],
-    articleLinks: [
-      { title: "H3ロケット開発の歴史とLE-9エンジン", url: "https://cosmo-base.github.io/library/" },
-      { title: "日本の基幹ロケットの系譜", url: "https://cosmo-base.github.io/library/" }
-    ]
-  },
-  {
-    slug: "epsilon",
-    name: "イプシロン",
-    emoji: "🚀",
-    catchCopy: "小さな機体に、驚くほど濃い個性",
-    country: "日本",
-    status: "active",
-    category: "小型固体ロケット",
-    stats: { power: 2, technology: 5, history: 3, ace: 2, challenge: 4, individuality: 5, future: 3, trust: 4 },
-    highlights: [
-      "モバイル管制を可能にした、スマートな高性能固体ロケット",
-      "世界に誇る日本の「固体燃料」の伝統と高い技術の結晶",
-      "コンパクトながらも小回りがきく機動性の高さ"
-    ],
-    story: {
-      origin: "世界最高峰の性能を誇ったM-VロケットのDNAを受け継ぎ、「もっと手軽に、もっと安く小型衛星を打ち上げる」という思想のもと誕生しました。",
-      struggle: "パソコン数台でロケットを自動点検・管制する「モバイル管制」という世界初の革新的なシステムを実装するため、従来の運用の常識をゼロから覆す開発が行われました。",
-      today: "大学の小型探査機やベンチャー企業の衛星など、ライトでスピーディーな打ち上げニーズに応える唯一無二の個性派として絶大な支持を集めています。"
-    },
-    relatedRockets: ["h3", "kairos"],
-    articleLinks: [{ title: "イプシロンロケットと固体燃料の魅力", url: "https://cosmo-base.github.io/library/" }]
-  },
-  {
-    slug: "h2a",
-    name: "H-IIAロケット",
-    emoji: "🚀",
-    catchCopy: "長く日本の宇宙開発を支え続けた信頼のベテラン",
-    country: "日本",
-    status: "active", // 退役間近ですが現役稼働中
-    category: "大型液体ロケット",
-    stats: { power: 4, technology: 4, history: 5, ace: 4, challenge: 2, individuality: 2, future: 1, trust: 5 },
-    highlights: [
-      "98%を超える、世界最高水準の打上げ成功率",
-      "「はやぶさ2」や「あかつき」など伝説の探査機を送り出した名機",
-      "日本の宇宙開発の信頼性を世界に知らしめた金字塔"
-    ],
-    story: {
-      origin: "国産にこだわったH-IIロケットの失敗を受け、その高い技術をベースにしつつ、信頼性の向上と製造コストの削減を両立させるために開発されました。",
-      struggle: "6号機での打上げ失敗という最大の危機を経験。そこから徹底的な原因究明と品質管理の改善を重ねた結果、その後40機以上連続成功という驚異の記録を樹立しました。",
-      today: "間もなく引退を迎えるベテランですが、その完璧な仕事ぶりは日本の宇宙史に刻まれており、H3へとバトンを繋ぐ最後のミッションへと向かっています。"
-    },
-    relatedRockets: ["h3"],
-    articleLinks: [{ title: "名機H-IIAロケットの軌跡とはやぶさの物語", url: "https://cosmo-base.github.io/library/" }]
+const CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQENBPEZ3ep1J54G09l7I-vPMaMC6wNxr55bXBsdAdj_xp6gy5ksoM27EyITCuGObi0Kzxbzu2HpLM1/pub?gid=0&single=true&output=csv";
+
+function parseStatus(val: string): "active" | "retired" | "development" {
+  if (!val) return "retired";
+  if (val.includes("現役") || val.includes("運用中")) return "active";
+  if (val.includes("開発中") || val.includes("計画")) return "development";
+  return "retired";
+}
+
+export async function getRockets(): Promise<Rocket[]> {
+  try {
+    const res = await fetch(CSV_URL, { cache: 'no-store' });
+    const csvText = await res.text();
+
+    return new Promise((resolve) => {
+      Papa.parse(csvText, {
+        header: true,
+        skipEmptyLines: true,
+        transformHeader: (h) => h.trim(),
+        complete: (results) => {
+          const rows = results.data as Record<string, string>[];
+
+          const rockets: Rocket[] = rows
+            .filter((row) => row['ロケット名']?.trim())
+            .map((row) => {
+              const reading = row['読み方']?.trim() || '';
+              const slug = reading || row['ロケット名']?.trim() || '';
+
+              const links: { title: string; url: string }[] = [];
+              if (row['公式ページ']?.trim())
+                links.push({ title: '公式ページ', url: row['公式ページ'].trim() });
+              if (row['参考サイト①']?.trim())
+                links.push({ title: '参考サイト①', url: row['参考サイト①'].trim() });
+              if (row['参考サイト②']?.trim())
+                links.push({ title: '参考サイト②', url: row['参考サイト②'].trim() });
+              if (row['参考サイト③']?.trim())
+                links.push({ title: '参考サイト③', url: row['参考サイト③'].trim() });
+
+              return {
+                slug,
+                name: row['ロケット名']?.trim() || '',
+                reading,
+                emoji: '🚀',
+                catchCopy: row['キャッチコピー']?.trim() || '',
+                intro: row['一言紹介']?.trim() || '',
+                country: row['国']?.trim() || '',
+                status: parseStatus(row['現役/退役'] || ''),
+                category: row['分類']?.trim() || '',
+                appearance: parseFloat(row['出現係数'] || '1') || 1,
+                stats: {
+                  power:         parseInt(row['パワー']       || '0', 10) || 0,
+                  technology:    parseInt(row['技術']         || '0', 10) || 0,
+                  history:       parseInt(row['歴史']         || '0', 10) || 0,
+                  ace:           parseInt(row['エース']       || '0', 10) || 0,
+                  challenge:     parseInt(row['挑戦']         || '0', 10) || 0,
+                  individuality: parseInt(row['個性']         || '0', 10) || 0,
+                  future:        parseInt(row['未来']         || '0', 10) || 0,
+                  trust:         parseInt(row['信頼（現在）'] || '0', 10) || 0,
+                },
+                highlights: [
+                  row['推しポイント1'],
+                  row['推しポイント2'],
+                  row['推しポイント3'],
+                ].map((s) => s?.trim() || '').filter(Boolean),
+                story: {
+                  origin:   row['誕生の背景']?.trim() || '',
+                  struggle: row['苦労したこと/課題']?.trim() || '',
+                  today:    row['象徴するエピソード']?.trim() || row['一言紹介']?.trim() || '',
+                },
+                relatedRockets: [],
+                articleLinks: links,
+              } as Rocket;
+            });
+
+          const nameToSlug = new Map<string, string>();
+          rockets.forEach((r) => nameToSlug.set(r.name, r.slug));
+
+          const rowMap = new Map<string, Record<string, string>>();
+          rows.forEach((row) => {
+            const name = row['ロケット名']?.trim();
+            if (name) rowMap.set(name, row);
+          });
+
+          rockets.forEach((r) => {
+            const row = rowMap.get(r.name);
+            if (!row) return;
+            const related: string[] = [];
+            [row['前世代ロケット'], row['後継ロケット']].forEach((field) => {
+              if (!field?.trim() || field.trim() === 'なし') return;
+              field.split(/[、,，]/).forEach((part) => {
+                const s = nameToSlug.get(part.trim());
+                if (s && !related.includes(s)) related.push(s);
+              });
+            });
+            r.relatedRockets = related;
+          });
+
+          resolve(rockets);
+        },
+      });
+    });
+  } catch (err) {
+    console.error('ロケットデータの取得に失敗しました:', err);
+    return [];
   }
-]
+}
+
+// Legacy static array kept for backward compatibility (empty — use getRockets() instead)
+export const ROCKETS: Rocket[] = [];
