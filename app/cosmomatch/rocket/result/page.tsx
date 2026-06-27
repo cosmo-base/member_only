@@ -1,34 +1,57 @@
 // app/cosmomatch/rocket/result/page.tsx
 "use client"
 
-import { Suspense, useMemo } from "react"
+import { Suspense, useMemo, useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
-import { ROCKETS, RocketStats } from "@/data/CMrockets"
+import { getRockets, Rocket, RocketStats } from "@/data/CMrockets"
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Legend } from "recharts"
 import { Award, RefreshCw, BookOpen, Star, Sparkles, Loader2, ChevronRight } from "lucide-react"
 
-// 出題側と同じ順番のキー配列（デコード用）
 const STAT_KEYS = ['power', 'technology', 'history', 'ace', 'challenge', 'individuality', 'future', 'trust'] as const;
 
 function ResultContent() {
   const searchParams = useSearchParams()
-  // r=ロケットslug, s=8桁のスコア文字列
-  const rocketSlug = searchParams.get("r") || "h3"
-  const encodedStats = searchParams.get("s") || "33333333"
+  const rocketSlug = decodeURIComponent(searchParams.get("r") || "")
+  const encodedStats = searchParams.get("s") || "00000000"
 
-  const rocket = ROCKETS.find(r => r.slug === rocketSlug) || ROCKETS[0]
+  const [rockets, setRockets] = useState<Rocket[]>([])
+  const [isLoaded, setIsLoaded] = useState(false)
 
-  // 8桁の文字列(Base36)を数値に戻す
+  useEffect(() => {
+    getRockets().then((data) => {
+      setRockets(data);
+      setIsLoaded(true);
+    });
+  }, []);
+
   const userScores = useMemo(() => {
     const scores = {} as Record<keyof RocketStats, number>;
     STAT_KEYS.forEach((key, index) => {
-      scores[key] = parseInt(encodedStats[index] || "3", 36);
+      scores[key] = parseInt(encodedStats[index] || "0", 36);
     });
     return scores;
   }, [encodedStats]);
+
+  if (!isLoaded) {
+    return (
+      <div className="max-w-3xl mx-auto py-24 flex flex-col items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground font-bold">ロケットデータを読み込み中...</p>
+      </div>
+    )
+  }
+
+  const rocket = rockets.find(r => r.slug === rocketSlug) || rockets[0]
+  if (!rocket) {
+    return (
+      <div className="max-w-3xl mx-auto py-24 text-center text-muted-foreground">
+        ロケットが見つかりませんでした。
+      </div>
+    )
+  }
 
   const chartData = [
     { subject: "パワー", あなた: userScores.power, ロケット: rocket.stats.power },
@@ -41,14 +64,14 @@ function ResultContent() {
     { subject: "信頼", あなた: userScores.trust, ロケット: rocket.stats.trust },
   ]
 
-  // 同調率の再計算 (URLを短くするために結果画面側で再計算します)
-  const totalDiff = Object.keys(userScores).reduce((acc, key) => {
-    const k = key as keyof typeof userScores
-    return acc + Math.abs(userScores[k] - rocket.stats[k])
+  const totalDiff = STAT_KEYS.reduce((acc, key) => {
+    return acc + Math.abs(userScores[key] - rocket.stats[key])
   }, 0)
   const matchPercent = Math.max(78, Math.min(98, Math.round(100 - totalDiff * 2.5)));
 
-  const subcontractors = ROCKETS.filter(r => r.slug !== rocket.slug).slice(0, 2)
+  const candidates = rockets
+    .filter(r => r.slug !== rocket.slug)
+    .slice(0, 2)
 
   return (
     <div className="max-w-3xl mx-auto pb-16 animate-in fade-in zoom-in-95 duration-500">
@@ -95,31 +118,33 @@ function ResultContent() {
         </div>
       </div>
 
-      <div className="space-y-4 mb-12">
-        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-          <Star className="w-4 h-4 text-primary fill-primary" />
-          ここがあなたの推しポイント！
-        </h3>
-        <div className="grid gap-3">
-          {rocket.highlights.map((point, index) => (
-            <div key={index} className="bg-secondary/20 border border-border/50 rounded-xl p-4 flex items-start gap-3">
-              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary text-xs font-bold mt-0.5 shrink-0">
-                {index + 1}
-              </span>
-              <p className="text-sm text-foreground font-medium leading-relaxed">{point}</p>
-            </div>
-          ))}
+      {rocket.highlights.length > 0 && (
+        <div className="space-y-4 mb-12">
+          <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+            <Star className="w-4 h-4 text-primary fill-primary" />
+            ここがあなたの推しポイント！
+          </h3>
+          <div className="grid gap-3">
+            {rocket.highlights.map((point, index) => (
+              <div key={index} className="bg-secondary/20 border border-border/50 rounded-xl p-4 flex items-start gap-3">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary text-xs font-bold mt-0.5 shrink-0">
+                  {index + 1}
+                </span>
+                <p className="text-sm text-foreground font-medium leading-relaxed">{point}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {subcontractors.length > 0 && (
+      {candidates.length > 0 && (
         <div className="mb-12">
           <h3 className="text-sm font-bold text-muted-foreground tracking-wider uppercase mb-4">
             あなたに近い他のロケット候補
           </h3>
           <div className="grid sm:grid-cols-2 gap-4">
-            {subcontractors.map((cand) => (
-              <Link key={cand.slug} href={`/cosmomatch/rocket/result?r=${cand.slug}&s=${encodedStats}`} className="block group">
+            {candidates.map((cand) => (
+              <Link key={cand.slug} href={`/cosmomatch/rocket/result?r=${encodeURIComponent(cand.slug)}&s=${encodedStats}`} className="block group">
                 <div className="bg-secondary/10 border border-border/40 rounded-xl p-4 flex items-center justify-between hover:border-primary/40 hover:bg-secondary/30 transition-all">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{cand.emoji}</span>
@@ -137,7 +162,7 @@ function ResultContent() {
       )}
 
       <div className="border-t border-border/50 pt-8 flex flex-col sm:flex-row gap-4 justify-center">
-        <Link href={`/cosmomatch/rocket/dictionary/${rocket.slug}`} className="w-full sm:w-auto">
+        <Link href={`/cosmomatch/rocket/dictionary/${encodeURIComponent(rocket.slug)}`} className="w-full sm:w-auto">
           <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow h-12 px-8 rounded-full font-bold">
             <BookOpen className="w-4 h-4 mr-2" />
             {rocket.name}の図鑑でもっと深掘りする
