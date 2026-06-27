@@ -81,7 +81,7 @@ export default async function RocketDetailPage({ params }: PageProps) {
     : "✖ 退役機"
 
   return (
-    <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="CosmoMatch">
+    <ContentPageLayout title="日本のロケット図鑑" level={1} levelTitle="" logo="CosmoMatch">
       <div className="max-w-4xl mx-auto pb-16 animate-in fade-in duration-500">
 
         <div className="mb-6">
