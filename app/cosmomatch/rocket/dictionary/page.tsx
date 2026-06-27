@@ -86,8 +86,8 @@ export default function DictionaryTopPage() {
           <select
             value={filterCountry}
             onChange={(e) => setFilterCountry(e.target.value)}
-            className="text-sm rounded-xl border border-border/60 bg-secondary/20 text-foreground px-3 py-2.5 focus:outline-none focus:border-primary/50 transition-colors"
-          >
+            className="text-sm rounded-xl border border-border/60 bg-background text-foreground px-3 py-2.5 focus:outline-none focus:border-primary/50 transition-colors [&>option]:bg-background [&>option]:text-foreground"
+            >
             <option value="">すべての国</option>
             {countries.map((c) => (
               <option key={c} value={c}>{c}</option>
@@ -96,8 +96,8 @@ export default function DictionaryTopPage() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="text-sm rounded-xl border border-border/60 bg-secondary/20 text-foreground px-3 py-2.5 focus:outline-none focus:border-primary/50 transition-colors"
-          >
+           className="text-sm rounded-xl border border-border/60 bg-background text-foreground px-3 py-2.5 focus:outline-none focus:border-primary/50 transition-colors [&>option]:bg-background [&>option]:text-foreground"
+            >
             <option value="">すべてのステータス</option>
             <option value="active">現役</option>
             <option value="development">開発中</option>
