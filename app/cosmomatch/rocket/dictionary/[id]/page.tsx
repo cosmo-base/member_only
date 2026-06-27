@@ -29,6 +29,28 @@ function SpecRow({ label, value }: { label: string; value: string }) {
   )
 }
 
+function LinkedSpecRow({ label, value, nameToSlug }: { label: string; value: string; nameToSlug: Map<string, string> }) {
+  if (!value) return null
+  const parts = value.split(/[、,，]/).map(s => s.trim()).filter(Boolean)
+  return (
+    <div className="flex gap-3 py-2.5 border-b border-border/30 last:border-0">
+      <span className="text-xs text-muted-foreground w-36 shrink-0 pt-0.5">{label}</span>
+      <span className="text-xs text-foreground font-medium leading-relaxed flex flex-wrap gap-x-1.5 gap-y-1">
+        {parts.map((part, i) => {
+          const slug = nameToSlug.get(part)
+          return slug ? (
+            <Link key={i} href={`/cosmomatch/rocket/dictionary/${encodeURIComponent(slug)}`} className="text-primary hover:underline underline-offset-2">
+              {part}
+            </Link>
+          ) : (
+            <span key={i}>{part}{i < parts.length - 1 ? '、' : ''}</span>
+          )
+        })}
+      </span>
+    </div>
+  )
+}
+
 export default async function RocketDetailPage({ params }: PageProps) {
   const resolvedParams = await params;
   const currentId = decodeURIComponent(resolvedParams?.id || '');
@@ -39,6 +61,7 @@ export default async function RocketDetailPage({ params }: PageProps) {
   const rocket = rocketFound!
 
   const relatedList = rockets.filter(r => rocket.relatedRockets.includes(r.slug))
+  const nameToSlug = new Map(rockets.map(r => [r.name, r.slug]))
 
   const chartData = [
     { subject: "パワー", A: rocket.stats.power },
@@ -136,33 +159,22 @@ export default async function RocketDetailPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* 3. 詳細スペック表 */}
-        <div className="space-y-4 mb-10">
-          <h3 className="text-xl font-bold text-foreground border-b border-border pb-2 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-primary" />
-            詳細スペック
-          </h3>
-          <div className="bg-secondary/10 border border-border/40 rounded-2xl px-5 py-2">
-            <SpecRow label="開発・運用主体" value={rocket.operator} />
-            <SpecRow label="主な製造/主契約" value={rocket.manufacturer} />
-            <SpecRow label="系列/位置づけ" value={rocket.lineage} />
-            <SpecRow label="推進方式" value={rocket.propulsion} />
-            <SpecRow label="主な推進剤" value={rocket.propellant} />
-            <SpecRow label="主な打上げ場所" value={rocket.launchSite} />
-            <SpecRow label="高さ/全長 (m)" value={rocket.height} />
-            <SpecRow label="直径 (m)" value={rocket.diameter} />
-            <SpecRow label="重量 (t)" value={rocket.mass} />
-            <SpecRow label="打上げ能力・到達高度" value={rocket.payload} />
-            <SpecRow label="代表ミッション/衛星" value={rocket.missions} />
-            <SpecRow label="打上げ実績" value={rocket.launchRecord} />
-            <SpecRow label="成功/失敗の要点" value={rocket.successFailure} />
-            <SpecRow label="技術的特徴" value={rocket.techFeatures} />
-            <SpecRow label="関連人物" value={rocket.keyPerson} />
-            <SpecRow label="ライバル/類似機" value={rocket.rivals} />
-            <SpecRow label="前世代ロケット" value={rocket.predecessors === 'なし' ? '' : rocket.predecessors} />
-            <SpecRow label="後継ロケット" value={rocket.successors === 'なし' ? '' : rocket.successors} />
+        {/* 6. 推しポイント */}
+        {rocket.highlights.length > 0 && (
+          <div className="space-y-4 mb-10">
+            <h3 className="text-xl font-bold text-foreground border-b border-border pb-2">推しポイント</h3>
+            <div className="grid gap-3">
+              {rocket.highlights.map((point, index) => (
+                <div key={index} className="bg-secondary/20 border border-border/50 rounded-xl p-4 flex items-start gap-3">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary text-xs font-bold mt-0.5 shrink-0">
+                    {index + 1}
+                  </span>
+                  <p className="text-sm text-foreground font-medium leading-relaxed">{point}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* 4. 機体パラメーター */}
         <div className="space-y-6 mb-10">
@@ -204,23 +216,35 @@ export default async function RocketDetailPage({ params }: PageProps) {
             </div>
           </div>
         )}
-
-        {/* 6. 推しポイント */}
-        {rocket.highlights.length > 0 && (
-          <div className="space-y-4 mb-10">
-            <h3 className="text-xl font-bold text-foreground border-b border-border pb-2">推しポイント</h3>
-            <div className="grid gap-3">
-              {rocket.highlights.map((point, index) => (
-                <div key={index} className="bg-secondary/20 border border-border/50 rounded-xl p-4 flex items-start gap-3">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary text-xs font-bold mt-0.5 shrink-0">
-                    {index + 1}
-                  </span>
-                  <p className="text-sm text-foreground font-medium leading-relaxed">{point}</p>
-                </div>
-              ))}
-            </div>
+        
+        {/* 3. 詳細スペック表 */}
+        <div className="space-y-4 mb-10">
+          <h3 className="text-xl font-bold text-foreground border-b border-border pb-2 flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-primary" />
+            詳細スペック
+          </h3>
+          <div className="bg-secondary/10 border border-border/40 rounded-2xl px-5 py-2">
+            <SpecRow label="開発・運用主体" value={rocket.operator} />
+            <SpecRow label="主な製造/主契約" value={rocket.manufacturer} />
+            <SpecRow label="系列/位置づけ" value={rocket.lineage} />
+            <SpecRow label="推進方式" value={rocket.propulsion} />
+            <SpecRow label="主な推進剤" value={rocket.propellant} />
+            <SpecRow label="主な打上げ場所" value={rocket.launchSite} />
+            <SpecRow label="高さ/全長 (m)" value={rocket.height} />
+            <SpecRow label="直径 (m)" value={rocket.diameter} />
+            <SpecRow label="重量 (t)" value={rocket.mass} />
+            <SpecRow label="打上げ能力・到達高度" value={rocket.payload} />
+            <SpecRow label="代表ミッション/衛星" value={rocket.missions} />
+            <SpecRow label="打上げ実績" value={rocket.launchRecord} />
+            <SpecRow label="成功/失敗の要点" value={rocket.successFailure} />
+            <SpecRow label="技術的特徴" value={rocket.techFeatures} />
+            <SpecRow label="関連人物" value={rocket.keyPerson} />
+            <LinkedSpecRow label="ライバル/類似機" value={rocket.rivals} nameToSlug={nameToSlug} />
+            <LinkedSpecRow label="前世代ロケット" value={rocket.predecessors === 'なし' ? '' : rocket.predecessors} nameToSlug={nameToSlug} />
+            <LinkedSpecRow label="後継ロケット" value={rocket.successors === 'なし' ? '' : rocket.successors} nameToSlug={nameToSlug} />
           </div>
-        )}
+        </div>
+
 
         {/* 7. 関連・リンク */}
         <div className="grid md:grid-cols-2 gap-6">
