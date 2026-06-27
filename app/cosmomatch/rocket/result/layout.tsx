@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "ロケット編 | Cosmo Match",
+  title: "日本のロケット編 | Cosmo Match",
 }
 
 export default function SubPageLayout({
