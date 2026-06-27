@@ -57,7 +57,7 @@ export default function DictionaryTopPage() {
   }, [rockets, query, filterCountry, filterStatus])
 
   return (
-    <ContentPageLayout title="ロケット図鑑" level={1} levelTitle="" logo="CosmoMatch">
+    <ContentPageLayout title="日本のロケット図鑑" level={1} levelTitle="" logo="CosmoMatch">
       <div className="max-w-4xl mx-auto pb-16 animate-in fade-in duration-500">
 
         <div className="mb-6">
@@ -67,8 +67,8 @@ export default function DictionaryTopPage() {
         </div>
 
         <div className="mb-8">
-          <h2 className="text-2xl font-extrabold text-foreground mb-1">ロケット図鑑</h2>
-          <p className="text-sm text-muted-foreground">世界のロケットを一覧で探せます</p>
+          <h2 className="text-2xl font-extrabold text-foreground mb-1">日本のロケット図鑑</h2>
+          <p className="text-sm text-muted-foreground">日本のロケットを一覧で探せます</p>
         </div>
 
         {/* 検索・フィルター */}
@@ -77,22 +77,12 @@ export default function DictionaryTopPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="名前・国・カテゴリで検索..."
+              placeholder="名前・カテゴリで検索..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-border/60 bg-secondary/20 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-secondary/30 transition-colors"
             />
           </div>
-          <select
-            value={filterCountry}
-            onChange={(e) => setFilterCountry(e.target.value)}
-            className="text-sm rounded-xl border border-border/60 bg-background text-foreground px-3 py-2.5 focus:outline-none focus:border-primary/50 transition-colors [&>option]:bg-background [&>option]:text-foreground"
-            >
-            <option value="">すべての国</option>
-            {countries.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
