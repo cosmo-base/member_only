@@ -86,7 +86,7 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
   ]
 
   return (
-    <ContentPageLayout title="星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
+    <ContentPageLayout title="88星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
       <div className="max-w-4xl mx-auto pb-16 animate-in fade-in duration-500">
 
         <div className="mb-6">
