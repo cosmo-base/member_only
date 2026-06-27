@@ -148,16 +148,15 @@ export default function DiagnosePage() {
     rockets.forEach((rocket) => {
       const w = rocket.appearance ?? 1;
       let distance = 0
-      STAT_KEYS.forEach((key) => {
-        const userScore = userStats[key] || 0
-        const rocketScore = rocket.stats[key] || 0
-        distance += Math.pow(userScore - rocketScore, 2)
-      })
-      const weightedDistance = distance / w;
-
+        STAT_KEYS.forEach((key) => {
+          const userScore = userStats[key] || 0
+            const rocketScore = rocket.stats[key] || 0
+              distance += Math.pow(userScore - rocketScore, 2)
+        })
+          const weightedDistance = Math.sqrt(distance) / w;
       if (weightedDistance < minDistance) {
         minDistance = weightedDistance
-        bestRocket = rocket
+          bestRocket = rocket
       }
     })
 
