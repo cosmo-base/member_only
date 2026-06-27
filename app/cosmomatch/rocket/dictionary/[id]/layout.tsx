@@ -1,15 +1,14 @@
 // app/cosmomatch/rocket/dictionary/[id]/layout.tsx
 import type { Metadata } from "next"
-import { ROCKETS } from "@/data/CMrockets" 
+import { getRockets } from "@/data/CMrockets"
 
-// ★ [id] を受け取って、動的にメタデータ（タブのタイトル）を生成する関数
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const currentId = resolvedParams.id;
-  
-  // URLのslugからロケットのデータを検索
-  const rocket = ROCKETS.find(r => r.slug === currentId);
-  
+  const currentId = decodeURIComponent(resolvedParams.id);
+
+  const rockets = await getRockets();
+  const rocket = rockets.find(r => r.slug === currentId);
+
   if (!rocket) {
     return {
       title: "ロケットが見つかりません | ロケット図鑑 | Cosmo Match",
