@@ -181,7 +181,7 @@ function ResultContent() {
 
 export default function ResultPage() {
   return (
-    <ContentPageLayout title="Cosmo Match～ロケット編～" level={1} levelTitle="" logo="CosmoMatch">
+    <ContentPageLayout title="Cosmo Match～日本のロケット編～" level={1} levelTitle="" logo="CosmoMatch">
       <Suspense fallback={
         <div className="max-w-3xl mx-auto py-24 flex flex-col items-center justify-center">
           <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
