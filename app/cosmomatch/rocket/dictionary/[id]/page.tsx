@@ -280,15 +280,6 @@ export default async function RocketDetailPage({ params }: PageProps) {
             </div>
           )}
         </div>
-
-        {/* データ信頼度・注記 */}
-        {(rocket.dataReliability || rocket.notes) && (
-          <div className="mt-8 p-4 bg-secondary/10 border border-border/30 rounded-xl text-xs text-muted-foreground space-y-1">
-            {rocket.dataReliability && <p>データ信頼度: {rocket.dataReliability}</p>}
-            {rocket.notes && <p>注記: {rocket.notes}</p>}
-          </div>
-        )}
-
       </div>
     </ContentPageLayout>
   )
