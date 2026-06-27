@@ -73,17 +73,17 @@ export default function DiagnosePage() {
 
     // 2. マッチング計算（ユークリッド距離）
     constellations.forEach((constellation) => {
+      const w = constellation.appearance ?? 1;
       let distanceSum = 0
-      STAT_KEYS.forEach((key) => {
-        const userScore = finalStats[key]
-        const constellationScore = constellation.stats[key] || 5
-        distanceSum += Math.pow(userScore - constellationScore, 2)
-      })
-      const actualDistance = Math.sqrt(distanceSum);
-
+        STAT_KEYS.forEach((key) => {
+          const userScore = finalStats[key]
+            const constellationScore = constellation.stats[key] || 5
+              distanceSum += Math.pow(userScore - constellationScore, 2)
+        })
+          const actualDistance = Math.sqrt(distanceSum) / w;
       if (actualDistance < minDistance) {
         minDistance = actualDistance
-        bestConstellation = constellation
+          bestConstellation = constellation
       }
     })
 
