@@ -51,7 +51,7 @@ const slides = [
     title: "",
     description: "",
     image: memberImg,
-    href: "https://fsifofficial.github.io/CosmoBase/contact",
+    href: "https://fsifofficial.github.io/CosmoBase/contact/member",
   },
   {
     id: 5,
