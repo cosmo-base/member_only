@@ -2,7 +2,7 @@
 import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
-import { Heart, Rocket, Stars } from "lucide-react"
+import { Heart, Rocket, Stars, BookOpen } from "lucide-react"
 
 export const metadata = {
   title: "Cosmo Match",
