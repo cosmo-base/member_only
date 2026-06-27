@@ -11,13 +11,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   if (!rocket) {
     return {
-      title: "ロケットが見つかりません | ロケット図鑑 | Cosmo Match",
+      title: "ロケットが見つかりません | 日本のロケット図鑑 | Cosmo Match",
     }
   }
 
   return {
-    title: `${rocket.name} | ロケット編 | Cosmo Match`,
-    description: `推しロケット「${rocket.name}」の図鑑ページ。${rocket.catchCopy}`,
+    title: `${rocket.name} | 日本のロケット編 | Cosmo Match`,
+    description: `日本のロケット「${rocket.name}」の図鑑ページ。${rocket.catchCopy}`,
   }
 }
 
