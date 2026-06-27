@@ -4,7 +4,7 @@ import { HeroSection } from "@/components/hero-section"
 import { LevelSection } from "@/components/level-section"
 import { ContentCard } from "@/components/content-card"
 import { FooterSection } from "@/components/footer-section"
-import { HelpCircle, Landmark, Newspaper, User, Calendar, MessageCircle, MapPin, Camera, Database, Award, BookOpen } from "lucide-react"
+import { Heart, HelpCircle, Landmark, Newspaper, User, Calendar, MessageCircle, MapPin, Camera, Database, Award, BookOpen } from "lucide-react"
 
 import cbedLogo from "../public/CBED_logo.png"
 import cblLogo from "../public/CBL_logo.png" 
@@ -17,7 +17,7 @@ import shittokuLogo from "../public/CBshittoku_logo.png"
 import typeLogo from "../public/CBtype_logo.png" 
 import voyagerLogo from "../public/CBvoyager_logo.png"
 import cbmdLogo from "../public/CBMD_logo.png"
-import cmlogo from "../public/CosmoMatch.png"
+import cmLogo from "../public/CosmoMatch.png"
 
 // ★ logoプロパティを追加し、インポートした画像をマッピング
 const level1Content = [
@@ -44,6 +44,14 @@ const level1Content = [
     description: "あなたの宇宙タイプを診断",
     features: ["簡易版", "完全版"],
     href: "/type"
+  },
+  {
+    icon: "Heart",
+    logo: cmLogo,
+    title: "Cosmo Match",
+    description: "あなたの推し○○を探せ",
+    features: ["日本のロケット編","88星座編"],
+    href: "/cosmomatch"
   }
 ]
 
