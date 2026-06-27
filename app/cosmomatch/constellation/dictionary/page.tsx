@@ -175,7 +175,7 @@ export default function DictionaryIndexPage() {
 
   if (!isLoaded) {
     return (
-      <ContentPageLayout title="星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
+      <ContentPageLayout title="88星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
         <div className="max-w-md mx-auto py-32 flex flex-col items-center justify-center animate-in fade-in">
           <Loader2 className="w-12 h-12 text-accent animate-spin mb-6" />
           <p className="text-muted-foreground font-bold">天球の座標を計算中...</p>
@@ -185,7 +185,7 @@ export default function DictionaryIndexPage() {
   }
 
   return (
-    <ContentPageLayout title="星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
+    <ContentPageLayout title="88星座図鑑" level={1} levelTitle="" logo="CosmoMatch">
       <div className="max-w-[1400px] mx-auto pb-24 animate-in fade-in duration-700 relative">
         
         <div className="mb-6 pt-4 px-4 sm:px-8">
