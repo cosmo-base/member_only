@@ -43,6 +43,16 @@ export const QUESTIONS = [
   },
   {
     id: 4,
+    title: "宇宙開発で一番大事だと思うのは？",
+    choices: [
+      { text: "信頼性と実績の積み重ね", score: { trust: 2, history: 1 } },
+      { text: "コストを下げて誰でも使えること", score: { future: 2, challenge: 1 } },
+      { text: "技術の限界に挑むこと", score: { technology: 2, individuality: 1 } },
+      { text: "国の威信をかけた力強さ", score: { power: 2, ace: 1 } }
+    ]
+  },
+  {
+    id: 5,
     title: "あなたが惹かれるのは？（二択）",
     choices: [
       { text: "積み重ねてきた長い実績", score: { history: 2, trust: 2 } },
@@ -50,11 +60,31 @@ export const QUESTIONS = [
     ]
   },
   {
-    id: 5,
+    id: 6,
     title: "直感的にどちらが好き？（二択）",
     choices: [
       { text: "みんなに愛される王道", score: { ace: 2, power: 1 } },
       { text: "唯一無二の尖った個性", score: { individuality: 2, technology: 1 } }
+    ]
+  },
+  {
+    id: 7,
+    title: "好きなストーリーは？",
+    choices: [
+      { text: "幾多の失敗を乗り越えた逆転劇", score: { challenge: 2, history: 1 } },
+      { text: "誰も真似できない技術を磨き続けた職人技", score: { technology: 2, individuality: 1 } },
+      { text: "時代を超えて愛され続ける不朽の名作", score: { trust: 2, history: 1 } },
+      { text: "世界を驚かせた大きすぎる夢の実現", score: { future: 2, power: 1 } }
+    ]
+  },
+  {
+    id: 8,
+    title: "ロケットに例えるなら、あなたは？",
+    choices: [
+      { text: "黙々と使命を果たす縁の下の力持ち", score: { trust: 2, ace: 1 } },
+      { text: "誰よりも高く、誰よりも速く", score: { power: 2, future: 1 } },
+      { text: "新しい道を誰よりも先に切り開く先駆者", score: { challenge: 2, individuality: 1 } },
+      { text: "長年培った技と知恵で挑む熟練者", score: { history: 2, technology: 1 } }
     ]
   }
 ]
@@ -192,7 +222,7 @@ export default function DiagnosePage() {
               </span>
               <span className="w-px h-4 bg-border" />
               <span className="flex items-center gap-1.5 font-medium text-foreground">
-                <Zap className="w-4 h-4 text-primary" /> 全5問
+                <Zap className="w-4 h-4 text-primary" /> 全8問
               </span>
             </div>
           </GlassCard>
