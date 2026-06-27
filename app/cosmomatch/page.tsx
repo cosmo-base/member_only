@@ -44,11 +44,11 @@ export default function CosmoMatchTopPage() {
         {/* テーマ一覧 */}
         <div className="grid md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
           
-          {/* 第1弾：ロケット編 */}
+          {/* 第1弾：日本のロケット編 */}
           <div className="glass-card rounded-xl p-6 flex flex-col">
             <div className="flex items-center gap-3 mb-4">
               <Rocket className="w-5 h-5 text-accent" />
-              <h3 className="text-lg font-semibold text-foreground">～ロケット編～</h3>
+              <h3 className="text-lg font-semibold text-foreground">～日本のロケット編～</h3>
             </div>
             <p className="text-muted-foreground text-sm mb-6 flex-1 leading-relaxed">
               日本の宇宙輸送を担うエースから、独自路線を貫く個性派まで。あなたの「ワクワクの原動力」にシンクロする運命の1機をマッチングします。
@@ -58,14 +58,21 @@ export default function CosmoMatchTopPage() {
                 マッチングを始める
               </Button>
             </Link>
+            <Link
+              href="/cosmomatch/rocket/dictionary"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 opacity-70 hover:opacity-100"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>図鑑だけを見る</span>
+            </Link>
           </div>
 
-          {/* 第2弾：星座編 */}
+          {/* 第2弾：88星座編 */}
           <div className="glass-card rounded-xl p-6 flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <Stars className="w-5 h-5 text-muted-foreground" />
-                <h3 className="text-lg font-semibold text-foreground">～星座編～</h3>
+                <h3 className="text-lg font-semibold text-foreground">～88星座編～</h3>
               </div>
             </div>
             <p className="text-muted-foreground text-sm mb-6 flex-1 leading-relaxed opacity-80">
@@ -75,6 +82,13 @@ export default function CosmoMatchTopPage() {
               <Button variant="outline" className="w-full bg-primary/10 text-primary border-primary/30 hover:bg-primary/20 hover:text-primary font-bold">
                 マッチングを始める
               </Button>
+            </Link>
+            <Link
+              href="/cosmomatch/constellation/dictionary"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 opacity-70 hover:opacity-100"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>図鑑だけを見る</span>
             </Link>
           </div>
 
