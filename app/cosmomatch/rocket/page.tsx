@@ -1,15 +1,16 @@
 // app/cosmomatch/rocket/page.tsx
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { GlassCard } from "@/components/glass-card"
-import { ROCKETS, RocketStats, Question } from "@/data/CMrockets"
-import { Zap, Clock, Rocket as RocketIcon, Loader2, ChevronLeft, ChevronRight } from "lucide-react"
+import { getRockets, Rocket, RocketStats } from "@/data/CMrockets"
+import { Zap, Clock, Rocket as RocketIcon, Loader2, ChevronLeft, ChevronRight, BookOpen } from "lucide-react"
 
-export const QUESTIONS: Question[] = [
+export const QUESTIONS = [
   {
     id: 1,
     title: "一番ワクワクするのは？",
@@ -58,21 +59,29 @@ export const QUESTIONS: Question[] = [
   }
 ]
 
-// エンコードの順番を固定するためのキー配列
 const STAT_KEYS = ['power', 'technology', 'history', 'ace', 'challenge', 'individuality', 'future', 'trust'] as const;
 
 export default function DiagnosePage() {
   const router = useRouter()
+
+  const [rockets, setRockets] = useState<Rocket[]>([])
+  const [isDataLoaded, setIsDataLoaded] = useState(false)
+
   const [started, setStarted] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
-  
+  const [isCalculating, setIsCalculating] = useState(false)
+
   const [userStats, setUserStats] = useState<RocketStats>({
     power: 0, technology: 0, history: 0, ace: 0, challenge: 0, individuality: 0, future: 0, trust: 0
   })
-  
-  // ユーザーの回答テキストを記録する
   const [userAnswers, setUserAnswers] = useState<Record<number, string>>({})
+
+  useEffect(() => {
+    getRockets().then((data) => {
+      setRockets(data);
+      setIsDataLoaded(true);
+    });
+  }, []);
 
   const handleChoice = (score: Partial<RocketStats>, choiceText: string) => {
     const updatedStats = { ...userStats }
@@ -81,77 +90,81 @@ export default function DiagnosePage() {
       updatedStats[k] = (updatedStats[k] || 0) + (score[k] || 0)
     })
     setUserStats(updatedStats)
-    
+
     const updatedAnswers = { ...userAnswers, [currentStep + 1]: choiceText }
     setUserAnswers(updatedAnswers)
 
     if (currentStep < QUESTIONS.length - 1) {
       setCurrentStep(currentStep + 1)
     } else {
-      calculateResult(updatedStats, updatedAnswers)
+      setIsCalculating(true)
     }
   }
 
-  const calculateResult = (finalStats: RocketStats, finalAnswers: Record<number, string>) => {
-    setIsLoading(true)
+  useEffect(() => {
+    if (isCalculating && isDataLoaded) {
+      setTimeout(() => {
+        executeMatching();
+      }, 2200);
+    }
+  }, [isCalculating, isDataLoaded]);
 
-    setTimeout(() => {
-      let bestRocket = ROCKETS[0]
-      let minDistance = Infinity
+  const executeMatching = async () => {
+    if (rockets.length === 0) return;
 
-      ROCKETS.forEach((rocket) => {
-        let distance = 0
-        Object.keys(rocket.stats).forEach((key) => {
-          const k = key as keyof RocketStats
-          const userScore = finalStats[k] || 0
-          const rocketScore = rocket.stats[k]
-          distance += Math.pow(userScore - rocketScore, 2)
-        })
+    let bestRocket = rockets[0]
+    let minDistance = Infinity
 
-        if (distance < minDistance) {
-          minDistance = distance
-          bestRocket = rocket
-        }
+    rockets.forEach((rocket) => {
+      const w = rocket.appearance ?? 1;
+      let distance = 0
+      STAT_KEYS.forEach((key) => {
+        const userScore = userStats[key] || 0
+        const rocketScore = rocket.stats[key] || 0
+        distance += Math.pow(userScore - rocketScore, 2)
       })
+      const weightedDistance = distance / w;
 
-      // 同調率の計算
-      const totalDiff = Object.keys(finalStats).reduce((acc, key) => {
-        const k = key as keyof RocketStats
-        return acc + Math.abs(finalStats[k] - bestRocket.stats[k])
-      }, 0)
-      const matchPercent = Math.max(78, Math.min(98, Math.round(100 - totalDiff * 2.5)));
+      if (weightedDistance < minDistance) {
+        minDistance = weightedDistance
+        bestRocket = rocket
+      }
+    })
 
-      // 1. GASへ裏側で送信（結果ページ遷移前に送ってしまう）
-      const GAS_URL = "https://script.google.com/macros/s/AKfycbxfhx-DlgYauECo0vPZ8TJNjs1pIL96GxhifeB4FTfxN__jIpYoz9JdNMnLub9euDtORQ/exec";
-      const payload = {
-        rocket: bestRocket.name,
-        matchPercent: matchPercent,
-        ...finalStats,
-        q1: finalAnswers[1] || "",
-        q2: finalAnswers[2] || "",
-        q3: finalAnswers[3] || "",
-        q4: finalAnswers[4] || "",
-        q5: finalAnswers[5] || "",
-      };
-      
-      fetch(GAS_URL, {
+    const totalDiff = STAT_KEYS.reduce((acc, key) => {
+      return acc + Math.abs(userStats[key] - bestRocket.stats[key])
+    }, 0)
+    const matchPercent = Math.max(78, Math.min(98, Math.round(100 - totalDiff * 2.5)));
+
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxfhx-DlgYauECo0vPZ8TJNjs1pIL96GxhifeB4FTfxN__jIpYoz9JdNMnLub9euDtORQ/exec";
+    const payload: Record<string, any> = {
+      rocket: bestRocket.name,
+      matchPercent,
+      ...userStats,
+    };
+    for (let i = 1; i <= QUESTIONS.length; i++) {
+      payload[`q${i}`] = userAnswers[i] || "";
+    }
+
+    try {
+      await fetch(GAS_URL, {
         method: "POST",
+        mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload),
-      }).catch(err => console.error("GAS Error:", err));
+      });
+    } catch (err) {
+      console.error("GAS送信エラー:", err);
+    }
 
-      // 2. パラメーターを「8桁の文字列(Base36)」に圧縮する
-      // 例: power=4, technology=10... なら "4a..." のように1文字ずつに圧縮
-      const encodedStats = STAT_KEYS.map(k => Math.min(35, finalStats[k] || 0).toString(36)).join('');
-
-      // 短縮URLで結果ページへ（r = ロケットslug, s = 8桁スコア）
-      router.push(`/cosmomatch/rocket/result?r=${bestRocket.slug}&s=${encodedStats}`)
-    }, 2200)
+    const encodedStats = STAT_KEYS.map(k => Math.min(35, userStats[k] || 0).toString(36)).join('');
+    router.push(`/cosmomatch/rocket/result?r=${encodeURIComponent(bestRocket.slug)}&s=${encodedStats}`)
   }
 
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1)
+      setIsCalculating(false)
     } else {
       setStarted(false)
     }
@@ -165,7 +178,7 @@ export default function DiagnosePage() {
             <RocketIcon className="w-12 h-12 text-primary animate-pulse" />
           </div>
           <h2 className="text-3xl font-extrabold text-foreground mb-4 tracking-tight">
-            Cosmo Match - あなたの推し○○を探せ <br/>～ロケット編～
+            Cosmo Match - あなたの推しを探せ <br/>～ロケット編～
           </h2>
           <p className="text-muted-foreground text-base max-w-md mx-auto leading-relaxed mb-8">
             直感で答えるだけ。専門知識は一切不要！<br />
@@ -184,25 +197,35 @@ export default function DiagnosePage() {
             </div>
           </GlassCard>
 
-          <Button id="btn-cosmomatch"
-            onClick={() => setStarted(true)}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 glow h-14 px-12 rounded-full font-bold text-lg transition-transform active:scale-95"
-          >
-            診断を始める
-          </Button>
+          <div className="flex flex-col items-center gap-6">
+            <Button id="btn-cosmomatch"
+              onClick={() => setStarted(true)}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 glow h-14 px-12 rounded-full font-bold text-lg transition-transform active:scale-95"
+            >
+              診断を始める
+            </Button>
+
+            <Link
+              href="/cosmomatch/rocket/dictionary"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5 opacity-70 hover:opacity-100"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>図鑑だけを見る</span>
+            </Link>
+          </div>
         </div>
       </ContentPageLayout>
     )
   }
 
-  if (isLoading) {
+  if (isCalculating) {
     return (
       <ContentPageLayout title="Cosmo Match～ロケット編～" level={1} levelTitle="" logo="CosmoMatch">
         <div className="max-w-md mx-auto text-center py-24 flex flex-col items-center justify-center animate-in fade-in duration-300">
           <Loader2 className="w-12 h-12 text-accent animate-spin mb-6" />
           <h3 className="text-2xl font-bold text-foreground mb-2">推しロケットを分析中...</h3>
           <p className="text-sm text-muted-foreground tracking-wide">
-            あなたのワクワクの原動力にシンクロする機体を探しています
+            {isDataLoaded ? "あなたのワクワクの原動力にシンクロする機体を探しています" : "最新のロケットデータを読み込んでいます..."}
           </p>
         </div>
       </ContentPageLayout>
