@@ -120,7 +120,9 @@ export default function DiagnosePage() {
 
     // ★ 修正：データが送信されたのを確認してから、結果画面へ遷移させる
     const encodedStats = STAT_KEYS.map(k => Math.min(35, finalStats[k] || 5).toString(36)).join('');
-    router.push(`/cosmomatch/constellation/result?c=${bestConstellation.slug}&s=${encodedStats}`)
+    setTimeout(() => {
+      router.push(`/cosmomatch/constellation/result?c=${bestConstellation.slug}&s=${encodedStats}`)
+    }, 500);
   }
   
   const handleBack = () => {
