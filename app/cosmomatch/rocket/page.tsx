@@ -187,7 +187,9 @@ export default function DiagnosePage() {
     }
 
     const encodedStats = STAT_KEYS.map(k => Math.min(35, userStats[k] || 0).toString(36)).join('');
-    router.push(`/cosmomatch/rocket/result?r=${encodeURIComponent(bestRocket.slug)}&s=${encodedStats}`)
+    setTimeout(() => {
+      router.push(`/cosmomatch/rocket/result?r=${encodeURIComponent(bestRocket.slug)}&s=${encodedStats}`)
+    }, 500);
   }
 
   const handleBack = () => {
