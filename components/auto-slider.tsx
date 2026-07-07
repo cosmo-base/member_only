@@ -44,7 +44,7 @@ const slides = [
     title: "",
     description: "",
     image: feedbackImg,
-    href: "https://fsifofficial.github.io/CosmoBase/contact",
+    href: "/feedback",
   },
   {
     id: 4,
