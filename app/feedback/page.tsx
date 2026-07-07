@@ -40,6 +40,7 @@ export default function FeedbackPage() {
 
   const [formData, setFormData] = useState({
     category: "",
+    categoryOther: "",
     content: "",
     share: "",
     name: "",
@@ -49,8 +50,13 @@ export default function FeedbackPage() {
     e.preventDefault()
     setIsSubmitting(true)
 
+    const categoryValue =
+      formData.category === "📝 その他" && formData.categoryOther.trim()
+        ? `📝 その他：${formData.categoryOther.trim()}`
+        : formData.category
+
     const submitData = new FormData()
-    submitData.append("entry.7963631", formData.category)
+    submitData.append("entry.7963631", categoryValue)
     submitData.append("entry.262316761", formData.content)
     submitData.append("entry.287386767", formData.share)
     if (formData.name.trim()) {
@@ -138,6 +144,20 @@ export default function FeedbackPage() {
                 </label>
               ))}
             </div>
+            {formData.category === "📝 その他" && (
+              <div className="mt-3">
+                <input
+                  type="text"
+                  required
+                  value={formData.categoryOther}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, categoryOther: e.target.value }))
+                  }
+                  placeholder="内容を入力してください"
+                  className="w-full p-3 rounded-md border border-input bg-secondary/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+            )}
           </div>
 
           <div className="w-full h-px bg-border/50" />
