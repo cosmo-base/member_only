@@ -5,6 +5,7 @@ import { useState } from "react"
 import { ContentPageLayout } from "@/components/content-page-layout"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, ClipboardList, Loader2, Send } from "lucide-react"
+import { RequiredBadge } from "@/components/ui/required-badge"
 
 interface FeedbackClientProps {
   recentEventNames: string[];
@@ -87,13 +88,6 @@ export function ShittokuFeedbackClient({ recentEventNames }: FeedbackClientProps
       setIsSubmitting(false)
     }
   }
-
-  // 必須マーク用の共通コンポーネント
-  const RequiredBadge = () => (
-    <span className="ml-2 text-[10px] font-bold px-2 py-0.5 rounded bg-red-500/20 text-red-500 border border-red-500/30">
-      必須
-    </span>
-  )
 
   // 成功画面
   if (isSuccess) {
