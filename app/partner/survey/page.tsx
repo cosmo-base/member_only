@@ -21,13 +21,12 @@ export default function SurveyRequestPage() {
         const formData = new FormData(e.currentTarget)
 
         try {
-            // mode: 'no-cors' でGoogleフォームに直接送信
+            // no-cors のため opaque response が返り、成功・失敗を判定できない。fire-and-forget として扱う
             await fetch(GOOGLE_FORM_ACTION, {
                 method: "POST",
                 mode: "no-cors",
                 body: formData,
             })
-            // 送信完了画面へ
             setIsSuccess(true)
         } catch (error) {
             console.error("送信エラー:", error)
@@ -66,7 +65,8 @@ export default function SurveyRequestPage() {
                             <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-4" />
                             <h2 className="text-2xl font-bold mb-2">送信完了しました</h2>
                             <p className="text-muted-foreground mb-8">
-                                内容の確認依頼を受け付けました。Cosmo Base運営にて内容を確認後、ご連絡いたします。
+                                内容の確認依頼を受け付けました。Cosmo Base運営にて内容を確認後、ご連絡いたします。<br />
+                                <span className="text-xs">届かない場合は別途ご連絡ください。</span>
                             </p>
                             <Link href="/partner">
                                 <Button className="px-8 h-12">マイページに戻る</Button>

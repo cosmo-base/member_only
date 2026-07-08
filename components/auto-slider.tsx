@@ -168,6 +168,7 @@ export function AutoSlider() {
         variant="ghost"
         size="icon"
         onClick={goToPrev}
+        aria-label="前のスライドへ"
         className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/50 hover:bg-background/80 backdrop-blur-sm shadow-md"
       >
         <ChevronLeft className="w-5 h-5" />
@@ -176,15 +177,19 @@ export function AutoSlider() {
         variant="ghost"
         size="icon"
         onClick={goToNext}
+        aria-label="次のスライドへ"
         className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/50 hover:bg-background/80 backdrop-blur-sm shadow-md"
       >
         <ChevronRight className="w-5 h-5" />
       </Button>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 bg-background/30 backdrop-blur-md px-4 py-2 rounded-full border border-border/20">
-        {slides.map((_, index) => (
+      <div role="tablist" aria-label="スライドを選択" className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 bg-background/30 backdrop-blur-md px-4 py-2 rounded-full border border-border/20">
+        {slides.map((slide, index) => (
           <button
             key={index}
+            role="tab"
+            aria-selected={index === actualIndex}
+            aria-label={`スライド ${index + 1}${slide.title ? `: ${slide.title}` : ""}`}
             onClick={() => goToSlide(index)}
             className={`w-2.5 h-2.5 rounded-full transition-all shadow-sm ${
               index === actualIndex

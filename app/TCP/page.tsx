@@ -47,13 +47,12 @@ export default function Project1000FormPage() {
     submitData.append("entry.201530021", formData.involvement)
 
     try {
-      // CORSエラーを回避するために mode: 'no-cors' を指定
+      // no-cors のため opaque response が返り、成功・失敗を判定できない。fire-and-forget として扱う
       await fetch(GOOGLE_FORM_ACTION, {
         method: "POST",
         mode: "no-cors",
         body: submitData,
       })
-      // no-cors の場合、正確なレスポンスは取れないので、エラーでなければ成功とみなす
       setIsSuccess(true)
     } catch (error) {
       console.error("送信エラー:", error)
@@ -71,7 +70,8 @@ export default function Project1000FormPage() {
           <h2 className="text-3xl font-bold text-foreground mb-4">乗船手続きが完了しました！</h2>
           <p className="text-muted-foreground mb-8 leading-relaxed">
             ご入力ありがとうございます。限定案内やDiscordへのご招待をお送りいたします。<br />
-            Cosmo Baseの宇宙の旅へようこそ！
+            Cosmo Baseの宇宙の旅へようこそ！<br />
+            <span className="text-xs">届かない場合は別途ご連絡ください。</span>
           </p>
         </div>
       </ContentPageLayout>
