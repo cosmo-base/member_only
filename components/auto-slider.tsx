@@ -1,7 +1,7 @@
 // components/auto-slider.tsx
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
@@ -65,7 +65,10 @@ const slides = [
 export function AutoSlider() {
   const [currentIndex, setCurrentIndex] = useState(1)
   const [isTransitioning, setIsTransitioning] = useState(false)
-  
+  // ref で遷移ガードを管理することで goToNext の参照を安定させ、
+  // setInterval が不要にリセットされるのを防ぐ
+  const isTransitioningRef = useRef(false)
+
   const extendedSlides = [
     slides[slides.length - 1],
     ...slides,
@@ -73,16 +76,18 @@ export function AutoSlider() {
   ]
 
   const goToNext = useCallback(() => {
-    if (isTransitioning) return
+    if (isTransitioningRef.current) return
+    isTransitioningRef.current = true
     setIsTransitioning(true)
     setCurrentIndex((prev) => prev + 1)
-  }, [isTransitioning])
+  }, [])
 
   const goToPrev = useCallback(() => {
-    if (isTransitioning) return
+    if (isTransitioningRef.current) return
+    isTransitioningRef.current = true
     setIsTransitioning(true)
     setCurrentIndex((prev) => prev - 1)
-  }, [isTransitioning])
+  }, [])
 
   useEffect(() => {
     const timer = setInterval(goToNext, 5000)
@@ -93,8 +98,9 @@ export function AutoSlider() {
     if (!isTransitioning) return
 
     const timer = setTimeout(() => {
+      isTransitioningRef.current = false
       setIsTransitioning(false)
-      
+
       if (currentIndex === extendedSlides.length - 1) {
         setCurrentIndex(1)
       }
@@ -107,7 +113,8 @@ export function AutoSlider() {
   }, [currentIndex, isTransitioning, extendedSlides.length])
 
   const goToSlide = (realIndex: number) => {
-    if (isTransitioning) return
+    if (isTransitioningRef.current) return
+    isTransitioningRef.current = true
     setIsTransitioning(true)
     setCurrentIndex(realIndex + 1)
   }
