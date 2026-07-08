@@ -6,8 +6,6 @@ import { Camera, Calendar, Image as ImageIcon, Archive, ExternalLink, MapPin, Cl
 import { GlassCard } from "@/components/glass-card"
 import { fetchIttekitaData } from "@/data/ittekita"
 
-export const dynamic = 'force-static';
-
 export default async function IttekitaPage() {
   const events = await fetchIttekitaData();
   const latestEvent = events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
