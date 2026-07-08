@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import ShittokuArchivePage from "./_components/content"
+import ShittokuArchivePage from "./_components/archive"
 
 export const dynamic = 'force-static';
 

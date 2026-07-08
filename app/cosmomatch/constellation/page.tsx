@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import DiagnosePage from "./_components/content"
+import DiagnosePage from "./_components/constellation"
 
 export const metadata: Metadata = {
   title: "88星座編 | Cosmo Match",

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import SurveyRequestPage from "./_components/content"
+import SurveyRequestPage from "./_components/survey"
 
 export const metadata: Metadata = {
   title: { absolute: "アンケート確認依頼 | Cosmo Baseパートナーページ" },

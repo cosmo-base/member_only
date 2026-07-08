@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { getRockets } from "@/data/CMrockets"
-export { dynamic, generateStaticParams } from "./_components/content"
-import RocketDetailPage from "./_components/content"
+export { dynamic, generateStaticParams } from "./_components/detail"
+import RocketDetailPage from "./_components/detail"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;

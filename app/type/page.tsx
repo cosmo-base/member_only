@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import DiagnosisPage from "./_components/content"
+import DiagnosisPage from "./_components/diagnosis"
 
 export const metadata: Metadata = {
   title: "宇宙タイプ診断 完全版 | Cosmo Base参加者ページ",

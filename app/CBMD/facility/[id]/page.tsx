@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { fetchFacilitiesData } from "@/data/CBMD"
-import FacilityPage from "./_components/content"
+import FacilityPage from "./_components/detail"
 
 export const dynamic = 'force-static';
 export const dynamicParams = false;
