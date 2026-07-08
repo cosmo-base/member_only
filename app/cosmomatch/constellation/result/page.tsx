@@ -24,10 +24,15 @@ function ResultContent() {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    getConstellations().then((data) => {
-      setConstellations(data)
-      setIsLoaded(true)
-    })
+    getConstellations()
+      .then((data) => {
+        setConstellations(data)
+        setIsLoaded(true)
+      })
+      .catch((err) => {
+        console.error("データ読み込みエラー:", err)
+        setIsLoaded(true)
+      })
   }, [])
 
   const userScores = useMemo(() => {

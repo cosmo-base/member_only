@@ -70,12 +70,13 @@ export default function LibraryUploadPage() {
       }
 
       // GASへ送信
-      await fetch(GAS_API_URL, {
+      const response = await fetch(GAS_API_URL, {
         method: "POST",
         body: JSON.stringify(data),
         headers: { "Content-Type": "text/plain" },
       })
-      
+      if (!response.ok) throw new Error(`GAS送信エラー: ${response.status}`)
+
       setIsSuccess(true)
     } catch (error) {
       console.error("送信エラー:", error)

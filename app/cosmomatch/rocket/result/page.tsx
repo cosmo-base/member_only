@@ -21,11 +21,16 @@ function ResultContent() {
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
-    getRockets().then((data) => {
-      setRockets(data);
-      setIsLoaded(true);
-    });
-  }, []);
+    getRockets()
+      .then((data) => {
+        setRockets(data)
+        setIsLoaded(true)
+      })
+      .catch((err) => {
+        console.error("データ読み込みエラー:", err)
+        setIsLoaded(true)
+      })
+  }, [])
 
   const userScores = useMemo(() => {
     const scores = {} as Record<keyof RocketStats, number>;
