@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import IttekitaPage from "./_components/content"
+import IttekitaPage from "./_components/ittekita"
 
 export const metadata: Metadata = {
   title: "宇宙のイベント行ってきた",

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import DictionaryListPage from "./_components/content"
+import DictionaryListPage from "./_components/list"
 
 export const metadata: Metadata = {
   title: "88星座図鑑 | Cosmo Match",

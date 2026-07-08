@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import CosmoMatchTopPage from "./_components/content"
+import CosmoMatchTopPage from "./_components/cosmomatch"
 
 export const metadata: Metadata = {
   title: "Cosmo Match",

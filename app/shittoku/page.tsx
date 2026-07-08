@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import ShittokuPage from "./_components/content"
+import ShittokuPage from "./_components/shittoku"
 
 export const metadata: Metadata = {
   title: "Cosmo Baseで宇宙知っトク",

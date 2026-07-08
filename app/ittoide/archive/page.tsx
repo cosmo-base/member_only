@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import IttoideArchivePage from "./_components/content"
+import IttoideArchivePage from "./_components/archive"
 
 export const metadata: Metadata = {
   title: "過去のおすすめ | 宇宙に行っといで",
