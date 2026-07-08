@@ -77,7 +77,7 @@ export default function OshieteAskPage() {
             <p className="text-muted-foreground mb-8 text-balance">
               ご質問ありがとうございます。<br />
               いただいた内容は運営メンバーが確認し、Discordやイベント等で順次お答えします！<br />
-              <span className="text-xs">うまく届かなかった場合はDiscordでご連絡ください。</span>
+              <span className="text-xs">うまく送信できなかった場合は再度お試しください。</span>
             </p>
             <div className="flex justify-center gap-4">
               <Link href="/oshiete">
