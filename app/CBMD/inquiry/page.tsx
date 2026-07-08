@@ -35,7 +35,7 @@ function InquiryContent() {
     const formData = new FormData(e.currentTarget)
 
     try {
-      // いただいたCBMDお問い合わせフォームの action URL
+      // no-cors のため opaque response が返り、成功・失敗を判定できない。fire-and-forget として扱う
       await fetch(
         "https://docs.google.com/forms/u/0/d/e/1FAIpQLScA3WyNS-YPdzfkprvFzCsjs4DP_AwL4drDilq0fmiGIZWD-Q/formResponse",
         {
@@ -100,7 +100,8 @@ function InquiryContent() {
                 </h3>
                 <p className="text-muted-foreground mb-8 text-balance">
                   情報のご提供、誠にありがとうございます。<br />
-                  内容を確認の上、随時データベースへ反映させていただきます。
+                  内容を確認の上、随時データベースへ反映させていただきます。<br />
+                  <span className="text-xs">うまく送信できなかった場合は再度お試しください。</span>
                 </p>
                 <div className="flex justify-center gap-4">
                   <Link href="/CBMD">

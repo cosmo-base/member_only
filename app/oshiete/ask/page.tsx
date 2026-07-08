@@ -23,6 +23,7 @@ export default function OshieteAskPage() {
 
     try {
       // 抽出したGoogleフォームのaction URL
+      // no-cors のため opaque response が返り、成功・失敗を判定できない。fire-and-forget として扱う
       await fetch(
         "https://docs.google.com/forms/u/0/d/e/1FAIpQLSdHWPTtr7r7miuussTxMyR4oDxljnmxjQSeT3Q8Q7OoSVQauw/formResponse",
         {
@@ -75,7 +76,8 @@ export default function OshieteAskPage() {
             </h3>
             <p className="text-muted-foreground mb-8 text-balance">
               ご質問ありがとうございます。<br />
-              いただいた内容は運営メンバーが確認し、Discordやイベント等で順次お答えします！
+              いただいた内容は運営メンバーが確認し、Discordやイベント等で順次お答えします！<br />
+              <span className="text-xs">うまく送信できなかった場合は再度お試しください。</span>
             </p>
             <div className="flex justify-center gap-4">
               <Link href="/oshiete">

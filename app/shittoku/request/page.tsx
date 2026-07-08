@@ -19,16 +19,15 @@ export default function ShittokuRequestPage() {
     const formData = new FormData(e.currentTarget)
 
     try {
-      // Googleフォームのaction URLへPOST送信
+      // no-cors のため opaque response が返り、成功・失敗を判定できない。fire-and-forget として扱う
       await fetch(
         "https://docs.google.com/forms/u/0/d/e/1FAIpQLSef7zRGC8CbFccMO5pctpvEZw5QAkYlqv-EUxU9IJe4R2aQLg/formResponse",
         {
           method: "POST",
-          mode: "no-cors", // CORSエラーを回避するために必須
+          mode: "no-cors",
           body: formData,
         }
       )
-      // 送信成功（no-corsのためステータスコードは不透明ですが、通常は成功します）
       setSubmitted(true)
     } catch (error) {
       console.error("送信エラー:", error)
@@ -73,7 +72,8 @@ export default function ShittokuRequestPage() {
           </h3>
           <p className="text-muted-foreground">
             貴重なご意見をありがとうございます。
-            今後のイベント企画の参考にさせていただきます。
+            今後のイベント企画の参考にさせていただきます。<br />
+            <span className="text-xs">うまく送信できなかった場合は再度お試しください。</span>
           </p>
           {/* 必要に応じて「続けてリクエストする」ボタンなどを追加 */}
           <Button 

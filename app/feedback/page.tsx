@@ -88,7 +88,7 @@ export default function FeedbackPage() {
           <p className="text-muted-foreground mb-8 leading-relaxed">
             送信しました。<br />
             いただいたご意見は運営メンバーが確認し、コミュニティの改善に活かしていきます。<br />
-            <span className="text-xs mt-2 block">届かない場合は運営に直接ご連絡ください。</span>
+            <span className="text-xs mt-2 block">うまく送信できなかった場合は再度お試しください。</span>
           </p>
           <Button
             variant="outline"

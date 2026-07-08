@@ -39,13 +39,12 @@ export default function PartnerJoinFormPage() {
     submitData.append("entry.87242204", formData.discord)      // Discordの名前
 
     try {
-      // CORSエラーを回避するために mode: 'no-cors' を指定
+      // no-cors のため opaque response が返り、成功・失敗を判定できない。fire-and-forget として扱う
       await fetch(GOOGLE_FORM_ACTION, {
         method: "POST",
         mode: "no-cors",
         body: submitData,
       })
-      // no-cors の場合、正確なレスポンスは取れないので、エラーでなければ成功とみなす
       setIsSuccess(true)
     } catch (error) {
       console.error("送信エラー:", error)
@@ -80,7 +79,8 @@ export default function PartnerJoinFormPage() {
             </div>
             <div className="glass-card rounded-xl p-10 max-w-2xl mx-auto border border-primary/30 text-center animate-in fade-in zoom-in duration-500">
               <p className="text-muted-foreground mb-8 leading-relaxed">
-                ご入力ありがとうございます。内容を確認の上、<br />記載いただいたDiscordアカウントへパートナー限定チャンネルへの招待をお送りいたします。
+                ご入力ありがとうございます。内容を確認の上、<br />記載いただいたDiscordアカウントへパートナー限定チャンネルへの招待をお送りいたします。<br />
+                <span className="text-xs">うまく送信できなかった場合は再度お試しください。</span>
               </p>
               <Button onClick={() => window.location.reload()} variant="outline" className="w-full sm:w-auto">
                 別の申請を送信する

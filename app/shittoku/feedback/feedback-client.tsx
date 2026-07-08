@@ -75,6 +75,7 @@ export function ShittokuFeedbackClient({ recentEventNames }: FeedbackClientProps
     })
 
     try {
+      // no-cors のため opaque response が返り、成功・失敗を判定できない。fire-and-forget として扱う
       await fetch(GOOGLE_FORM_ACTION, {
         method: "POST",
         mode: "no-cors",
@@ -98,7 +99,8 @@ export function ShittokuFeedbackClient({ recentEventNames }: FeedbackClientProps
           <h2 className="text-3xl font-bold text-foreground mb-4">ご協力ありがとうございました！</h2>
           <p className="text-muted-foreground mb-8 leading-relaxed">
             アンケートの送信が完了しました。<br />
-            いただいた貴重なご意見は、今後のイベント運営やコンテンツ作りに活用させていただきます。
+            いただいた貴重なご意見は、今後のイベント運営やコンテンツ作りに活用させていただきます。<br />
+            <span className="text-xs">うまく届かなかった場合はDiscordでご連絡ください。</span>
           </p>
         </div>
       </ContentPageLayout>
