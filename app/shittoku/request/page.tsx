@@ -73,7 +73,7 @@ export default function ShittokuRequestPage() {
           <p className="text-muted-foreground">
             貴重なご意見をありがとうございます。
             今後のイベント企画の参考にさせていただきます。<br />
-            <span className="text-xs">届かない場合はDiscordでご連絡ください。</span>
+            <span className="text-xs">うまく送信できなかった場合は再度お試しください。</span>
           </p>
           {/* 必要に応じて「続けてリクエストする」ボタンなどを追加 */}
           <Button 

@@ -80,7 +80,7 @@ export default function PartnerJoinFormPage() {
             <div className="glass-card rounded-xl p-10 max-w-2xl mx-auto border border-primary/30 text-center animate-in fade-in zoom-in duration-500">
               <p className="text-muted-foreground mb-8 leading-relaxed">
                 ご入力ありがとうございます。内容を確認の上、<br />記載いただいたDiscordアカウントへパートナー限定チャンネルへの招待をお送りいたします。<br />
-                <span className="text-xs">届かない場合は別途ご連絡ください。</span>
+                <span className="text-xs">うまく送信できなかった場合は再度お試しください。</span>
               </p>
               <Button onClick={() => window.location.reload()} variant="outline" className="w-full sm:w-auto">
                 別の申請を送信する

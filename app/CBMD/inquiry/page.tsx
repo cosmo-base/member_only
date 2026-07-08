@@ -101,7 +101,7 @@ function InquiryContent() {
                 <p className="text-muted-foreground mb-8 text-balance">
                   情報のご提供、誠にありがとうございます。<br />
                   内容を確認の上、随時データベースへ反映させていただきます。<br />
-                  <span className="text-xs">届かない場合は別途ご連絡ください。</span>
+                  <span className="text-xs">うまく送信できなかった場合は再度お試しください。</span>
                 </p>
                 <div className="flex justify-center gap-4">
                   <Link href="/CBMD">

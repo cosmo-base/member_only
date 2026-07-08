@@ -71,7 +71,7 @@ export default function Project1000FormPage() {
           <p className="text-muted-foreground mb-8 leading-relaxed">
             ご入力ありがとうございます。限定案内やDiscordへのご招待をお送りいたします。<br />
             Cosmo Baseの宇宙の旅へようこそ！<br />
-            <span className="text-xs">届かない場合は別途ご連絡ください。</span>
+            <span className="text-xs">うまく送信できなかった場合は再度お試しください。</span>
           </p>
         </div>
       </ContentPageLayout>

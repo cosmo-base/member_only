@@ -66,7 +66,7 @@ export default function SurveyRequestPage() {
                             <h2 className="text-2xl font-bold mb-2">送信完了しました</h2>
                             <p className="text-muted-foreground mb-8">
                                 内容の確認依頼を受け付けました。Cosmo Base運営にて内容を確認後、ご連絡いたします。<br />
-                                <span className="text-xs">届かない場合は別途ご連絡ください。</span>
+                                <span className="text-xs">うまく送信できなかった場合は再度お試しください。</span>
                             </p>
                             <Link href="/partner">
                                 <Button className="px-8 h-12">マイページに戻る</Button>
