@@ -100,25 +100,6 @@ function parseShittokuCSV(csvText: string): ShittokuEvent[] {
   return events;
 }
 
-export async function fetchNextShittokuEventId(): Promise<number | null> {
-  const events = await fetchShittokuData();
-  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
-  today.setHours(0, 0, 0, 0);
-
-  const upcoming = events
-    .filter(e => e.parsedDate >= today && e.theme.trim() !== "" && e.eventId > 0)
-    .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime());
-
-  if (upcoming.length > 0) return upcoming[0].eventId;
-
-  // 次回予定がなければ最新の過去イベントを使用
-  const past = events
-    .filter(e => e.parsedDate < today && e.eventId > 0)
-    .sort((a, b) => b.parsedDate.getTime() - a.parsedDate.getTime());
-
-  return past.length > 0 ? past[0].eventId : null;
-}
-
 export async function fetchShittokuData(): Promise<ShittokuEvent[]> {
   try {
     const cacheBusterUrl = `${SHITTOKU_CSV_URL}&_t=${BUILD_TIMESTAMP}`;
