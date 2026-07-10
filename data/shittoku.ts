@@ -1,6 +1,7 @@
 // data/shittoku.ts
 
 export interface ShittokuEvent {
+  eventId: number; // CSV "id" 列の値（画像ファイル名に使用）
   month: string;
   day: string;
   weekday: string;
@@ -77,23 +78,45 @@ function parseShittokuCSV(csvText: string): ShittokuEvent[] {
       content = tema || meisho || "内容未定";
     }
 
-    // ★ 追加: 「参加者数」列の数値をパース（空欄の場合は未来の予定として0にする）
+    const eventIdRaw = rowObj["id"] || "";
+    const eventId = eventIdRaw ? parseInt(eventIdRaw, 10) : 0;
+
     const participantsRaw = rowObj["参加者数"] || "";
     const participantsCount = participantsRaw ? parseInt(participantsRaw, 10) : 0;
 
     events.push({
+      eventId,
       month,
       day,
       weekday,
       venue,
       content,
       theme: tema,
-      participantsCount, // ★ 格納
+      participantsCount,
       parsedDate
     });
   }
 
   return events;
+}
+
+export async function fetchNextShittokuEventId(): Promise<number | null> {
+  const events = await fetchShittokuData();
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+  today.setHours(0, 0, 0, 0);
+
+  const upcoming = events
+    .filter(e => e.parsedDate >= today && e.theme.trim() !== "" && e.eventId > 0)
+    .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime());
+
+  if (upcoming.length > 0) return upcoming[0].eventId;
+
+  // 次回予定がなければ最新の過去イベントを使用
+  const past = events
+    .filter(e => e.parsedDate < today && e.eventId > 0)
+    .sort((a, b) => b.parsedDate.getTime() - a.parsedDate.getTime());
+
+  return past.length > 0 ? past[0].eventId : null;
 }
 
 export async function fetchShittokuData(): Promise<ShittokuEvent[]> {
