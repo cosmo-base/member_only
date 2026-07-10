@@ -5,7 +5,7 @@ import { ContentPageLayout } from "@/components/content-page-layout"
 import { getConstellations, Constellation } from "@/data/CMconstellation"
 import { Globe, Eye, Languages, ExternalLink, ArrowLeft, Bookmark, Activity, Star, Telescope, List } from "lucide-react"
 import { CMRadarChart } from "@/components/ui/radar-chart"
-import { VisualToggle } from "./visual-toggle"
+import { VisualToggle } from "../visual-toggle"
 
 export const dynamic = 'force-static';
 

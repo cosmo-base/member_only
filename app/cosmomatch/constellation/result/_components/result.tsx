@@ -11,7 +11,7 @@ import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Lege
 import { Award, RefreshCw, BookOpen, Star, Sparkles, Loader2, ChevronRight } from "lucide-react"
 
 // ★ VisualToggle をインポート
-import { VisualToggle } from "../dictionary/[id]/visual-toggle"
+import { VisualToggle } from "../../dictionary/[id]/visual-toggle"
 
 const STAT_KEYS = ['origin', 'energy', 'role', 'bond', 'form', 'mood', 'presence'] as const;
 
