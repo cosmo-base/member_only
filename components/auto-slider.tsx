@@ -75,9 +75,8 @@ export function AutoSlider({ shittokuImageSrc }: { shittokuImageSrc?: string | n
     : BASE_SLIDES
   const [currentIndex, setCurrentIndex] = useState(1)
   const [isTransitioning, setIsTransitioning] = useState(false)
-  // ref で遷移ガードを管理することで goToNext の参照を安定させ、
-  // setInterval が不要にリセットされるのを防ぐ
   const isTransitioningRef = useRef(false)
+  const isPausedRef = useRef(false)
 
   const extendedSlides = [
     slides[slides.length - 1],
@@ -86,7 +85,7 @@ export function AutoSlider({ shittokuImageSrc }: { shittokuImageSrc?: string | n
   ]
 
   const goToNext = useCallback(() => {
-    if (isTransitioningRef.current) return
+    if (isTransitioningRef.current || isPausedRef.current) return
     isTransitioningRef.current = true
     setIsTransitioning(true)
     setCurrentIndex((prev) => prev + 1)
@@ -100,7 +99,7 @@ export function AutoSlider({ shittokuImageSrc }: { shittokuImageSrc?: string | n
   }, [])
 
   useEffect(() => {
-    const timer = setInterval(goToNext, 5000)
+    const timer = setInterval(goToNext, 7000)
     return () => clearInterval(timer)
   }, [goToNext])
 
@@ -136,7 +135,11 @@ export function AutoSlider({ shittokuImageSrc }: { shittokuImageSrc?: string | n
     : currentIndex - 1
 
   return (
-    <div className="relative w-full overflow-hidden rounded-xl shadow-lg">
+    <div
+      className="relative w-full overflow-hidden rounded-xl shadow-lg"
+      onMouseEnter={() => { isPausedRef.current = true }}
+      onMouseLeave={() => { isPausedRef.current = false }}
+    >
       <div
         className={`flex ${isTransitioning ? 'transition-transform duration-500 ease-in-out' : ''}`}
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}

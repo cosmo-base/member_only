@@ -19,17 +19,19 @@ export async function HeroSection() {
   const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }))
   today.setHours(0, 0, 0, 0)
 
-  const upcoming = events
-    .filter(e => e.parsedDate >= today && e.theme.trim() !== "" && e.eventId > 0)
-    .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime())
+  // 画像探索はテーマの有無に関わらず全イベントを対象にする
+  // （テーマ未入力でも画像が準備済みのケースに対応）
+  const searchOrder = [
+    ...events
+      .filter(e => e.parsedDate >= today && e.eventId > 0)
+      .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime()),
+    ...events
+      .filter(e => e.parsedDate < today && e.eventId > 0)
+      .sort((a, b) => b.parsedDate.getTime() - a.parsedDate.getTime()),
+  ]
 
-  const past = events
-    .filter(e => e.parsedDate < today && e.eventId > 0)
-    .sort((a, b) => b.parsedDate.getTime() - a.parsedDate.getTime())
-
-  // 次回イベントから順に画像ファイルが存在するものを探す
   let shittokuImageSrc: string | null = null
-  for (const event of [...upcoming, ...past]) {
+  for (const event of searchOrder) {
     const src = findShittokuImageSrc(event.eventId)
     if (src) {
       shittokuImageSrc = src
