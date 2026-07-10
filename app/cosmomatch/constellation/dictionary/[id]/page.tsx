@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { getConstellations } from "@/data/CMconstellation"
-export { dynamic, generateStaticParams } from "./_components/detail"
+export const dynamic = 'force-static'
+export { generateStaticParams } from "./_components/detail"
 import ConstellationDetailPage from "./_components/detail"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
