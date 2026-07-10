@@ -12,57 +12,65 @@ import Link from "next/link"
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 import welcomeImg from "../public/images/slider-welcome.jpg"
 import partnerImg from "../public/CBP.png"
-import shittokuImg from "../public/shittoku/13.png"
 import feedbackImg from "../public/feedback.png"
 import memberImg from "../public/member.png"
 import partImg from "../public/part.jpg"
+import type { StaticImageData } from "next/image"
 
-const slides = [
-  {
-    id: 0,
-    title: "Cosmo Baseへようこそ",
-    description: "宇宙をさらに身近にしていくコミュニティーです。\nCosmo Baseで宇宙を楽しみましょう。",
-    image: welcomeImg,
-    href: "/",
-  },
-  {
-    id: 1,
-    title: "",
-    description: "",
-    image: partnerImg,
-    href: "https://fsifofficial.github.io/CosmoBase/news/iSIO",
-  },
-  {
-    id: 2,
-    title: "",
-    description: "",
-    image: shittokuImg,
-    href: "https://cosmo-base.github.io/member_only/shittoku/",
-  },
-  {
-    id: 3,
-    title: "",
-    description: "",
-    image: feedbackImg,
-    href: "/feedback",
-  },
-  {
-    id: 4,
-    title: "",
-    description: "",
-    image: memberImg,
-    href: "https://fsifofficial.github.io/CosmoBase/contact/member",
-  },
-  {
-    id: 5,
-    title: "",
-    description: "",
-    image: partImg,
-    href: "https://fsifofficial.github.io/CosmoBase/partner",
-  },
-]
+type SlideImage = string | StaticImageData
 
-export function AutoSlider() {
+function createSlides(shittokuImage: SlideImage) {
+  return [
+    {
+      id: 0,
+      title: "Cosmo Baseへようこそ",
+      description: "宇宙をさらに身近にしていくコミュニティーです。\nCosmo Baseで宇宙を楽しみましょう。",
+      image: welcomeImg as SlideImage,
+      href: "/",
+    },
+    {
+      id: 1,
+      title: "",
+      description: "",
+      image: partnerImg as SlideImage,
+      href: "https://fsifofficial.github.io/CosmoBase/news/iSIO",
+    },
+    {
+      id: 2,
+      title: "",
+      description: "",
+      image: shittokuImage,
+      href: "https://cosmo-base.github.io/member_only/shittoku/",
+    },
+    {
+      id: 3,
+      title: "",
+      description: "",
+      image: feedbackImg as SlideImage,
+      href: "/feedback",
+    },
+    {
+      id: 4,
+      title: "",
+      description: "",
+      image: memberImg as SlideImage,
+      href: "https://fsifofficial.github.io/CosmoBase/contact/member",
+    },
+    {
+      id: 5,
+      title: "",
+      description: "",
+      image: partImg as SlideImage,
+      href: "https://fsifofficial.github.io/CosmoBase/partner",
+    },
+  ]
+}
+
+export function AutoSlider({ shittokuImageId }: { shittokuImageId?: number | null }) {
+  const shittokuImage: SlideImage = shittokuImageId
+    ? `/shittoku/${shittokuImageId}.png`
+    : "/shittoku/13.png"
+  const slides = createSlides(shittokuImage)
   const [currentIndex, setCurrentIndex] = useState(1)
   const [isTransitioning, setIsTransitioning] = useState(false)
   // ref で遷移ガードを管理することで goToNext の参照を安定させ、
