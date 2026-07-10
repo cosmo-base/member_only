@@ -12,7 +12,7 @@ import Link from "next/link"
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 import welcomeImg from "../public/images/slider-welcome.jpg"
 import partnerImg from "../public/CBP.png"
-import shittokuImg from "../public/shittoku/12.png"
+import shittokuImg from "../public/shittoku/13.png"
 import feedbackImg from "../public/feedback.png"
 import memberImg from "../public/member.png"
 import partImg from "../public/part.jpg"
