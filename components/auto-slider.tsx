@@ -19,58 +19,60 @@ import type { StaticImageData } from "next/image"
 
 type SlideImage = string | StaticImageData
 
-function createSlides(shittokuImage: SlideImage) {
-  return [
-    {
-      id: 0,
-      title: "Cosmo Baseへようこそ",
-      description: "宇宙をさらに身近にしていくコミュニティーです。\nCosmo Baseで宇宙を楽しみましょう。",
-      image: welcomeImg as SlideImage,
-      href: "/",
-    },
-    {
-      id: 1,
-      title: "",
-      description: "",
-      image: partnerImg as SlideImage,
-      href: "https://fsifofficial.github.io/CosmoBase/news/iSIO",
-    },
-    {
-      id: 2,
-      title: "",
-      description: "",
-      image: shittokuImage,
-      href: "https://cosmo-base.github.io/member_only/shittoku/",
-    },
-    {
-      id: 3,
-      title: "",
-      description: "",
-      image: feedbackImg as SlideImage,
-      href: "/feedback",
-    },
-    {
-      id: 4,
-      title: "",
-      description: "",
-      image: memberImg as SlideImage,
-      href: "https://fsifofficial.github.io/CosmoBase/contact/member",
-    },
-    {
-      id: 5,
-      title: "",
-      description: "",
-      image: partImg as SlideImage,
-      href: "https://fsifofficial.github.io/CosmoBase/partner",
-    },
-  ]
+const BASE_SLIDES = [
+  {
+    id: 0,
+    title: "Cosmo Baseへようこそ",
+    description: "宇宙をさらに身近にしていくコミュニティーです。\nCosmo Baseで宇宙を楽しみましょう。",
+    image: welcomeImg as SlideImage,
+    href: "/",
+  },
+  {
+    id: 1,
+    title: "",
+    description: "",
+    image: partnerImg as SlideImage,
+    href: "https://fsifofficial.github.io/CosmoBase/news/iSIO",
+  },
+  {
+    id: 3,
+    title: "",
+    description: "",
+    image: feedbackImg as SlideImage,
+    href: "/feedback",
+  },
+  {
+    id: 4,
+    title: "",
+    description: "",
+    image: memberImg as SlideImage,
+    href: "https://fsifofficial.github.io/CosmoBase/contact/member",
+  },
+  {
+    id: 5,
+    title: "",
+    description: "",
+    image: partImg as SlideImage,
+    href: "https://fsifofficial.github.io/CosmoBase/partner",
+  },
+]
+
+const SHITTOKU_SLIDE = {
+  id: 2,
+  title: "",
+  description: "",
+  href: "https://cosmo-base.github.io/member_only/shittoku/",
 }
 
-export function AutoSlider({ shittokuImageId }: { shittokuImageId?: number | null }) {
-  const shittokuImage: SlideImage = shittokuImageId
-    ? `/shittoku/${shittokuImageId}.png`
-    : "/shittoku/13.png"
-  const slides = createSlides(shittokuImage)
+export function AutoSlider({ shittokuImageSrc }: { shittokuImageSrc?: string | null }) {
+  const slides = shittokuImageSrc
+    ? [
+        BASE_SLIDES[0],
+        BASE_SLIDES[1],
+        { ...SHITTOKU_SLIDE, image: shittokuImageSrc as SlideImage },
+        ...BASE_SLIDES.slice(2),
+      ]
+    : BASE_SLIDES
   const [currentIndex, setCurrentIndex] = useState(1)
   const [isTransitioning, setIsTransitioning] = useState(false)
   // ref で遷移ガードを管理することで goToNext の参照を安定させ、
