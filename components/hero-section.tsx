@@ -5,10 +5,14 @@ import { fetchShittokuData } from "@/data/shittoku"
 
 const SHITTOKU_EXTENSIONS = ["png", "jpeg", "jpg", "webp"]
 
+// output: export + unoptimized: true では <Image> が <img> に変換されるため
+// basePath が自動付与されない。next.config.ts の basePath に合わせて手動で付与する。
+const BASE_PATH = "/member_only"
+
 function findShittokuImageSrc(id: number): string | null {
   for (const ext of SHITTOKU_EXTENSIONS) {
     if (fs.existsSync(path.join(process.cwd(), "public", "shittoku", `${id}.${ext}`))) {
-      return `/shittoku/${id}.${ext}`
+      return `${BASE_PATH}/shittoku/${id}.${ext}`
     }
   }
   return null
