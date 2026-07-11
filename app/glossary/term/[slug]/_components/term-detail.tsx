@@ -78,7 +78,7 @@ export function TermDetail({ term, relatedTerms, allTerms }: TermDetailProps) {
       </div>
 
       {/* Level Tabs */}
-      <div className="glass-card rounded-xl overflow-hidden">
+      <div className="glass-card rounded-xl">
         <div className="flex border-b border-border/40">
           {availableLevels.map((lv) => {
             const meta = LEVEL_LABELS[lv]
