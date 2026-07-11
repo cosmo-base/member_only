@@ -48,6 +48,10 @@ function splitList(val: string): string[] {
     : []
 }
 
+function col(cols: string[], idx: number): string {
+  return cols[idx]?.trim() || ""
+}
+
 let cachedTerms: GlossaryTerm[] | null = null
 
 export async function fetchGlossaryTerms(): Promise<GlossaryTerm[]> {
@@ -61,68 +65,74 @@ export async function fetchGlossaryTerms(): Promise<GlossaryTerm[]> {
     }
 
     const text = await res.text()
-    const lines = text.split(/\r?\n/).filter((l) => l.trim())
+    // Strip BOM if present
+    const cleanText = text.startsWith("﻿") ? text.slice(1) : text
+    const lines = cleanText.split(/\r?\n/).filter((l) => l.trim())
     if (lines.length < 2) return []
 
-    // Skip header row (index 0)
-    // Columns: id,term,kana,english,category_large,category_medium,category_small,
-    //          difficulty,text_lv1,text_lv2,text_lv3,status,credit,
-    //          aliases,internal,related,opposite,similar,image
+    // Parse header row to locate columns by name (resilient to column reordering)
+    const headers = parseCSVLine(lines[0]).map((h) => h.trim().toLowerCase())
+    const idx = (name: string) => headers.indexOf(name)
+
+    const iId           = idx("id")
+    const iTerm         = idx("term")
+    const iKana         = idx("kana")
+    const iEnglish      = idx("english")
+    const iCatLarge     = idx("category_large")
+    const iCatMedium    = idx("category_medium")
+    const iCatSmall     = idx("category_small")
+    const iDifficulty   = idx("difficulty")
+    const iTextLv1      = idx("text_lv1")
+    const iTextLv2      = idx("text_lv2")
+    const iTextLv3      = idx("text_lv3")
+    const iStatus       = idx("status")
+    const iCredit       = idx("credit")
+    const iAliases      = idx("aliases")
+    const iInternal     = idx("internal")
+    const iRelated      = idx("related")
+    const iOpposite     = idx("opposite")
+    const iSimilar      = idx("similar")
+
+    if (iTerm === -1) {
+      console.warn("[glossary] 'term' column not found in header:", headers)
+      return []
+    }
+
     const terms: GlossaryTerm[] = []
 
     for (let i = 1; i < lines.length; i++) {
       const cols = parseCSVLine(lines[i])
-      // id is col[0] (empty), term is col[1]
-      const [
-        ,
-        term,
-        kana,
-        english,
-        categoryLarge,
-        categoryMedium,
-        categorySmall,
-        difficulty,
-        textLv1,
-        textLv2,
-        textLv3,
-        status,
-        credit,
-        aliases,
-        internal,
-        related,
-        opposite,
-        similar,
-      ] = cols
-
-      const termStr = term?.trim()
+      const termStr = col(cols, iTerm)
       if (!termStr) continue
 
-      const kanaStr = kana?.trim() || ""
-      // slug: use kana reading (hiragana), unique per term
-      const slug = kanaStr || termStr
+      const idStr   = iId !== -1 ? col(cols, iId) : ""
+      const kanaStr = iKana !== -1 ? col(cols, iKana) : ""
+      // Prefer id as slug (now that the column is filled); fall back to kana, then term
+      const slug = idStr || kanaStr || termStr
 
       terms.push({
         slug,
         term: termStr,
         kana: kanaStr,
-        english: english?.trim() || "",
-        aliases: splitList(aliases || ""),
-        categoryLarge: (categoryLarge?.trim() || "宇宙輸送・ロケット") as CategoryLarge,
-        categoryMedium: categoryMedium?.trim() || "",
-        categorySmall: categorySmall?.trim() || "",
-        difficulty: parseDifficulty(difficulty?.trim() || ""),
-        textLv1: textLv1?.trim() || undefined,
-        textLv2: textLv2?.trim() || undefined,
-        textLv3: textLv3?.trim() || undefined,
-        internal: splitList(internal || ""),
-        related: splitList(related || ""),
-        opposite: splitList(opposite || ""),
-        similar: splitList(similar || ""),
-        status: (status?.trim() || "未着手") as GlossaryStatus,
-        credit: credit?.trim() || "Cosmo Base運営",
+        english:        iEnglish    !== -1 ? col(cols, iEnglish)    : "",
+        aliases:        iAliases    !== -1 ? splitList(col(cols, iAliases))   : [],
+        categoryLarge:  (iCatLarge  !== -1 ? col(cols, iCatLarge)   : "宇宙輸送・ロケット") as CategoryLarge,
+        categoryMedium: iCatMedium  !== -1 ? col(cols, iCatMedium)  : "",
+        categorySmall:  iCatSmall   !== -1 ? col(cols, iCatSmall)   : "",
+        difficulty:     parseDifficulty(iDifficulty !== -1 ? col(cols, iDifficulty) : ""),
+        textLv1:        iTextLv1    !== -1 ? col(cols, iTextLv1)  || undefined : undefined,
+        textLv2:        iTextLv2    !== -1 ? col(cols, iTextLv2)  || undefined : undefined,
+        textLv3:        iTextLv3    !== -1 ? col(cols, iTextLv3)  || undefined : undefined,
+        internal:       iInternal   !== -1 ? splitList(col(cols, iInternal))  : [],
+        related:        iRelated    !== -1 ? splitList(col(cols, iRelated))   : [],
+        opposite:       iOpposite   !== -1 ? splitList(col(cols, iOpposite))  : [],
+        similar:        iSimilar    !== -1 ? splitList(col(cols, iSimilar))   : [],
+        status:         (iStatus    !== -1 ? col(cols, iStatus)    : "未着手") as GlossaryStatus,
+        credit:         iCredit     !== -1 ? col(cols, iCredit) || "Cosmo Base運営" : "Cosmo Base運営",
       })
     }
 
+    console.log(`[glossary] Loaded ${terms.length} terms from CSV`)
     cachedTerms = terms
     return terms
   } catch (err) {
