@@ -4,7 +4,7 @@ import { HeroSection } from "@/components/hero-section"
 import { LevelSection } from "@/components/level-section"
 import { ContentCard } from "@/components/content-card"
 import { FooterSection } from "@/components/footer-section"
-import { Heart, HelpCircle, Landmark, Newspaper, User, Calendar, MessageCircle, MapPin, Camera, Database, Award, BookOpen } from "lucide-react"
+import { Heart, HelpCircle, Landmark, Newspaper, User, Calendar, MessageCircle, MapPin, Camera, Database, Award, BookOpen, BookMarked } from "lucide-react"
 
 import cbedLogo from "../public/CBED_logo.png"
 import cblLogo from "../public/CBL_logo.png" 
@@ -111,6 +111,14 @@ const level3Content = [
 
 const level4Content = [
   {
+    icon: "glossary",
+    logo: null,
+    title: "宇宙用語集",
+    description: "宇宙専門用語を3段階で解説するデータベース",
+    features: ["キーワード検索", "カテゴリ・難易度フィルター", "50音索引"],
+    href: "/glossary"
+  },
+  {
     icon: "award",
     logo: voyagerLogo,
     title: "Space Voyager 検定",
@@ -141,6 +149,7 @@ function getIcon(iconName: string) {
     case "database": return <Database className="w-6 h-6" />
     case "award": return <Award className="w-6 h-6" />
     case "book": return <BookOpen className="w-6 h-6" />
+    case "glossary": return <BookMarked className="w-6 h-6" />
     default: return <HelpCircle className="w-6 h-6" />
   }
 }
