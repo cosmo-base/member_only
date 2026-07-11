@@ -7,7 +7,6 @@ import { StarBackground } from "@/components/star-background"
 import { SiteHeader } from "@/components/site-header"
 import { Input } from "@/components/ui/input"
 import {
-  glossaryTerms,
   CATEGORY_LARGE_LIST,
   type CategoryLarge,
   type DifficultyLevel,
@@ -37,14 +36,18 @@ function kanaRow(kana: string): string {
   return first
 }
 
-export default function GlossaryIndex() {
+interface GlossaryIndexProps {
+  terms: GlossaryTerm[]
+}
+
+export default function GlossaryIndex({ terms }: GlossaryIndexProps) {
   const [query, setQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<CategoryLarge | "">("")
   const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | 0>(0)
   const [selectedKana, setSelectedKana] = useState("")
 
   const filtered = useMemo<GlossaryTerm[]>(() => {
-    return glossaryTerms.filter((t) => {
+    return terms.filter((t) => {
       if (selectedCategory && t.categoryLarge !== selectedCategory) return false
       if (selectedDifficulty && t.difficulty !== selectedDifficulty) return false
       if (selectedKana) {
@@ -62,7 +65,7 @@ export default function GlossaryIndex() {
       }
       return true
     })
-  }, [query, selectedCategory, selectedDifficulty, selectedKana])
+  }, [terms, query, selectedCategory, selectedDifficulty, selectedKana])
 
   const sorted = useMemo(
     () => [...filtered].sort((a, b) => a.kana.localeCompare(b.kana, "ja")),
@@ -93,7 +96,7 @@ export default function GlossaryIndex() {
             知識ゼロでも大丈夫。難しい言葉に出会ったとき、ここへ来てください。
           </p>
           <div className="mt-2 text-xs text-muted-foreground">
-            現在 <span className="text-primary font-semibold">{glossaryTerms.length}</span> 語収録
+            現在 <span className="text-primary font-semibold">{terms.length}</span> 語収録
           </div>
         </div>
 
@@ -165,7 +168,7 @@ export default function GlossaryIndex() {
           <div className="glass-card rounded-xl p-3">
             <div className="flex flex-wrap gap-1">
               {KANA_INDEX.map((k) => {
-                const hasTerms = glossaryTerms.some((t) => kanaRow(t.kana) === k)
+                const hasTerms = terms.some((t) => kanaRow(t.kana) === k)
                 return (
                   <button
                     key={k}
@@ -203,10 +206,8 @@ export default function GlossaryIndex() {
             </div>
           )}
 
-          {sorted.length === 0 && !hasFilter && null}
-
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {(hasFilter ? sorted : [...glossaryTerms].sort((a, b) => a.kana.localeCompare(b.kana, "ja"))).map(
+            {(hasFilter ? sorted : [...terms].sort((a, b) => a.kana.localeCompare(b.kana, "ja"))).map(
               (term) => (
                 <Link
                   key={term.slug}

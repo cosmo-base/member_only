@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { ExternalLink } from "lucide-react"
-import { glossaryTerms } from "@/data/glossary"
+import { useGlossaryTerms } from "./glossary-terms-context"
 
 interface TermLinkProps {
   termName: string
@@ -12,8 +12,9 @@ interface TermLinkProps {
 export function TermLink({ termName }: TermLinkProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLSpanElement>(null)
+  const allTerms = useGlossaryTerms()
 
-  const matched = glossaryTerms.find(
+  const matched = allTerms.find(
     (t) => t.term === termName || t.aliases?.includes(termName)
   )
 
