@@ -58,7 +58,7 @@ export async function fetchGlossaryTerms(): Promise<GlossaryTerm[]> {
   if (cachedTerms) return cachedTerms
 
   try {
-    const res = await fetch(SHEET_CSV_URL, { cache: "no-store" })
+    const res = await fetch(SHEET_CSV_URL, { cache: "force-cache" })
     if (!res.ok) {
       console.warn(`[glossary] CSV fetch failed: ${res.status}`)
       return []
