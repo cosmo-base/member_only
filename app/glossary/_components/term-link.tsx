@@ -55,7 +55,7 @@ export function TermLink({ termName }: TermLinkProps) {
 
       {open && (
         <span
-          className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 rounded-xl shadow-xl border border-border/60 p-3 text-sm text-left"
+          className="absolute z-[9999] bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 rounded-xl shadow-xl border border-border/60 p-3 text-sm text-left"
           style={{
             background: "oklch(0.14 0.02 260 / 0.97)",
             backdropFilter: "blur(12px)",
