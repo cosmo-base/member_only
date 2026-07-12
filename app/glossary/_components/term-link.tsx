@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef } from "react"
 import Link from "next/link"
 import { ExternalLink } from "lucide-react"
 import { useGlossaryTerms } from "./glossary-terms-context"
@@ -9,30 +9,47 @@ interface TermLinkProps {
   termName: string
 }
 
+type TooltipAlign = "center" | "left" | "right"
+
 export function TermLink({ termName }: TermLinkProps) {
   const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLSpanElement>(null)
+  const [align, setAlign] = useState<TooltipAlign>("center")
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const wrapperRef = useRef<HTMLSpanElement>(null)
   const allTerms = useGlossaryTerms()
 
   const matched = allTerms.find(
     (t) => t.term === termName || t.aliases?.includes(termName)
   )
 
-  useEffect(() => {
-    function handleOutside(e: MouseEvent | TouchEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
+  const cancelHide = () => {
+    if (hideTimer.current) clearTimeout(hideTimer.current)
+  }
+
+  const scheduleHide = () => {
+    hideTimer.current = setTimeout(() => setOpen(false), 120)
+  }
+
+  const handleEnter = () => {
+    cancelHide()
+    // Calculate tooltip alignment before showing to avoid flash
+    if (wrapperRef.current) {
+      const rect = wrapperRef.current.getBoundingClientRect()
+      const tooltipWidth = 256 // w-64
+      const center = rect.left + rect.width / 2
+      if (center - tooltipWidth / 2 < 8) setAlign("left")
+      else if (center + tooltipWidth / 2 > window.innerWidth - 8) setAlign("right")
+      else setAlign("center")
     }
-    if (open) {
-      document.addEventListener("mousedown", handleOutside)
-      document.addEventListener("touchstart", handleOutside)
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleOutside)
-      document.removeEventListener("touchstart", handleOutside)
-    }
-  }, [open])
+    setOpen(true)
+  }
+
+  const tooltipPos =
+    align === "left"
+      ? "left-0"
+      : align === "right"
+      ? "right-0"
+      : "left-1/2 -translate-x-1/2"
 
   if (!matched) {
     return (
@@ -43,25 +60,26 @@ export function TermLink({ termName }: TermLinkProps) {
   }
 
   return (
-    <span ref={ref} className="relative inline-block">
-      <span
-        className="text-primary border-b border-dashed border-primary/60 cursor-pointer hover:text-primary/80 transition-colors"
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        onClick={() => setOpen((v) => !v)}
+    <span ref={wrapperRef} className="relative inline-block">
+      {/* Term link — hover opens tooltip, click navigates */}
+      <Link
+        href={`/glossary/term/${matched.slug}`}
+        className="text-primary border-b border-dashed border-primary/60 hover:text-primary/80 transition-colors"
+        onMouseEnter={handleEnter}
+        onMouseLeave={scheduleHide}
       >
         {termName}
-      </span>
+      </Link>
 
       {open && (
         <span
-          className="absolute z-[9999] bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 rounded-xl shadow-xl border border-border/60 p-3 text-sm text-left"
+          className={`absolute z-[9999] bottom-full mb-2 w-64 rounded-xl shadow-xl border border-border/60 p-3 text-sm text-left ${tooltipPos}`}
           style={{
             background: "oklch(0.14 0.02 260 / 0.97)",
             backdropFilter: "blur(12px)",
           }}
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
+          onMouseEnter={cancelHide}
+          onMouseLeave={scheduleHide}
         >
           <p className="font-semibold text-foreground mb-1">{matched.term}</p>
           <p className="text-muted-foreground leading-relaxed text-xs line-clamp-4">
