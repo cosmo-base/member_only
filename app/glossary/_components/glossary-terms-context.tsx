@@ -1,24 +1,32 @@
 "use client"
 
 import { createContext, useContext } from "react"
-import type { GlossaryTerm } from "@/data/glossary"
 
-const GlossaryTermsContext = createContext<GlossaryTerm[]>([])
+export type TermEntry = {
+  slug: string
+  term: string
+  textLv1?: string
+  textLv2?: string
+}
+
+export type TermMap = Record<string, TermEntry>
+
+const GlossaryTermsContext = createContext<TermMap>({})
 
 export function GlossaryTermsProvider({
-  terms,
+  termMap,
   children,
 }: {
-  terms: GlossaryTerm[]
+  termMap: TermMap
   children: React.ReactNode
 }) {
   return (
-    <GlossaryTermsContext.Provider value={terms}>
+    <GlossaryTermsContext.Provider value={termMap}>
       {children}
     </GlossaryTermsContext.Provider>
   )
 }
 
-export function useGlossaryTerms(): GlossaryTerm[] {
+export function useGlossaryTerms(): TermMap {
   return useContext(GlossaryTermsContext)
 }

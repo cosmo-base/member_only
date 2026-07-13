@@ -7,7 +7,7 @@ import { type GlossaryTerm } from "@/data/glossary"
 import { DifficultyBadge } from "@/app/glossary/_components/difficulty-badge"
 import { LevelText } from "@/app/glossary/_components/level-text"
 import { cn } from "@/lib/utils"
-import { GlossaryTermsProvider } from "@/app/glossary/_components/glossary-terms-context"
+import { GlossaryTermsProvider, type TermMap } from "@/app/glossary/_components/glossary-terms-context"
 
 const LEVEL_LABELS = {
   lv1: { label: "Lv.1 初心者", sublabel: "Concept", color: "text-emerald-400" },
@@ -20,10 +20,10 @@ type LevelKey = keyof typeof LEVEL_LABELS
 interface TermDetailProps {
   term: GlossaryTerm
   relatedTerms: GlossaryTerm[]
-  allTerms: GlossaryTerm[]
+  termMap: TermMap
 }
 
-export function TermDetail({ term, relatedTerms, allTerms }: TermDetailProps) {
+export function TermDetail({ term, relatedTerms, termMap }: TermDetailProps) {
   const availableLevels = (["lv1", "lv2", "lv3"] as LevelKey[]).filter(
     (lv) =>
       (lv === "lv1" && term.textLv1) ||
@@ -41,7 +41,7 @@ export function TermDetail({ term, relatedTerms, allTerms }: TermDetailProps) {
       : term.textLv3
 
   return (
-    <GlossaryTermsProvider terms={allTerms}>
+    <GlossaryTermsProvider termMap={termMap}>
     <div className="space-y-6">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-muted-foreground">
