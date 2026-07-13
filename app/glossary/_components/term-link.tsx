@@ -16,11 +16,9 @@ export function TermLink({ termName }: TermLinkProps) {
   const [align, setAlign] = useState<TooltipAlign>("center")
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const wrapperRef = useRef<HTMLSpanElement>(null)
-  const allTerms = useGlossaryTerms()
+  const termMap = useGlossaryTerms()
 
-  const matched = allTerms.find(
-    (t) => t.term === termName || t.aliases?.includes(termName)
-  )
+  const matched = termMap[termName]
 
   const cancelHide = () => {
     if (hideTimer.current) clearTimeout(hideTimer.current)
