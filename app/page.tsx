@@ -110,14 +110,14 @@ const level3Content = [
 ]
 
 const level4Content = [
-  {
-    icon: "glossary",
-    logo: null,
-    title: "宇宙用語集",
-    description: "宇宙専門用語を3段階で解説するデータベース",
-    features: ["キーワード検索", "カテゴリ・難易度フィルター", "50音索引"],
-    href: "/glossary"
-  },
+  //{
+  //  icon: "glossary",
+  //  logo: null,
+   // title: "宇宙用語集",
+   // description: "宇宙専門用語を3段階で解説するデータベース",
+   // features: ["キーワード検索", "カテゴリ・難易度フィルター", "50音索引"],
+   // href: "/glossary"
+ // },
   {
     icon: "award",
     logo: voyagerLogo,
