@@ -148,18 +148,49 @@ export function getTermBySlug(
   return terms.find((t) => t.slug === slug)
 }
 
+function resolveTermRefs(
+  terms: GlossaryTerm[],
+  refs: string[],
+  excludeSlug: string
+): GlossaryTerm[] {
+  const set = new Set(refs)
+  return terms.filter(
+    (t) =>
+      t.slug !== excludeSlug &&
+      (set.has(t.term) || set.has(t.slug) || t.aliases?.some((a) => set.has(a)))
+  )
+}
+
+export interface RelatedTermGroups {
+  related: GlossaryTerm[]
+  similar: GlossaryTerm[]
+  opposite: GlossaryTerm[]
+}
+
+export function getRelatedTermGroups(
+  terms: GlossaryTerm[],
+  term: GlossaryTerm
+): RelatedTermGroups {
+  const allRefs = [
+    ...(term.related ?? []),
+    ...(term.internal ?? []),
+  ]
+  return {
+    related: resolveTermRefs(terms, allRefs, term.slug),
+    similar: resolveTermRefs(terms, term.similar ?? [], term.slug),
+    opposite: resolveTermRefs(terms, term.opposite ?? [], term.slug),
+  }
+}
+
 export function getRelatedTerms(
   terms: GlossaryTerm[],
   term: GlossaryTerm
 ): GlossaryTerm[] {
-  const names = new Set([
-    ...(term.related ?? []),
-    ...(term.internal ?? []),
-    ...(term.similar ?? []),
-  ])
-  return terms.filter(
-    (t) =>
-      t.slug !== term.slug &&
-      (names.has(t.term) || t.aliases?.some((a) => names.has(a)))
-  )
+  const { related, similar, opposite } = getRelatedTermGroups(terms, term)
+  const seen = new Set<string>()
+  return [...related, ...similar, ...opposite].filter((t) => {
+    if (seen.has(t.slug)) return false
+    seen.add(t.slug)
+    return true
+  })
 }
