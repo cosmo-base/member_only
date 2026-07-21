@@ -113,32 +113,8 @@ export function TermDetail({ term, relatedGroups, termMap }: TermDetailProps) {
       </div>
 
       {/* Related term groups */}
-      {(relatedGroups.related.length > 0 || relatedGroups.similar.length > 0 || relatedGroups.opposite.length > 0) && (
+      {(relatedGroups.related.length > 0　|| relatedGroups.opposite.length > 0) && (
         <div className="glass-card rounded-xl p-6 space-y-5">
-          {relatedGroups.related.length > 0 && (
-            <div>
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                関連語
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {relatedGroups.related.map((rt) => (
-                  <TermChip key={rt.slug} term={rt} />
-                ))}
-              </div>
-            </div>
-          )}
-          {relatedGroups.similar.length > 0 && (
-            <div>
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                類義語
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {relatedGroups.similar.map((rt) => (
-                  <TermChip key={rt.slug} term={rt} />
-                ))}
-              </div>
-            </div>
-          )}
           {relatedGroups.opposite.length > 0 && (
             <div>
               <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
@@ -146,6 +122,18 @@ export function TermDetail({ term, relatedGroups, termMap }: TermDetailProps) {
               </h2>
               <div className="flex flex-wrap gap-2">
                 {relatedGroups.opposite.map((rt) => (
+                  <TermChip key={rt.slug} term={rt} />
+                ))}
+              </div>
+            </div>
+          )}
+          {relatedGroups.related.length > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                関連語
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {relatedGroups.related.map((rt) => (
                   <TermChip key={rt.slug} term={rt} />
                 ))}
               </div>
