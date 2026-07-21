@@ -85,7 +85,7 @@ export function AutoSlider({ shittokuImageSrc }: { shittokuImageSrc?: string | n
   ]
 
   const goToNext = useCallback(() => {
-    if (isTransitioningRef.current || isPausedRef.current) return
+    if (isTransitioningRef.current) return
     isTransitioningRef.current = true
     setIsTransitioning(true)
     setCurrentIndex((prev) => prev + 1)
@@ -99,7 +99,9 @@ export function AutoSlider({ shittokuImageSrc }: { shittokuImageSrc?: string | n
   }, [])
 
   useEffect(() => {
-    const timer = setInterval(goToNext, 7000)
+    const timer = setInterval(() => {
+      if (!isPausedRef.current) goToNext()
+    }, 7000)
     return () => clearInterval(timer)
   }, [goToNext])
 
