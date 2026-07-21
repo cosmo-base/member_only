@@ -30,11 +30,11 @@ const KANA_INDEX = [
   "A–Z",
 ]
 
-function kanaRow(kana: string): string {
+function kanaRow(kana: string, term?: string): string {
   if (!kana) return ""
-  const first = kana[0]
-  if (/[a-zA-Z]/.test(first)) return "A–Z"
-  return first
+  // kana is always hiragana even for English terms, so check the term name for A-Z
+  if (term && /^[a-zA-Z]/.test(term)) return "A–Z"
+  return kana[0]
 }
 
 type SortMode = "kana" | "category"
@@ -55,7 +55,7 @@ export default function GlossaryIndex({ terms }: GlossaryIndexProps) {
       if (selectedCategory && t.categoryLarge !== selectedCategory) return false
       if (selectedDifficulty && t.difficulty !== selectedDifficulty) return false
       if (selectedKana) {
-        const row = kanaRow(t.kana)
+        const row = kanaRow(t.kana, t.term)
         if (row !== selectedKana) return false
       }
       if (query) {
@@ -227,7 +227,7 @@ export default function GlossaryIndex({ terms }: GlossaryIndexProps) {
             <div className="glass-card rounded-xl p-3">
               <div className="flex flex-wrap gap-1">
                 {KANA_INDEX.map((k) => {
-                  const hasTerms = terms.some((t) => kanaRow(t.kana) === k)
+                  const hasTerms = terms.some((t) => kanaRow(t.kana, t.term) === k)
                   return (
                     <button
                       key={k}
