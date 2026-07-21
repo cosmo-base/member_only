@@ -91,7 +91,6 @@ export async function fetchGlossaryTerms(): Promise<GlossaryTerm[]> {
     const iInternal     = idx("internal")
     const iRelated      = idx("related")
     const iOpposite     = idx("antonyms")
-    const iSimilar      = idx("synonyms")
 
     if (iTerm === -1) {
       console.warn("[glossary] 'term' column not found in header:", headers)
@@ -126,7 +125,6 @@ export async function fetchGlossaryTerms(): Promise<GlossaryTerm[]> {
         internal:       iInternal   !== -1 ? splitList(col(cols, iInternal))  : [],
         related:        iRelated    !== -1 ? splitList(col(cols, iRelated))   : [],
         opposite:       iOpposite   !== -1 ? splitList(col(cols, iOpposite))  : [],
-        similar:        iSimilar    !== -1 ? splitList(col(cols, iSimilar))   : [],
         status:         (iStatus    !== -1 ? col(cols, iStatus)    : "未着手") as GlossaryStatus,
         credit:         iCredit     !== -1 ? col(cols, iCredit) || "Cosmo Base運営" : "Cosmo Base運営",
       })
@@ -163,7 +161,6 @@ function resolveTermRefs(
 
 export interface RelatedTermGroups {
   related: GlossaryTerm[]
-  similar: GlossaryTerm[]
   opposite: GlossaryTerm[]
 }
 
@@ -177,7 +174,6 @@ export function getRelatedTermGroups(
   ]
   return {
     related: resolveTermRefs(terms, allRefs, term.slug),
-    similar: resolveTermRefs(terms, term.similar ?? [], term.slug),
     opposite: resolveTermRefs(terms, term.opposite ?? [], term.slug),
   }
 }
@@ -186,9 +182,9 @@ export function getRelatedTerms(
   terms: GlossaryTerm[],
   term: GlossaryTerm
 ): GlossaryTerm[] {
-  const { related, similar, opposite } = getRelatedTermGroups(terms, term)
+  const { related, opposite } = getRelatedTermGroups(terms, term)
   const seen = new Set<string>()
-  return [...related, ...similar, ...opposite].filter((t) => {
+  return [...related, ...opposite].filter((t) => {
     if (seen.has(t.slug)) return false
     seen.add(t.slug)
     return true
