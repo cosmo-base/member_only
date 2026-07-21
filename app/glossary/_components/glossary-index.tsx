@@ -2,12 +2,13 @@
 
 import { useState, useMemo } from "react"
 import Link from "next/link"
-import { Search, BookOpen, ChevronRight } from "lucide-react"
+import { Search, BookOpen, ChevronRight, ArrowUpDown } from "lucide-react"
 import { StarBackground } from "@/components/star-background"
 import { SiteHeader } from "@/components/site-header"
 import { Input } from "@/components/ui/input"
 import {
   CATEGORY_LARGE_LIST,
+  CATEGORY_SMALL_ORDER,
   type CategoryLarge,
   type DifficultyLevel,
   type GlossaryTerm,
@@ -36,6 +37,8 @@ function kanaRow(kana: string): string {
   return first
 }
 
+type SortMode = "kana" | "category"
+
 interface GlossaryIndexProps {
   terms: GlossaryTerm[]
 }
@@ -45,6 +48,7 @@ export default function GlossaryIndex({ terms }: GlossaryIndexProps) {
   const [selectedCategory, setSelectedCategory] = useState<CategoryLarge | "">("")
   const [selectedDifficulty, setSelectedDifficulty] = useState<DifficultyLevel | 0>(0)
   const [selectedKana, setSelectedKana] = useState("")
+  const [sortMode, setSortMode] = useState<SortMode>("kana")
 
   const filtered = useMemo<GlossaryTerm[]>(() => {
     return terms.filter((t) => {
@@ -67,10 +71,31 @@ export default function GlossaryIndex({ terms }: GlossaryIndexProps) {
     })
   }, [terms, query, selectedCategory, selectedDifficulty, selectedKana])
 
-  const sorted = useMemo(
+  const sortedByKana = useMemo(
     () => [...filtered].sort((a, b) => a.kana.localeCompare(b.kana, "ja")),
     [filtered]
   )
+
+  // Group terms by categorySmall in the defined order
+  const groupedByCategory = useMemo(() => {
+    const smallOrderMap = new Map(CATEGORY_SMALL_ORDER.map((s, i) => [s, i]))
+    const groups = new Map<string, GlossaryTerm[]>()
+
+    const sorted = [...filtered].sort((a, b) => {
+      const ai = smallOrderMap.get(a.categorySmall) ?? 9999
+      const bi = smallOrderMap.get(b.categorySmall) ?? 9999
+      if (ai !== bi) return ai - bi
+      return a.kana.localeCompare(b.kana, "ja")
+    })
+
+    for (const term of sorted) {
+      const key = term.categorySmall || term.categoryLarge
+      if (!groups.has(key)) groups.set(key, [])
+      groups.get(key)!.push(term)
+    }
+
+    return Array.from(groups.entries())
+  }, [filtered])
 
   const hasFilter = query || selectedCategory || selectedDifficulty || selectedKana
 
@@ -161,81 +186,112 @@ export default function GlossaryIndex({ terms }: GlossaryIndexProps) {
               </button>
             ))}
           </div>
-        </div>
 
-        {/* 50-on index */}
-        <div className="max-w-5xl mx-auto px-4 mb-6">
-          <div className="glass-card rounded-xl p-3">
-            <div className="flex flex-wrap gap-1">
-              {KANA_INDEX.map((k) => {
-                const hasTerms = terms.some((t) => kanaRow(t.kana) === k)
-                return (
-                  <button
-                    key={k}
-                    disabled={!hasTerms}
-                    onClick={() => {
-                      setSelectedKana(k === selectedKana ? "" : k)
-                      setQuery("")
-                    }}
-                    className={cn(
-                      "w-8 h-8 rounded text-xs font-medium transition-colors",
-                      selectedKana === k
-                        ? "bg-primary text-primary-foreground"
-                        : hasTerms
-                        ? "bg-card/60 text-foreground hover:bg-primary/20 hover:text-primary"
-                        : "text-muted-foreground/30 cursor-not-allowed"
-                    )}
-                  >
-                    {k}
-                  </button>
-                )
-              })}
-            </div>
+          {/* Sort mode toggle */}
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">並び順:</span>
+            <button
+              onClick={() => {
+                setSortMode("kana")
+              }}
+              className={cn(
+                "px-3 py-1 rounded-full text-xs font-medium border transition-colors",
+                sortMode === "kana"
+                  ? "bg-primary/20 text-primary border-primary/40"
+                  : "bg-card/40 text-muted-foreground border-border/40 hover:border-border"
+              )}
+            >
+              50音順
+            </button>
+            <button
+              onClick={() => {
+                setSortMode("category")
+                setSelectedKana("")
+              }}
+              className={cn(
+                "px-3 py-1 rounded-full text-xs font-medium border transition-colors",
+                sortMode === "category"
+                  ? "bg-primary/20 text-primary border-primary/40"
+                  : "bg-card/40 text-muted-foreground border-border/40 hover:border-border"
+              )}
+            >
+              カテゴリ順
+            </button>
           </div>
         </div>
+
+        {/* 50-on index — only shown in kana mode */}
+        {sortMode === "kana" && (
+          <div className="max-w-5xl mx-auto px-4 mb-6">
+            <div className="glass-card rounded-xl p-3">
+              <div className="flex flex-wrap gap-1">
+                {KANA_INDEX.map((k) => {
+                  const hasTerms = terms.some((t) => kanaRow(t.kana) === k)
+                  return (
+                    <button
+                      key={k}
+                      disabled={!hasTerms}
+                      onClick={() => {
+                        setSelectedKana(k === selectedKana ? "" : k)
+                        setQuery("")
+                      }}
+                      className={cn(
+                        "w-8 h-8 rounded text-xs font-medium transition-colors",
+                        selectedKana === k
+                          ? "bg-primary text-primary-foreground"
+                          : hasTerms
+                          ? "bg-card/60 text-foreground hover:bg-primary/20 hover:text-primary"
+                          : "text-muted-foreground/30 cursor-not-allowed"
+                      )}
+                    >
+                      {k}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Results */}
         <div className="max-w-5xl mx-auto px-4 pb-16">
           {hasFilter && (
             <div className="text-sm text-muted-foreground mb-4">
-              {sorted.length > 0 ? (
-                <>{sorted.length} 件が見つかりました</>
+              {filtered.length > 0 ? (
+                <>{filtered.length} 件が見つかりました</>
               ) : (
                 <>該当する用語が見つかりませんでした</>
               )}
             </div>
           )}
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {(hasFilter ? sorted : [...terms].sort((a, b) => a.kana.localeCompare(b.kana, "ja"))).map(
-              (term) => (
-                <Link
-                  key={term.slug}
-                  href={`/glossary/term/${term.slug}`}
-                  className="glass-card rounded-xl p-4 group block transition-all duration-200 hover:scale-[1.02]"
-                >
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div>
-                      <p className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                        {term.term}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{term.english}</p>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary/60 transition-colors flex-shrink-0 mt-1" />
+          {sortMode === "kana" ? (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {sortedByKana.map((term) => (
+                <TermCard key={term.slug} term={term} />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {groupedByCategory.map(([categorySmall, groupTerms]) => (
+                <section key={categorySmall}>
+                  <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block" />
+                    {categorySmall}
+                    <span className="text-muted-foreground/50 font-normal normal-case tracking-normal">
+                      ({groupTerms.length})
+                    </span>
+                  </h2>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {groupTerms.map((term) => (
+                      <TermCard key={term.slug} term={term} />
+                    ))}
                   </div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <DifficultyBadge level={term.difficulty} />
-                    <span className="text-xs text-muted-foreground">{term.categoryLarge}</span>
-                  </div>
-                  {term.textLv1 && (
-                    <p className="text-xs text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
-                      {term.textLv1.replace(/\[[^\]]+\]/g, (m) => m.slice(1, -1))}
-                    </p>
-                  )}
-                </Link>
-              )
-            )}
-          </div>
+                </section>
+              ))}
+            </div>
+          )}
         </div>
 
         <footer className="border-t border-border/50 bg-background/80 backdrop-blur-sm py-8">
@@ -245,5 +301,33 @@ export default function GlossaryIndex({ terms }: GlossaryIndexProps) {
         </footer>
       </main>
     </div>
+  )
+}
+
+function TermCard({ term }: { term: GlossaryTerm }) {
+  return (
+    <Link
+      href={`/glossary/term/${term.slug}`}
+      className="glass-card rounded-xl p-4 group block transition-all duration-200 hover:scale-[1.02]"
+    >
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <div>
+          <p className="font-semibold text-foreground group-hover:text-primary transition-colors">
+            {term.term}
+          </p>
+          <p className="text-xs text-muted-foreground">{term.english}</p>
+        </div>
+        <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary/60 transition-colors flex-shrink-0 mt-1" />
+      </div>
+      <div className="flex items-center gap-2 flex-wrap">
+        <DifficultyBadge level={term.difficulty} />
+        <span className="text-xs text-muted-foreground">{term.categoryLarge}</span>
+      </div>
+      {term.textLv1 && (
+        <p className="text-xs text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
+          {term.textLv1.replace(/\[[^\]]+\]/g, (m) => m.slice(1, -1))}
+        </p>
+      )}
+    </Link>
   )
 }
