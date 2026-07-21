@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { StarBackground } from "@/components/star-background"
 import { SiteHeader } from "@/components/site-header"
-import { fetchGlossaryTerms, getTermBySlug, getRelatedTerms } from "@/lib/glossary-fetch"
+import { fetchGlossaryTerms, getTermBySlug, getRelatedTermGroups } from "@/lib/glossary-fetch"
 import { TermDetail } from "./_components/term-detail"
 import type { TermMap } from "@/app/glossary/_components/glossary-terms-context"
 import type { GlossaryTerm } from "@/data/glossary"
@@ -54,7 +54,7 @@ export default async function TermPage({ params }: PageProps) {
   const term = getTermBySlug(terms, slug)
   if (!term) notFound()
 
-  const relatedTerms = getRelatedTerms(terms, term)
+  const relatedGroups = getRelatedTermGroups(terms, term)
   const termMap = buildTermMap([term.textLv1, term.textLv2, term.textLv3], terms)
 
   return (
@@ -64,7 +64,7 @@ export default async function TermPage({ params }: PageProps) {
         <SiteHeader />
         <div className="h-16" />
         <div className="max-w-3xl mx-auto px-4 py-8">
-          <TermDetail term={term} relatedTerms={relatedTerms} termMap={termMap} />
+          <TermDetail term={term} relatedGroups={relatedGroups} termMap={termMap} />
         </div>
         <footer className="border-t border-border/50 bg-background/80 backdrop-blur-sm py-8 mt-8">
           <div className="max-w-5xl mx-auto px-4 text-center text-sm text-muted-foreground">

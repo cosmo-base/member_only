@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { ChevronLeft, BookOpen } from "lucide-react"
 import { type GlossaryTerm } from "@/data/glossary"
+import { type RelatedTermGroups } from "@/lib/glossary-fetch"
 import { DifficultyBadge } from "@/app/glossary/_components/difficulty-badge"
 import { LevelText } from "@/app/glossary/_components/level-text"
 import { cn } from "@/lib/utils"
@@ -19,11 +20,11 @@ type LevelKey = keyof typeof LEVEL_LABELS
 
 interface TermDetailProps {
   term: GlossaryTerm
-  relatedTerms: GlossaryTerm[]
+  relatedGroups: RelatedTermGroups
   termMap: TermMap
 }
 
-export function TermDetail({ term, relatedTerms, termMap }: TermDetailProps) {
+export function TermDetail({ term, relatedGroups, termMap }: TermDetailProps) {
   const availableLevels = (["lv1", "lv2", "lv3"] as LevelKey[]).filter(
     (lv) =>
       (lv === "lv1" && term.textLv1) ||
@@ -111,24 +112,45 @@ export function TermDetail({ term, relatedTerms, termMap }: TermDetailProps) {
         </div>
       </div>
 
-      {/* Related terms */}
-      {relatedTerms.length > 0 && (
-        <div className="glass-card rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-            関連用語
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {relatedTerms.map((rt) => (
-              <Link
-                key={rt.slug}
-                href={`/glossary/term/${rt.slug}`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm border border-border/50 bg-card/40 text-foreground hover:text-primary hover:border-primary/40 transition-colors"
-              >
-                {rt.term}
-                <DifficultyBadge level={rt.difficulty} className="text-[10px]" />
-              </Link>
-            ))}
-          </div>
+      {/* Related term groups */}
+      {(relatedGroups.related.length > 0 || relatedGroups.similar.length > 0 || relatedGroups.opposite.length > 0) && (
+        <div className="glass-card rounded-xl p-6 space-y-5">
+          {relatedGroups.related.length > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                関連語
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {relatedGroups.related.map((rt) => (
+                  <TermChip key={rt.slug} term={rt} />
+                ))}
+              </div>
+            </div>
+          )}
+          {relatedGroups.similar.length > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                類義語
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {relatedGroups.similar.map((rt) => (
+                  <TermChip key={rt.slug} term={rt} />
+                ))}
+              </div>
+            </div>
+          )}
+          {relatedGroups.opposite.length > 0 && (
+            <div>
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                対義語
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {relatedGroups.opposite.map((rt) => (
+                  <TermChip key={rt.slug} term={rt} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -138,5 +160,17 @@ export function TermDetail({ term, relatedTerms, termMap }: TermDetailProps) {
       </div>
     </div>
     </GlossaryTermsProvider>
+  )
+}
+
+function TermChip({ term }: { term: GlossaryTerm }) {
+  return (
+    <Link
+      href={`/glossary/term/${term.slug}`}
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm border border-border/50 bg-card/40 text-foreground hover:text-primary hover:border-primary/40 transition-colors"
+    >
+      {term.term}
+      <DifficultyBadge level={term.difficulty} className="text-[10px]" />
+    </Link>
   )
 }
