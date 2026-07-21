@@ -90,8 +90,8 @@ export async function fetchGlossaryTerms(): Promise<GlossaryTerm[]> {
     const iAliases      = idx("aliases")
     const iInternal     = idx("internal")
     const iRelated      = idx("related")
-    const iOpposite     = idx("opposite")
-    const iSimilar      = idx("similar")
+    const iOpposite     = idx("antonyms")
+    const iSimilar      = idx("synonyms")
 
     if (iTerm === -1) {
       console.warn("[glossary] 'term' column not found in header:", headers)
