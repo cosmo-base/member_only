@@ -106,7 +106,15 @@ const level3Content = [
     description: "全国の宇宙イベント一覧",
     features: [],
     href: "/CBED"
-  }
+  },
+    //{
+  //  icon: "glossary",
+  //  logo: null,
+   // title: "宇宙用語集",
+   // description: "宇宙専門用語を3段階で解説するデータベース",
+   // features: ["キーワード検索", "カテゴリ・難易度フィルター", "50音索引"],
+   // href: "/glossary"
+ // },
 ]
 
 const level4Content = [
@@ -141,6 +149,7 @@ function getIcon(iconName: string) {
     case "database": return <Database className="w-6 h-6" />
     case "award": return <Award className="w-6 h-6" />
     case "book": return <BookOpen className="w-6 h-6" />
+    case "glossaly": return <BookOpen className="w-6 h-6" />
     default: return <HelpCircle className="w-6 h-6" />
   }
 }
