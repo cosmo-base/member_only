@@ -24,15 +24,28 @@ function normalizeDate(dateStr: string): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    return await fetch(url, { signal: controller.signal })
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 export async function fetchIttekitaData(): Promise<IttekitaEvent[]> {
   try {
-    // 1. CBLのデータをフェッチ
-    const response = await fetch(`${CBL_CSV_URL}&_t=${BUILD_TIMESTAMP}`)
+    // 1. CBLのデータをフェッチ（25秒タイムアウト）
+    const response = await fetchWithTimeout(`${CBL_CSV_URL}&_t=${BUILD_TIMESTAMP}`, 25000)
     if (!response.ok) throw new Error("CBLデータの読み込みに失敗しました")
     const csvText = await response.text()
 
-    // 2. ★ 同時にCBEDの全イベントデータも裏側で取得
-    const cbedEvents = await fetchEventsData();
+    // 2. CBEDの全イベントデータを取得（失敗してもビルドを止めない）
+    const cbedEvents = await Promise.race([
+      fetchEventsData(),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error("CBED timeout")), 25000))
+    ]).catch(() => [] as Awaited<ReturnType<typeof fetchEventsData>>);
 
     return new Promise((resolve, reject) => {
       Papa.parse(csvText, {
