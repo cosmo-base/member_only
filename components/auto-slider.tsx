@@ -32,7 +32,7 @@ const BASE_SLIDES = [
     title: "",
     description: "",
     image: partnerImg as SlideImage,
-    href: "https://fsifofficial.github.io/CosmoBase/news/iSIO",
+    href: "https://fsifofficial.github.io/CosmoBase/news/lyncs",
   },
   {
     id: 3,
