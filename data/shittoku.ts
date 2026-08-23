@@ -13,7 +13,7 @@ export interface ShittokuEvent {
 }
 
 // 「宇宙知っトク」専用の独立スプレッドシートURL
-const SHITTOKU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTLLj6DB0iMVlhvHqUbfQhAhE7JEl5cps2zkE-WG-P2Vr-YiJWhdaOqO2QCzsXR-fjKFV1P44-0n7l3/pub?gid=0&single=true&output=csv";
+const SHITTOKU_CSV_URL = process.env.NEXT_PUBLIC_SHITTOKU_CSV_URL ?? "";
 
 // ビルド単位でキャッシュを強制的に破壊するタイムスタンプ
 const BUILD_TIMESTAMP = Date.now();

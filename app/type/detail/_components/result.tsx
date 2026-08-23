@@ -129,7 +129,7 @@ export default function SpaceTypeDiagnosis() {
     const { typeStr, scores } = calculateResult();
 
     // ★ データ収集 (GASへの送信)
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbybYdsNkpDom6Titu1BNtmR3sOCid2TZ3823Wh1ZZ6GhIWJmyrXrLOZRXa7BtwUiJJG/exec";
+    const GAS_URL = process.env.NEXT_PUBLIC_TYPE_GAS_URL ?? "";
 
     const payload: any = {};
     for (let i = 1; i <= 24; i++) {

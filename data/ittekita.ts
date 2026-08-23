@@ -12,7 +12,7 @@ export type IttekitaEvent = {
   cbedId?: string; // スプレッドシートの cbedId 列から手入力
 }
 
-const CBL_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTiWVQ_iCVoOVIzzsR28wnfaWqniBFolkDs3uOn_kMcquNmiVqg1ZVV_BGjlIfsyCQlRemOXeoL4Mhw/pub?gid=0&single=true&output=csv"
+const CBL_CSV_URL = process.env.NEXT_PUBLIC_CBL_CSV_URL ?? ""
 const BUILD_TIMESTAMP = Date.now();
 
 async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
