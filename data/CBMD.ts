@@ -1,4 +1,5 @@
 // lib/CBMD.ts
+import { cache } from "react"
 import { fetchEventsData, SpaceEvent } from "@/data/CBED"
 
 export interface Facility {
@@ -125,7 +126,7 @@ function parseFacilityCSV(csvText: string): any[] {
   return facilities;
 }
 
-export async function fetchFacilitiesData(): Promise<Facility[]> {
+async function _fetchFacilitiesData(): Promise<Facility[]> {
   try {
     const cacheBusterUrl = `${CBMD_SPREADSHEET_BASE_URL}&_t=${BUILD_TIMESTAMP}`;
     
@@ -193,3 +194,5 @@ export async function fetchFacilitiesData(): Promise<Facility[]> {
     return [];
   }
 }
+
+export const fetchFacilitiesData = cache(_fetchFacilitiesData);
