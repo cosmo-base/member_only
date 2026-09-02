@@ -1,5 +1,3 @@
-import { cache } from "react"
-
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 1. イベントデータの型定義
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -146,4 +144,11 @@ async function _fetchEventsData(): Promise<SpaceEvent[]> {
   }
 }
 
-export const fetchEventsData = cache(_fetchEventsData);
+let _eventsPromise: Promise<SpaceEvent[]> | null = null;
+
+export function fetchEventsData(): Promise<SpaceEvent[]> {
+  if (!_eventsPromise) {
+    _eventsPromise = _fetchEventsData();
+  }
+  return _eventsPromise;
+}
