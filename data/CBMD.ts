@@ -1,5 +1,4 @@
 // lib/CBMD.ts
-import { cache } from "react"
 import { fetchEventsData, SpaceEvent } from "@/data/CBED"
 
 export interface Facility {
@@ -195,4 +194,11 @@ async function _fetchFacilitiesData(): Promise<Facility[]> {
   }
 }
 
-export const fetchFacilitiesData = cache(_fetchFacilitiesData);
+let _facilitiesPromise: Promise<Facility[]> | null = null;
+
+export function fetchFacilitiesData(): Promise<Facility[]> {
+  if (!_facilitiesPromise) {
+    _facilitiesPromise = _fetchFacilitiesData();
+  }
+  return _facilitiesPromise;
+}
