@@ -1,3 +1,5 @@
+import { cache } from "react"
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 1. イベントデータの型定義
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -117,16 +119,12 @@ function parseCSV(csvText: string): SpaceEvent[] {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 4. データの取得処理（クリーンな本番用）
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-export async function fetchEventsData(): Promise<SpaceEvent[]> {
+const BUILD_TIMESTAMP = Date.now();
+
+async function _fetchEventsData(): Promise<SpaceEvent[]> {
   try {
-    // ★ 改善1: タイムスタンプを関数内に移動し、アクセスするたびに新しい値を生成（キャッシュ対策）
-    const currentTimestamp = Date.now();
-    const cacheBusterUrl = `${CBED_SPREADSHEET_BASE_URL}&_t=${currentTimestamp}`;
-    
-    // ★ 改善2: Next.jsのエッジ環境やVercelデプロイ時を考慮し、明示的にno-store（キャッシュしない）を設定
-    const res = await fetch(cacheBusterUrl, {
-      cache: 'no-store'
-    });
+    const cacheBusterUrl = `${CBED_SPREADSHEET_BASE_URL}&_t=${BUILD_TIMESTAMP}`;
+    const res = await fetch(cacheBusterUrl);
     
     if (!res.ok) {
       throw new Error(`CBEDデータの取得に失敗: HTTP ${res.status}`);
@@ -144,6 +142,8 @@ export async function fetchEventsData(): Promise<SpaceEvent[]> {
     
   } catch (error) {
     console.error("CBED fetch error:", error);
-    return []; // エラー時は空配列を返してアプリのクラッシュを防ぐ
+    return [];
   }
 }
+
+export const fetchEventsData = cache(_fetchEventsData);
