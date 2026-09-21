@@ -88,7 +88,7 @@ export function ContentPageLayout({
             </h1>
           </div>
 
-          <div className="ml-10 flex-shrink-0 mb-6">
+          <div className="md:ml-10 flex-shrink-0 mb-6">
             {/* ★ 辞書から取り出した画像をImageコンポーネントに渡す */}
             {currentLogo && (
               <Image 
