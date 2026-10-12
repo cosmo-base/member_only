@@ -61,7 +61,7 @@ const SHITTOKU_SLIDE = {
   id: 2,
   title: "",
   description: "",
-  href: "https://cosmo-base.github.io/member_only/shittoku/",
+  href: "https://cb-member.fsif.jp/shittoku/",
 }
 
 export function AutoSlider({ shittokuImageSrc }: { shittokuImageSrc?: string | null }) {
