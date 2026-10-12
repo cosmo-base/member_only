@@ -169,7 +169,7 @@ export async function getConstellations(): Promise<Constellation[]> {
               rival: row['ライバル'] || '',
               similar: row['似ている星座'] || '',
               relatedConstellations: row['一緒に好きになりそうな星座'] ? row['一緒に好きになりそうな星座'].split(',').map((s: string) => s.trim()) : [],
-              imageUrl: row['画像URL'] || `/member_only/constellation/${slug}.jpeg`, appearance: Number(row['出現係数']) || 1,
+              imageUrl: row['画像URL'] || `/constellation/${slug}.jpeg`, appearance: Number(row['出現係数']) || 1,
               story: "",
               stats: {
                 origin: parseInt(row['物語'], 10) || 0,

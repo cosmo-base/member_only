@@ -25,10 +25,10 @@ export const metadata: Metadata = {
 
   icons: {
     icon: [
-      { url: '/member_only/CB_icon.png', media: '(prefers-color-scheme: light)' },
-      { url: '/member_only/CB_icon.png', media: '(prefers-color-scheme: dark)' },
+      { url: '/CB_icon.png', media: '(prefers-color-scheme: light)' },
+      { url: '/CB_icon.png', media: '(prefers-color-scheme: dark)' },
     ],
-    apple: '/member_only/CB_icon.png',
+    apple: '/CB_icon.png',
   },
 }
 
