@@ -223,7 +223,7 @@ export default function MuseumPage() {
             {recentEvents.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {recentEvents.map((event) => (
-                  <Link href={`/CBED/${event.id}`} key={event.id}>
+                  <Link href={`https://cbed.fsif.jp/${event.id}`} key={event.id}>
                     <GlassCard hover className="h-full">
                       <div className="space-y-3">
                         <div>

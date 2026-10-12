@@ -55,7 +55,7 @@ export default function EventMap({ events, center, onBoundsChange }: { events: S
               <div className="font-sans text-slate-900 leading-tight">
                 <strong className="text-primary block mb-1">{event.title}</strong>
                 <span className="text-xs block text-slate-600">{event.location}</span>
-                <Link href={`/CBED/${event.id}`} className="text-[10px] text-blue-600 underline block mt-2">
+                <Link href={`https://cbed.fsif.jp/${event.id}`} className="text-[10px] text-blue-600 underline block mt-2">
                   詳細を見る
                 </Link>
               </div>
