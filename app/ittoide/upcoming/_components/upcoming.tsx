@@ -67,7 +67,7 @@ export default async function IttoideUpcomingPage() {
                     <TableCell className="text-muted-foreground whitespace-nowrap">{event.time || "-"}</TableCell>
                     <TableCell className="text-muted-foreground">{event.location || "-"}</TableCell>
                     <TableCell className="text-foreground font-bold">
-                      <Link href={`/CBED/${event.id}`} className="text-primary hover:underline hover:text-primary/80 transition-colors">
+                      <Link href={`https://cbed.fsif.jp/${event.id}`} className="text-primary hover:underline hover:text-primary/80 transition-colors">
                         {event.title}
                       </Link>
                     </TableCell>

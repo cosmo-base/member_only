@@ -56,7 +56,7 @@ export function LinkedEvents({ events }: { events: any[] }) {
       </div>
       <div className="space-y-4">
         {upcomingEvents.map((event, index) => (
-          <Link href={`/CBED/${event.id}`} key={`upcoming-${index}`}>
+          <Link href={`https://cbed.fsif.jp/${event.id}`} key={`upcoming-${index}`}>
             <div className="glass-strong rounded-xl p-4 hover:bg-primary/10 transition-colors cursor-pointer mb-3">
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -89,7 +89,7 @@ export function LinkedEvents({ events }: { events: any[] }) {
             {showPast && (
               <div className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-2">
                 {pastEvents.map((event, index) => (
-                  <Link href={`/CBED/${event.id}`} key={`past-${index}`}>
+                  <Link href={`https://cbed.fsif.jp/${event.id}`} key={`past-${index}`}>
                     <div className="glass-strong rounded-xl p-4 hover:bg-primary/10 transition-colors cursor-pointer mb-3 opacity-60 hover:opacity-100">
                       <div className="flex items-start justify-between gap-4">
                         <div>

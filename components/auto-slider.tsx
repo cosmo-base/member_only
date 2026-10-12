@@ -32,7 +32,7 @@ const BASE_SLIDES = [
     title: "",
     description: "",
     image: partnerImg as SlideImage,
-    href: "https://fsifofficial.github.io/CosmoBase/news/lyncs",
+    href: "https://cosmobase.fsif.jp/news/lyncs",
   },
   {
     id: 3,
@@ -46,14 +46,14 @@ const BASE_SLIDES = [
     title: "",
     description: "",
     image: memberImg as SlideImage,
-    href: "https://fsifofficial.github.io/CosmoBase/contact/member",
+    href: "https://cosmobase.fsif.jp/contact/member",
   },
   {
     id: 5,
     title: "",
     description: "",
     image: partImg as SlideImage,
-    href: "https://fsifofficial.github.io/CosmoBase/partner",
+    href: "https://cosmobase.fsif.jp/partner",
   },
 ]
 
@@ -61,7 +61,7 @@ const SHITTOKU_SLIDE = {
   id: 2,
   title: "",
   description: "",
-  href: "https://cosmo-base.github.io/member_only/shittoku/",
+  href: "https://cb-member.fsif.jp/shittoku/",
 }
 
 export function AutoSlider({ shittokuImageSrc }: { shittokuImageSrc?: string | null }) {

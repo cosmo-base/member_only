@@ -66,7 +66,7 @@ export default async function IttoideArchivePage() {
                     <TableCell className="text-muted-foreground whitespace-nowrap">{event.time || "-"}</TableCell>
                     <TableCell className="text-muted-foreground">{event.location || "-"}</TableCell>
                     <TableCell className="text-foreground font-bold">
-                      <Link href={`/CBED/${event.id}`} className="text-muted-foreground hover:underline hover:text-primary transition-colors">
+                      <Link href={`https://cbed.fsif.jp/${event.id}`} className="text-muted-foreground hover:underline hover:text-primary transition-colors">
                         {event.title}
                       </Link>
                     </TableCell>

@@ -7,9 +7,9 @@
         var search = window.location.search;
         
         // パスに CBED が含まれている場合のみ、新サイトへ転送
-        if (path.indexOf('/member_only/CBED') !== -1) {
-            var subPath = path.split('/member_only/CBED')[1] || '';
-            window.location.replace('https://cosmo-base.github.io/event_database' + subPath + search);
+        if (path.indexOf('/CBED') !== -1) {
+            var subPath = path.split('/CBED')[1] || '';
+            window.location.replace('https://cbed.fsif.jp' + subPath + search);
         } else {
             // CBED以外の無効なURLの場合は通常の404を表示
             document.write('<div style="text-align:center; margin-top:50px;"><h1>404 Not Found</h1><p>お探しのページは見つかりませんでした。</p></div>');

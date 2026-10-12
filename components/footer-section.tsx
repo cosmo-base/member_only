@@ -4,8 +4,8 @@ import { ExternalLink } from "lucide-react"
 import logoImg from "../public/images/cosmo-base-logo.png"
 
 const links = [
-  { label: "Cosmo Base", href: "https://fsifofficial.github.io/CosmoBase/" },
-  { label: "Cosmo Base Library", href: "https://cosmo-base.github.io/library/index.html" },
+  { label: "Cosmo Base", href: "https://cosmobase.fsif.jp/" },
+  { label: "Cosmo Base Library", href: "https://cbl.fsif.jp" },
   { label: "X", href: "https://x.com/CosmoBase" },
   { label: "Instagram", href: "https://www.instagram.com/cosmobase.official/" },
   { label: "note", href: "https://note.com/cosmobase" },

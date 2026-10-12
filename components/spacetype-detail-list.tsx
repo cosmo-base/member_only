@@ -223,7 +223,7 @@ export function SpaceTypeDetailList() {
 
                 <div className="w-full relative aspect-video bg-secondary/30 overflow-hidden flex items-center justify-center z-10 border-b border-border/30">
                   <img 
-                    src={`/member_only/type/${type.id}.png`}
+                    src={`/type/${type.id}.png`}
                     alt={type.typeTitle}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     onError={(e) => {

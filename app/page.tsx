@@ -105,7 +105,7 @@ const level3Content = [
     title: "Cosmo Base Event Database",
     description: "全国の宇宙イベント一覧",
     features: [],
-    href: "/CBED"
+    href: "https://cbed.fsif.jp"
   },
     //{
   //  icon: "glossary",
@@ -113,7 +113,7 @@ const level3Content = [
    // title: "宇宙用語集",
    // description: "宇宙専門用語を3段階で解説するデータベース",
    // features: ["キーワード検索", "カテゴリ・難易度フィルター", "50音索引"],
-   // href: "https://cosmo-base.github.io/glossary"
+   // href: "https://cosmobase.fsif.jp/glossary"
  // },
 ]
 
@@ -132,7 +132,7 @@ const level4Content = [
     title: "Cosmo Base Library",
     description: "宇宙の知識を体系的に整理したライブラリ",
     features: ["カテゴリ別学習", "記事・動画コンテンツ", "ブックマーク機能"],
-    href: "/library"
+    href: "https://cbl.fsif.jp"
   }
 ]
 

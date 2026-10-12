@@ -18,7 +18,7 @@ export default function NotFound() {
       const subPath = path.split('/CBED/')[1] || '';
 
       // 新しいデータベースのURLにくっつけてジャンプさせる
-      const targetUrl = `https://cosmo-base.github.io/event_database/${subPath}${search}`;
+      const targetUrl = `https://cbed.fsif.jp/${subPath}${search}`;
       window.location.replace(targetUrl);
     }
   }, [])

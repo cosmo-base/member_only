@@ -232,7 +232,7 @@ export default function SpaceTypeDiagnosis() {
              </Link>
            </div>
         <div className="flex items-center gap-2">
-          <a href="https://fsifofficial.github.io/CosmoBase/partners">
+          <a href="https://cosmobase.fsif.jp/partners">
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               <Users className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">パートナー一覧</span>
@@ -254,7 +254,7 @@ export default function SpaceTypeDiagnosis() {
           <nav className="p-3 text-left">
             <ul className="flex flex-col gap-1">
               <li>
-                <a href="https://fsifofficial.github.io/CosmoBase/" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
+                <a href="https://cosmobase.fsif.jp/" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
                     <img src={cbIcon.src} className="w-5 h-5 object-contain" alt="Cosmo Base" />
                   </div>
@@ -265,7 +265,7 @@ export default function SpaceTypeDiagnosis() {
                 </a>
               </li>
               <li>
-                <a href="https://cosmo-base.github.io/library/index.html" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
+                <a href="https://cbl.fsif.jp" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
                     <BookOpen className="w-5 h-5 text-primary" />
                   </div>
@@ -318,7 +318,7 @@ export default function SpaceTypeDiagnosis() {
         <div className="max-w-2xl w-full">
           {step === 'start' && (
             <div className="flex flex-col items-center justify-center min-h-[80vh] text-center animate-fade-in">
-              <img src="/member_only/CBtype_logo.png" alt="宇宙タイプ診断" className="w-64 sm:w-80 h-auto mb-6 drop-shadow-lg"/>
+              <img src="/CBtype_logo.png" alt="宇宙タイプ診断" className="w-64 sm:w-80 h-auto mb-6 drop-shadow-lg"/>
               <p className="mb-8 opacity-80 leading-relaxed">
                 あなたの「関心」や「関わり方」から<br />
                 16種類のタイプを分析します。
@@ -409,7 +409,7 @@ export default function SpaceTypeDiagnosis() {
           return (
             <div className="animate-fade-in pb-12">
               <div className="flex justify-center mb-6">
-                <img src="/member_only/CBtype_logo.png" alt="宇宙タイプ診断" className="w-48 sm:w-56 h-auto drop-shadow-md"/>
+                <img src="/CBtype_logo.png" alt="宇宙タイプ診断" className="w-48 sm:w-56 h-auto drop-shadow-md"/>
               </div>
               <h2 className="text-center text-sm tracking-widest opacity-80 mb-2">あなたの診断結果</h2>
               <h1 className="text-3xl font-bold text-center mb-6">{tData.emoji}
@@ -418,7 +418,7 @@ export default function SpaceTypeDiagnosis() {
               </h1>
               <div className="w-full h-64 flex flex-col items-center justify-center rounded-2xl mb-8 relative overflow-hidden shadow-2xl" style={{ backgroundColor: tData.color }}>
                 <img
-                  src={`/member_only/type/${typeStr}.png`}
+                  src={`/type/${typeStr}.png`}
                   alt={tData.typeTitle}
                   className="w-full h-full object-contain z-10 p-4 drop-shadow-lg transition-transform duration-300"
                 />

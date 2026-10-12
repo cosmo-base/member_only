@@ -88,8 +88,8 @@ export async function LatestNewsCard() {
   if (!news) return null; 
 
   const imageUrl = news.image 
-    ? `https://cosmo-base.github.io/library/img/${news.image}` 
-    : 'https://cosmo-base.github.io/library/img/CBnews.png';
+    ? `https://cbl.fsif.jp/img/${news.image}`
+    : 'https://cbl.fsif.jp/img/CBnews.png';
 
   return (
     <div className="glass-card rounded-xl overflow-hidden mb-8 group border border-primary/30 shadow-lg shadow-primary/5 animate-in fade-in slide-in-from-bottom-4 duration-500">

@@ -102,7 +102,7 @@ export function SpaceTypeList() {
                                 {/* 画像エリア */}
                                 <div className="md:w-5/12 lg:w-1/3 relative bg-secondary/30 aspect-square md:aspect-auto flex items-center justify-center overflow-hidden pl-2">
                                     <img
-                                        src={`/member_only/${type.img}`} //  画像パス
+                                        src={`/${type.img}`} //  画像パス
                                         alt={type.title}
                                         className="w-full object-contain transition-transform duration-700 group-hover:scale-105"
                                         onError={(e) => {
