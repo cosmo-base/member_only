@@ -19,7 +19,7 @@ export function Header() {
 
         </div>
         <Button asChild variant="outline" className="gap-2 border-border/50 hover:bg-secondary/50">
-          <Link href="https://fsifofficial.github.io/CosmoBase/partners" target="_blank">
+          <Link href="https://cosmobase.fsif.jp/partners" target="_blank">
             <Users className="h-4 w-4" />
             パートナー一覧
           </Link>

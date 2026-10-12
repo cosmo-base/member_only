@@ -232,7 +232,7 @@ export default function SpaceTypeDiagnosis() {
              </Link>
            </div>
         <div className="flex items-center gap-2">
-          <a href="https://fsifofficial.github.io/CosmoBase/partners">
+          <a href="https://cosmobase.fsif.jp/partners">
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               <Users className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">パートナー一覧</span>
@@ -254,7 +254,7 @@ export default function SpaceTypeDiagnosis() {
           <nav className="p-3 text-left">
             <ul className="flex flex-col gap-1">
               <li>
-                <a href="https://fsifofficial.github.io/CosmoBase/" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
+                <a href="https://cosmobase.fsif.jp/" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
                     <img src={cbIcon.src} className="w-5 h-5 object-contain" alt="Cosmo Base" />
                   </div>

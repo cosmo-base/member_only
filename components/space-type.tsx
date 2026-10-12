@@ -104,14 +104,14 @@ function ResultScreen({ answers }: { answers: number[] }) {
 
   // SNSシェア関数をX用とInstagram用に分割・高機能化
   const handleXShare = () => {
-    const shareUrl = `https://fsifofficial.github.io/CosmoBase/space-type/result/${resultType}`;
+    const shareUrl = `https://cosmobase.fsif.jp/space-type/result/${resultType}`;
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(data.shareText)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(twitterUrl, '_blank');
   };
 
   const handleInstagramShare = async () => {
     const shareText = data.shareText;
-    const imageUrl = `https://fsifofficial.github.io/CosmoBase/${data.img_share}`;
+    const imageUrl = `https://cosmobase.fsif.jp/${data.img_share}`;
     const fileName = `cosmobase_${resultType}.png`;
 
     try {
