@@ -113,7 +113,7 @@ const level3Content = [
    // title: "宇宙用語集",
    // description: "宇宙専門用語を3段階で解説するデータベース",
    // features: ["キーワード検索", "カテゴリ・難易度フィルター", "50音索引"],
-   // href: "https://cosmo-base.github.io/glossary"
+   // href: "https://cosmobase.fsif.jp/glossary"
  // },
 ]
 

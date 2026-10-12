@@ -265,7 +265,7 @@ export default function SpaceTypeDiagnosis() {
                 </a>
               </li>
               <li>
-                <a href="https://cosmo-base.github.io/library/index.html" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
+                <a href="https://cbl.fsif.jp" target="_blank" rel="noopener noreferrer" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 p-3 rounded-xl hover:bg-secondary/60 transition-all duration-200 group">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-secondary group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-200 shrink-0">
                     <BookOpen className="w-5 h-5 text-primary" />
                   </div>
