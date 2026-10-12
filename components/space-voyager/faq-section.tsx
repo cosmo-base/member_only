@@ -71,7 +71,7 @@ export function FaqSection() {
               下記フォームよりお気軽にご連絡ください。
             </p>
             <a
-              href="https://fsifofficial.github.io/CosmoBase/contact"
+              href="https://cosmobase.fsif.jp/contact"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-cyan-400 to-cyan-500 text-[#0a1020] font-semibold hover:shadow-lg hover:shadow-cyan-400/25 transition-all duration-300 hover:scale-105"
             >
               お問い合わせフォーム

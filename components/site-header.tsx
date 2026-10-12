@@ -53,7 +53,7 @@ export function SiteHeader() {
         {/* Right side buttons */}
         <div className="flex items-center gap-2">
           {/* Partners button */}
-          <a href="https://fsifofficial.github.io/CosmoBase/partners">
+          <a href="https://cosmobase.fsif.jp/partners">
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               <Users className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">パートナー一覧</span>
@@ -88,7 +88,7 @@ export function SiteHeader() {
 
               <li>
                 <a
-                  href="https://fsifofficial.github.io/CosmoBase/"
+                  href="https://cosmobase.fsif.jp/"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setIsMenuOpen(false)}
@@ -106,7 +106,7 @@ export function SiteHeader() {
 
               <li>
                 <a
-                  href="https://cosmo-base.github.io/library/index.html"
+                  href="https://cbl.fsif.jp/index.html"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setIsMenuOpen(false)}

@@ -51,7 +51,7 @@ export default function NewsPage() {
           いつでも振り返ることができます。テーマ別や時系列での検索も可能です。
         </p>
         <a id="news"
-          href="https://cosmo-base.github.io/library/index.html"
+          href="https://cbl.fsif.jp/index.html"
           target="_blank"
           rel="noopener noreferrer"
         >

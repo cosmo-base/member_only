@@ -108,7 +108,7 @@ export function CosmoBaseSection() {
         {/* CTA */}
         <div className="mt-12 text-center">
           <a
-            href="https://fsifofficial.github.io/CosmoBase/"
+            href="https://cosmobase.fsif.jp/"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full glass-button text-cyan-400 hover:text-white font-medium transition-all"
           >
             Cosmo Baseを見る
