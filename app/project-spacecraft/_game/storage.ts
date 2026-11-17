@@ -1,6 +1,6 @@
 import type { GameState } from './engine/types';
 
-/** ブラウザ内ローカル保存（任意）。サーバーには何も送らない */
+/** ブラウザ内ローカル保存（初期値はオン、設定でオフにできる）。サーバーには何も送らない */
 const SAVE_KEY = 'ps-save-v1';
 const PREFS_KEY = 'ps-prefs-v1';
 
@@ -11,7 +11,7 @@ export interface Prefs {
   consentVersion: number | null;
 }
 
-export const DEFAULT_PREFS: Prefs = { localSave: false, analyticsConsent: false, consentVersion: null };
+export const DEFAULT_PREFS: Prefs = { localSave: true, analyticsConsent: false, consentVersion: null };
 
 export function loadPrefs(): Prefs {
   try {

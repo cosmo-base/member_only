@@ -26,7 +26,7 @@ export default function App() {
     savePrefs(prefs);
   }, [prefs]);
 
-  // ローカル保存は参加者が有効にしたときだけ行う
+  // ローカル保存は参加者がオフにしていないときだけ行う
   useEffect(() => {
     if (!prefs.localSave || !game) return;
     if (game.ending) clearGame();
