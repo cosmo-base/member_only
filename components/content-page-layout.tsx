@@ -45,18 +45,19 @@ const LOGO_MAP: Record<string, any> = {
 
 interface ContentPageLayoutProps {
   children: React.ReactNode
-  title: string
-  level: number
-  levelTitle: string
-  logo: string
+  // 省略すると見出し部分を出さない（ゲームなど、本文側に独自の見出しがあるページ用）
+  title?: string
+  level?: number
+  levelTitle?: string
+  logo?: string
 }
 
 export function ContentPageLayout({
   children,
   title,
-  level,
-  levelTitle,
-  logo
+  level = 0,
+  levelTitle = "",
+  logo = ""
 }: ContentPageLayoutProps) {
   
   // 辞書から、渡されたlogo名に一致する画像を取り出す
@@ -71,6 +72,7 @@ export function ContentPageLayout({
 
         <div className="h-16" />
 
+        {title && (
         <div className="max-w-5xl mx-auto px-4 pt-8 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
 
           <div className="flex-1">
@@ -100,6 +102,7 @@ export function ContentPageLayout({
             )}
           </div>
         </div>
+        )}
 
         <div className="max-w-5xl mx-auto px-4 pb-16">
           {children}
