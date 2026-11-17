@@ -71,11 +71,11 @@ export function TitleScreen({ onStart, saved, onContinue, onOpenData }: Props) {
       </section>
 
       <p className="center small">
-        アカウント登録は不要です。途中経過のブラウザ内保存は{' '}
+        アカウント登録は不要です。途中経過はこのブラウザに保存されます。保存しない場合は{' '}
         <button className="link-button inline" onClick={onOpenData}>
           保存とデータの設定
         </button>{' '}
-        から任意で有効にできます。
+        からオフにできます。
       </p>
     </div>
   );
