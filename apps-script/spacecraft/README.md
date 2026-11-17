@@ -29,7 +29,7 @@ URL をブラウザで開いて `{"ok":true,...}` と表示されれば受け口
 
 ## 4. ゲームに送信先を設定する
 
-ゲームは参加者ページ（このリポジトリ）の `/spacecraft/` で公開しています。
+ゲームは参加者ページ（このリポジトリ）の `/project-spacecraft/` で公開しています。
 
 **GitHub Pages で公開する場合**：このリポジトリの Settings → Secrets and variables → Actions → **Secrets** に、`NEXT_PUBLIC_SPACECRAFT_GAS_URL` という名前でウェブアプリの URL を登録します。push すると、自動ビルドのときに組み込まれます。
 

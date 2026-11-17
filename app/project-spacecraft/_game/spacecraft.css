@@ -94,7 +94,7 @@
 }
 
 /* ───── レイアウト ───── */
-/* ヘッダー・フッターは参加者ページ共通のもの（app/spacecraft/_components/spacecraft.tsx） */
+/* ヘッダー・フッターは参加者ページ共通のもの（app/project-spacecraft/_components/spacecraft.tsx） */
 /* 幅と左右の余白は参加者ページ共通レイアウト（max-w-5xl px-4）に任せる */
 .spacecraft .main {
   padding: 24px 0 48px;
