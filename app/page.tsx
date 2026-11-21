@@ -95,7 +95,8 @@ const level2Content = [
     title: "宇宙機シミュレーター",
     description: "人工衛星プロジェクトの責任者になって、ミッション成功を目指すシミュレーションゲーム",
     features: ["初心者モード", "玄人モード"],
-    href: "/project-spacecraft"
+    // 公開前の見た目確認中は Coming Soon（リンクなし）。公開時にコメントを外す
+    // href: "/project-spacecraft"
   }
 ]
 
@@ -191,7 +192,7 @@ export default function CosmoBasePage() {
           <LevelSection level={2} title="">
             {level2Content.map((item) => (
               <ContentCard
-                key={item.href}
+                key={item.href ?? item.title}
                 icon={getIcon(item.icon)}
                 logo={item.logo}
                 title={item.title}
