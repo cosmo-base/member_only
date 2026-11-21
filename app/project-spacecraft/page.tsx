@@ -6,14 +6,14 @@ const description = "小さな人工衛星プロジェクトの責任者にな�
 export const metadata: Metadata = {
   // 共有用画像などを絶対URLにするための基準
   metadataBase: new URL("https://cb-member.fsif.jp"),
-  title: "宇宙機プロジェクトシミュレーター",
+  title: "宇宙機シミュレーター",
   description,
   icons: {
     icon: "/CBspacecraft_icon.png",
     apple: "/CBspacecraft_icon.png",
   },
   openGraph: {
-    title: "宇宙機プロジェクトシミュレーター | Cosmo Base",
+    title: "宇宙機シミュレーター | Cosmo Base",
     description,
     images: [{ url: "/CBspacecraft_og.png", width: 1200, height: 400, alt: "宇宙機シミュレーター" }],
   },
