@@ -18,7 +18,7 @@ import typeLogo from "../public/CBtype_logo.png"
 import voyagerLogo from "../public/CBvoyager_logo.png"
 import cbmdLogo from "../public/CBMD_logo.png"
 import cmLogo from "../public/CosmoMatch.png"
-import spacecraftLogo from "../public/CBspacecraft_card.png"
+import spacecraftLogo from "../public/CBspacecraft_logo.png"
 
 // ★ logoプロパティを追加し、インポートした画像をマッピング
 const level1Content = [
