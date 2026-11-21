@@ -4,7 +4,7 @@ import { HeroSection } from "@/components/hero-section"
 import { LevelSection } from "@/components/level-section"
 import { ContentCard } from "@/components/content-card"
 import { FooterSection } from "@/components/footer-section"
-import { Heart, HelpCircle, Landmark, Newspaper, User, Calendar, MessageCircle, MapPin, Camera, Database, Award, BookOpen, BookMarked } from "lucide-react"
+import { Heart, HelpCircle, Landmark, Newspaper, User, Calendar, MessageCircle, MapPin, Camera, Database, Award, BookOpen, BookMarked, Rocket } from "lucide-react"
 
 import cbedLogo from "../public/CBED_logo.png"
 import cblLogo from "../public/CBL_logo.png" 
@@ -18,6 +18,7 @@ import typeLogo from "../public/CBtype_logo.png"
 import voyagerLogo from "../public/CBvoyager_logo.png"
 import cbmdLogo from "../public/CBMD_logo.png"
 import cmLogo from "../public/CosmoMatch.png"
+import spacecraftLogo from "../public/CBspacecraft_card.png"
 
 // ★ logoプロパティを追加し、インポートした画像をマッピング
 const level1Content = [
@@ -87,6 +88,14 @@ const level2Content = [
     description: "おすすめ宇宙イベント紹介",
     features: [],
     href: "/ittoide"
+  },
+  {
+    icon: "rocket",
+    logo: spacecraftLogo,
+    title: "宇宙機シミュレーター",
+    description: "人工衛星プロジェクトの責任者になって、ミッション成功を目指すシミュレーションゲーム",
+    features: ["初心者モード", "玄人モード"],
+    href: "/project-spacecraft"
   }
 ]
 
@@ -150,6 +159,7 @@ function getIcon(iconName: string) {
     case "award": return <Award className="w-6 h-6" />
     case "book": return <BookOpen className="w-6 h-6" />
     case "glossary": return <BookMarked className="w-6 h-6" />
+    case "rocket": return <Rocket className="w-6 h-6" />
     default: return <HelpCircle className="w-6 h-6" />
   }
 }
