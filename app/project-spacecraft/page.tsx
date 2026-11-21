@@ -9,17 +9,17 @@ export const metadata: Metadata = {
   title: "宇宙機シミュレーター",
   description,
   icons: {
-    icon: "/CBspacecraft_icon.png",
-    apple: "/CBspacecraft_icon.png",
+    icon: "/brand/spacecraft/spacecraft_square_navy.png",
+    apple: "/brand/spacecraft/spacecraft_square_navy.png",
   },
   openGraph: {
     title: "宇宙機シミュレーター | Cosmo Base",
     description,
-    images: [{ url: "/CBspacecraft_og.png", width: 1200, height: 400, alt: "宇宙機シミュレーター" }],
+    images: [{ url: "/brand/spacecraft/spacecraft_horizontal_navy.png", width: 1800, height: 600, alt: "宇宙機シミュレーター" }],
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/CBspacecraft_og.png"],
+    images: ["/brand/spacecraft/spacecraft_horizontal_navy.png"],
   },
 }
 

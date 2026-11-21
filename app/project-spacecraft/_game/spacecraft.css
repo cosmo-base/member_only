@@ -338,7 +338,7 @@
   opacity: 0.7;
   pointer-events: none;
 }
-/* タイトルはロゴ画像（public/CBspacecraft_logo.png）。読み上げは alt の正式名称 */
+/* タイトルはロゴ画像（public/brand/spacecraft/spacecraft_horizontal_transparent-dark.png）。読み上げは alt の正式名称 */
 .spacecraft .hero-title {
   margin: 0 auto 8px;
   max-width: 720px;

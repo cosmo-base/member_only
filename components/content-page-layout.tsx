@@ -24,7 +24,7 @@ import typeLogo from "../public/CBtype_logo.png"
 import voyagerLogo from "../public/CBvoyager_logo.png"
 import cbmdLogo from "../public/CBMD_logo.png"
 import cmlogo from "../public/CosmoMatch.png"
-import spacecraftLogo from "../public/CBspacecraft_logo.png"
+import spacecraftLogo from "../public/brand/spacecraft/spacecraft_horizontal_transparent-dark.png"
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 3. 呼び出し名（prop）とインポートした画像を紐づける辞書
