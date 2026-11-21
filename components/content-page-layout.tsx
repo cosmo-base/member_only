@@ -24,6 +24,7 @@ import typeLogo from "../public/CBtype_logo.png"
 import voyagerLogo from "../public/CBvoyager_logo.png"
 import cbmdLogo from "../public/CBMD_logo.png"
 import cmlogo from "../public/CosmoMatch.png"
+import spacecraftLogo from "../public/CBspacecraft_logo.png"
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ★ 3. 呼び出し名（prop）とインポートした画像を紐づける辞書
@@ -40,7 +41,8 @@ const LOGO_MAP: Record<string, any> = {
   "CBtype": typeLogo,
   "CBvoyager": voyagerLogo,
   "CBMD":cbmdLogo,
-  "CosmoMatch":cmlogo
+  "CosmoMatch":cmlogo,
+  "CBspacecraft": spacecraftLogo
 }
 
 interface ContentPageLayoutProps {

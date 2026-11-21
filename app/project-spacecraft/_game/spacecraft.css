@@ -338,8 +338,15 @@
   opacity: 0.7;
   pointer-events: none;
 }
-.spacecraft .hero h1 {
-  font-size: clamp(1.6rem, 5vw, 2.5rem);
+/* タイトルはロゴ画像（public/CBspacecraft_logo.png）。読み上げは alt の正式名称 */
+.spacecraft .hero-title {
+  margin: 0 auto 8px;
+  max-width: 720px;
+}
+.spacecraft .hero-logo {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 .spacecraft .hero-lead {
   font-size: 1.15rem;
