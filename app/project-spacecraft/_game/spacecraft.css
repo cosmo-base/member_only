@@ -1,5 +1,5 @@
 /*
- * 宇宙機プロジェクトシミュレーターのスタイル。サイト全体に影響しないよう、すべて .spacecraft の中に閉じ込める。
+ * 宇宙機シミュレーターのスタイル。サイト全体に影響しないよう、すべて .spacecraft の中に閉じ込める。
  *
  * Cosmo Base ブランドガイドライン v1.1 準拠
  * - Cosmo Navy を広く（約60%）、Star White を文字色に、アクセントは星のように要所だけ
@@ -338,8 +338,15 @@
   opacity: 0.7;
   pointer-events: none;
 }
-.spacecraft .hero h1 {
-  font-size: clamp(1.6rem, 5vw, 2.5rem);
+/* タイトルはロゴ画像（public/brand/spacecraft/spacecraft_horizontal_transparent-dark.png）。読み上げは alt の正式名称 */
+.spacecraft .hero-title {
+  margin: 0 auto 8px;
+  max-width: 720px;
+}
+.spacecraft .hero-logo {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 .spacecraft .hero-lead {
   font-size: 1.15rem;

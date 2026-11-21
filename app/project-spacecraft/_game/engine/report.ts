@@ -87,7 +87,7 @@ export function suggestImprovements(s: GameState): string[] {
 
 export function reportToText(s: GameState, r: MissionReport): string {
   const lines = [
-    '【宇宙機プロジェクトシミュレーター ミッションレポート】',
+    '【宇宙機シミュレーター ミッションレポート】',
     `モード：${s.mode === 'beginner' ? 'まずは体験する（初心者モード）' : '設計を深く考える（玄人モード）'}`,
     `結果：${r.endingTitle}`,
     '',

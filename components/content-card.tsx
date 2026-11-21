@@ -9,13 +9,13 @@ export interface ContentCardProps {
   title: string
   description: string
   features?: string[]
-  href: string
+  // 省略すると準備中（Coming Soon）として、リンクなしで表示する
+  href?: string
 }
 
 export function ContentCard({ icon, logo, title, description, features, href }: ContentCardProps) {
-  return (
-    <Link href={href} className="block group h-full">
-      <div className="glass-card rounded-xl p-6 md:p-8 h-full flex flex-col border border-border/50 hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,242,254,0.15)] relative overflow-hidden">
+  const card = (
+      <div className={`glass-card rounded-xl p-6 md:p-8 h-full flex flex-col border border-border/50 transition-all duration-300 relative overflow-hidden ${href ? "hover:border-primary/50 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,242,254,0.15)]" : ""}`}>
         
         {/* 背景の装飾グロウ */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-10 -mt-10 transition-opacity group-hover:bg-primary/10" />
@@ -59,13 +59,28 @@ export function ContentCard({ icon, logo, title, description, features, href }: 
           </div>
         )}
 
-        {/* アクセスボタン */}
-        <div className="mt-auto flex items-center text-sm font-bold text-primary group-hover:text-accent transition-colors relative z-10">
-          コンテンツを見る
-          <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
-        </div>
+        {/* アクセスボタン（準備中は Coming Soon） */}
+        {href ? (
+          <div className="mt-auto flex items-center text-sm font-bold text-primary group-hover:text-accent transition-colors relative z-10">
+            コンテンツを見る
+            <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+          </div>
+        ) : (
+          <div className="mt-auto relative z-10">
+            <span className="inline-block px-3 py-1 text-sm font-bold rounded-full bg-primary/10 text-primary border border-primary/30">
+              Coming Soon
+            </span>
+          </div>
+        )}
         
       </div>
+  )
+
+  if (!href) return <div className="block h-full">{card}</div>
+
+  return (
+    <Link href={href} className="block group h-full">
+      {card}
     </Link>
   )
 }

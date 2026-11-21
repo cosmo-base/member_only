@@ -1,5 +1,5 @@
 /**
- * 宇宙機プロジェクトシミュレーター：プレイデータ受信用 Google Apps Script
+ * 宇宙機シミュレーター：プレイデータ受信用 Google Apps Script
  *
  * スプレッドシートの「拡張機能 → Apps Script」に貼り付け、ウェブアプリとしてデプロイする。
  * 手順は apps-script/README.md を参照。

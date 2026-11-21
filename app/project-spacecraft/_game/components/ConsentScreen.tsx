@@ -12,7 +12,9 @@ export function ConsentScreen({ onAgree }: Props) {
     <div className="consent">
       <section className="hero">
         <p className="eyebrow">PROJECT SPACECRAFT</p>
-        <h1 className="serif">宇宙機プロジェクトシミュレーター</h1>
+        <h1 className="hero-title">
+          <img className="hero-logo" src="/brand/spacecraft/spacecraft_horizontal_transparent-dark.png" alt="宇宙機シミュレーター" width={1800} height={600} />
+        </h1>
         <p className="hero-lead">宇宙の知識がなくても大丈夫。はじめる前に、ひとつだけ確認させてください。</p>
       </section>
 

@@ -13,7 +13,9 @@ export function TitleScreen({ onStart, saved, onContinue, onOpenData }: Props) {
     <div className="title-screen">
       <section className="hero">
         <p className="eyebrow">PROJECT SPACECRAFT</p>
-        <h1 className="serif">宇宙機プロジェクトシミュレーター</h1>
+        <h1 className="hero-title">
+          <img className="hero-logo" src="/brand/spacecraft/spacecraft_horizontal_transparent-dark.png" alt="宇宙機シミュレーター" width={1800} height={600} />
+        </h1>
         <p className="hero-lead">
           宇宙の知識がなくても大丈夫。<br />
           興味から始めて、宇宙機づくりを体験しよう。
